@@ -1,0 +1,162 @@
+const I18N = {
+  tr: {
+    appName: "Le Français",
+    nav: {
+      flashcards: "Kartlar",
+      pronunciation: "Telaffuz",
+      settings: "Ayarlar"
+    },
+    flashcards: {
+      title: "Kelime Kartları",
+      subtitle: "Kartlara tıklayarak çevir",
+      due: "Bugün",
+      learned: "Öğrenildi",
+      total: "Toplam",
+      tapToFlip: "Çevirmek için tıkla",
+      again: "Tekrar",
+      hard: "Zor",
+      easy: "Kolay",
+      againInterval: "< 1 dk",
+      hardInterval: "1 gün",
+      easyInterval: "4 gün",
+      sessionDone: "Oturum Tamamlandı! 🎉",
+      sessionDoneMsg: "Harika iş çıkardın! Yarın tekrar çalış.",
+      newSession: "Yeni Oturum",
+      again_count: "Tekrar",
+      hard_count: "Zor",
+      easy_count: "Kolay",
+      loading: "Resimler yükleniyor...",
+      level_all: "Tümü",
+      level_a1: "A1",
+      level_a2: "A2",
+      level_verbs: "Fiiller"
+    },
+    pronunciation: {
+      title: "Telaffuz",
+      subtitle: "Dinle ve tekrar et",
+      level_all: "Tümü",
+      level_a1: "A1",
+      level_a2: "A2",
+      male: "Erkek",
+      female: "Kadın",
+      normal: "Normal",
+      slow: "Yavaş",
+      showTranslation: "Çeviriyi göster",
+      hideTranslation: "Çeviriyi gizle",
+      playing: "Oynatılıyor...",
+      due: "Bugün çalışılacak",
+      loading: "Yükleniyor..."
+    },
+    settings: {
+      title: "Ayarlar",
+      subtitle: "Çalışma tercihleriniz",
+      pronunciation: "Telaffuz Ayarları",
+      defaultVoice: "Varsayılan Ses",
+      male: "Erkek",
+      female: "Kadın",
+      defaultSpeed: "Varsayılan Hız",
+      normal: "Normal",
+      slow: "Yavaş",
+      autoPlay: "Otomatik Oynat",
+      autoPlayDesc: "Kart açılınca ses otomatik başlasın",
+      showPhonetic: "Fonetik Göster",
+      showPhoneticDesc: "Kelimenin IPA okunuşunu göster",
+      study: "Çalışma Ayarları",
+      dailyGoal: "Günlük Kart Hedefi",
+      language: "Dil / Language",
+      appLanguage: "Uygulama Dili",
+      progress: "İlerleme",
+      totalCards: "Toplam Kart",
+      learnedCards: "Öğrenilen",
+      studyDays: "Çalışma Günü",
+      accuracy: "Doğruluk",
+      resetProgress: "İlerlemeyi Sıfırla",
+      resetConfirm: "Tüm ilerleme silinecek. Emin misiniz?",
+      version: "Français App v1.0 — TCF Uyumlu"
+    }
+  },
+  en: {
+    appName: "Le Français",
+    nav: {
+      flashcards: "Cards",
+      pronunciation: "Pronunciation",
+      settings: "Settings"
+    },
+    flashcards: {
+      title: "Flashcards",
+      subtitle: "Tap a card to flip it",
+      due: "Due Today",
+      learned: "Learned",
+      total: "Total",
+      tapToFlip: "Tap to flip",
+      again: "Again",
+      hard: "Hard",
+      easy: "Easy",
+      againInterval: "< 1 min",
+      hardInterval: "1 day",
+      easyInterval: "4 days",
+      sessionDone: "Session Complete! 🎉",
+      sessionDoneMsg: "Great job! Come back tomorrow to review.",
+      newSession: "New Session",
+      again_count: "Again",
+      hard_count: "Hard",
+      easy_count: "Easy",
+      loading: "Loading images...",
+      level_all: "All",
+      level_a1: "A1",
+      level_a2: "A2",
+      level_verbs: "Verbs"
+    },
+    pronunciation: {
+      title: "Pronunciation",
+      subtitle: "Listen and repeat",
+      level_all: "All",
+      level_a1: "A1",
+      level_a2: "A2",
+      male: "Male",
+      female: "Female",
+      normal: "Normal",
+      slow: "Slow",
+      showTranslation: "Show translation",
+      hideTranslation: "Hide translation",
+      playing: "Playing...",
+      due: "Due today",
+      loading: "Loading..."
+    },
+    settings: {
+      title: "Settings",
+      subtitle: "Your study preferences",
+      pronunciation: "Pronunciation Settings",
+      defaultVoice: "Default Voice",
+      male: "Male",
+      female: "Female",
+      defaultSpeed: "Default Speed",
+      normal: "Normal",
+      slow: "Slow",
+      autoPlay: "Auto Play",
+      autoPlayDesc: "Auto play audio when card opens",
+      showPhonetic: "Show Phonetic",
+      showPhoneticDesc: "Show IPA pronunciation of words",
+      study: "Study Settings",
+      dailyGoal: "Daily Card Goal",
+      language: "Dil / Language",
+      appLanguage: "App Language",
+      progress: "Progress",
+      totalCards: "Total Cards",
+      learnedCards: "Learned",
+      studyDays: "Study Days",
+      accuracy: "Accuracy",
+      resetProgress: "Reset Progress",
+      resetConfirm: "All progress will be deleted. Are you sure?",
+      version: "Français App v1.0 — TCF Compatible"
+    }
+  }
+};
+
+function t(path) {
+  const lang = AppState.settings.language || 'tr';
+  const keys = path.split('.');
+  let val = I18N[lang];
+  for (const k of keys) { val = val?.[k]; }
+  return val || path;
+}

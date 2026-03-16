@@ -1,0 +1,247 @@
+/* ─── FLASHCARD PAGE ─── */
+
+.fc-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.fc-stat {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.fc-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+}
+
+.fc-stat-label {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ─── CARD FLIP ─── */
+.flashcard-scene {
+  perspective: 1000px;
+  margin-bottom: 24px;
+}
+
+.flashcard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/2;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.flashcard.flipped { transform: rotateY(180deg); }
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+/* FRONT */
+.flashcard-front {
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-image {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.fc-image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fc-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26,35,64,0.85) 0%, rgba(26,35,64,0.1) 60%);
+}
+
+.fc-image-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  background: linear-gradient(135deg, #1a2340 0%, #2c3e6e 100%);
+}
+
+.fc-front-content {
+  padding: 16px 20px 20px;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+}
+
+.fc-word {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+}
+
+.fc-phonetic {
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.fc-hint {
+  position: absolute;
+  top: 14px; right: 16px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* BACK */
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+  gap: 12px;
+}
+
+.fc-back-emoji { font-size: 3.5rem; }
+
+.fc-translation {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+}
+
+.fc-back-word {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  text-align: center;
+}
+
+.fc-category-badge {
+  background: var(--navy);
+  color: var(--gold);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── SM-2 BUTTONS ─── */
+.sm2-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sm2-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.sm2-btn:active { transform: scale(0.95); }
+
+.sm2-btn-again { background: #fef0ee; color: var(--danger); }
+.sm2-btn-hard { background: #fff8e6; color: var(--warning); }
+.sm2-btn-easy { background: #edfaf2; color: var(--success); }
+
+.sm2-btn-icon { font-size: 1.2rem; }
+.sm2-btn-label { font-size: 0.78rem; font-weight: 600; }
+.sm2-btn-interval { font-size: 0.68rem; color: var(--gray-600); }
+
+/* ─── CARD COUNTER ─── */
+.card-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.counter-text {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+/* ─── SESSION COMPLETE ─── */
+.session-complete {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.session-complete .trophy { font-size: 4rem; margin-bottom: 16px; }
+.session-complete h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.session-complete p { color: var(--gray-600); font-size: 0.9rem; margin-bottom: 24px; }
+
+.session-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sess-stat {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--gray-100);
+}
+
+.sess-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sess-stat-label { font-size: 0.7rem; color: var(--gray-600); margin-top: 2px; }

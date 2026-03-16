@@ -1,0 +1,17 @@
+[
+  {"id":"s_a1_001","sentence":"Bonjour, je m'appelle Marie.","words":["Bonjour,","je","m'appelle","Marie."],"translation_tr":"Merhaba, benim adım Marie.","translation_en":"Hello, my name is Marie.","level":"A1","topic":"introductions"},
+  {"id":"s_a1_002","sentence":"Comment vous appelez-vous ?","words":["Comment","vous","appelez-vous","?"],"translation_tr":"Adınız ne?","translation_en":"What is your name?","level":"A1","topic":"introductions"},
+  {"id":"s_a1_003","sentence":"J'habite à Paris.","words":["J'habite","à","Paris."],"translation_tr":"Paris'te oturuyorum.","translation_en":"I live in Paris.","level":"A1","topic":"places"},
+  {"id":"s_a1_004","sentence":"Il fait beau aujourd'hui.","words":["Il","fait","beau","aujourd'hui."],"translation_tr":"Bugün hava güzel.","translation_en":"The weather is nice today.","level":"A1","topic":"weather"},
+  {"id":"s_a1_005","sentence":"Je voudrais un café, s'il vous plaît.","words":["Je","voudrais","un","café,","s'il","vous","plaît."],"translation_tr":"Bir kahve istiyorum, lütfen.","translation_en":"I would like a coffee, please.","level":"A1","topic":"cafe"},
+  {"id":"s_a1_006","sentence":"Où est la gare ?","words":["Où","est","la","gare","?"],"translation_tr":"Tren garı nerede?","translation_en":"Where is the train station?","level":"A1","topic":"directions"},
+  {"id":"s_a1_007","sentence":"Je parle un peu français.","words":["Je","parle","un","peu","français."],"translation_tr":"Biraz Fransızca konuşuyorum.","translation_en":"I speak a little French.","level":"A1","topic":"language"},
+  {"id":"s_a1_008","sentence":"Quel âge avez-vous ?","words":["Quel","âge","avez-vous","?"],"translation_tr":"Kaç yaşındasınız?","translation_en":"How old are you?","level":"A1","topic":"introductions"},
+  {"id":"s_a1_009","sentence":"La maison est grande.","words":["La","maison","est","grande."],"translation_tr":"Ev büyük.","translation_en":"The house is big.","level":"A1","topic":"home"},
+  {"id":"s_a1_010","sentence":"J'aime beaucoup la musique.","words":["J'aime","beaucoup","la","musique."],"translation_tr":"Müziği çok seviyorum.","translation_en":"I love music very much.","level":"A1","topic":"hobbies"},
+  {"id":"s_a1_011","sentence":"Mon chat s'appelle Minou.","words":["Mon","chat","s'appelle","Minou."],"translation_tr":"Kedimin adı Minou.","translation_en":"My cat is called Minou.","level":"A1","topic":"animals"},
+  {"id":"s_a1_012","sentence":"Je mange une pomme.","words":["Je","mange","une","pomme."],"translation_tr":"Bir elma yiyorum.","translation_en":"I am eating an apple.","level":"A1","topic":"food"},
+  {"id":"s_a1_013","sentence":"Il y a un parc près d'ici.","words":["Il","y","a","un","parc","près","d'ici."],"translation_tr":"Buranın yakınında bir park var.","translation_en":"There is a park near here.","level":"A1","topic":"places"},
+  {"id":"s_a1_014","sentence":"Je vais à l'école en bus.","words":["Je","vais","à","l'école","en","bus."],"translation_tr":"Okula otobüsle gidiyorum.","translation_en":"I go to school by bus.","level":"A1","topic":"transport"},
+  {"id":"s_a1_015","sentence":"Bonne nuit, à demain !","words":["Bonne","nuit,","à","demain","!"],"translation_tr":"İyi geceler, yarına kadar!","translation_en":"Good night, see you tomorrow!","level":"A1","topic":"greetings"}
+]

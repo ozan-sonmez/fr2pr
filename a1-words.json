@@ -1,0 +1,22 @@
+[
+  {"id":"a1_001","word":"bonjour","translation_tr":"merhaba","translation_en":"hello","phonetic":"bɔ̃.ʒuʁ","category":"greetings","pexels_query":"greeting wave hello"},
+  {"id":"a1_002","word":"merci","translation_tr":"teşekkür ederim","translation_en":"thank you","phonetic":"mɛʁ.si","category":"greetings","pexels_query":"thank you gratitude"},
+  {"id":"a1_003","word":"oui","translation_tr":"evet","translation_en":"yes","phonetic":"wi","category":"basics","pexels_query":"yes agreement thumbs up"},
+  {"id":"a1_004","word":"non","translation_tr":"hayır","translation_en":"no","phonetic":"nɔ̃","category":"basics","pexels_query":"no rejection"},
+  {"id":"a1_005","word":"maison","translation_tr":"ev","translation_en":"house","phonetic":"mɛ.zɔ̃","category":"home","pexels_query":"house home"},
+  {"id":"a1_006","word":"eau","translation_tr":"su","translation_en":"water","phonetic":"o","category":"food","pexels_query":"water glass drink"},
+  {"id":"a1_007","word":"pain","translation_tr":"ekmek","translation_en":"bread","phonetic":"pɛ̃","category":"food","pexels_query":"bread bakery"},
+  {"id":"a1_008","word":"livre","translation_tr":"kitap","translation_en":"book","phonetic":"livʁ","category":"objects","pexels_query":"book reading"},
+  {"id":"a1_009","word":"chat","translation_tr":"kedi","translation_en":"cat","phonetic":"ʃa","category":"animals","pexels_query":"cat kitten"},
+  {"id":"a1_010","word":"chien","translation_tr":"köpek","translation_en":"dog","phonetic":"ʃjɛ̃","category":"animals","pexels_query":"dog puppy"},
+  {"id":"a1_011","word":"voiture","translation_tr":"araba","translation_en":"car","phonetic":"vwa.tyʁ","category":"transport","pexels_query":"car automobile"},
+  {"id":"a1_012","word":"école","translation_tr":"okul","translation_en":"school","phonetic":"e.kɔl","category":"places","pexels_query":"school classroom"},
+  {"id":"a1_013","word":"ami","translation_tr":"arkadaş","translation_en":"friend","phonetic":"a.mi","category":"people","pexels_query":"friends friendship"},
+  {"id":"a1_014","word":"famille","translation_tr":"aile","translation_en":"family","phonetic":"fa.mij","category":"people","pexels_query":"family together"},
+  {"id":"a1_015","word":"enfant","translation_tr":"çocuk","translation_en":"child","phonetic":"ɑ̃.fɑ̃","category":"people","pexels_query":"child kid playing"},
+  {"id":"a1_016","word":"soleil","translation_tr":"güneş","translation_en":"sun","phonetic":"sɔ.lɛj","category":"nature","pexels_query":"sun sunshine sky"},
+  {"id":"a1_017","word":"fleur","translation_tr":"çiçek","translation_en":"flower","phonetic":"flœʁ","category":"nature","pexels_query":"flower bloom"},
+  {"id":"a1_018","word":"pomme","translation_tr":"elma","translation_en":"apple","phonetic":"pɔm","category":"food","pexels_query":"apple fruit red"},
+  {"id":"a1_019","word":"lait","translation_tr":"süt","translation_en":"milk","phonetic":"lɛ","category":"food","pexels_query":"milk glass white"},
+  {"id":"a1_020","word":"table","translation_tr":"masa","translation_en":"table","phonetic":"tabl","category":"home","pexels_query":"table furniture wooden"}
+]
