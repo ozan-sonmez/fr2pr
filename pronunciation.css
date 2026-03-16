@@ -1,227 +1,399 @@
-/* ─── PRONUNCIATION PAGE ─── */
+// ─── DATA ───
+let allSentences = [];
+let pronFilter = ‘all’;
+let currentVoice = null;
+let currentSpeed = null;
+let activeAudio = null;
 
-.pron-filters {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 20px;
+// ─── VOICE MANAGEMENT ───
+let availableFrVoices = [];
+let selectedVoiceURI = null; // specific voice URI chosen by user
+
+function loadFrVoices() {
+const all = window.speechSynthesis.getVoices();
+availableFrVoices = all.filter(v => v.lang.startsWith(‘fr’));
+return availableFrVoices;
 }
 
-.pron-filter-row {
-  display: flex;
-  gap: 8px;
+function getBestVoice(gender) {
+if (selectedVoiceURI) {
+const picked = availableFrVoices.find(v => v.voiceURI === selectedVoiceURI);
+if (picked) return picked;
 }
 
-/* ─── SENTENCE CARD ─── */
-.sentence-card {
-  background: var(--white);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
-  margin-bottom: 16px;
-  overflow: hidden;
+const voices = availableFrVoices.length ? availableFrVoices : loadFrVoices();
+if (!voices.length) return null;
+
+// iOS voice name hints
+const femaleHints = [‘amélie’, ‘amelie’, ‘marie’, ‘aurelie’, ‘aurélie’, ‘audrey’, ‘virginie’, ‘female’, ‘femme’];
+const maleHints   = [‘thomas’, ‘nicolas’, ‘pierre’, ‘male’, ‘homme’];
+
+const hints = gender === ‘male’ ? maleHints : femaleHints;
+const match = voices.find(v => hints.some(h => v.name.toLowerCase().includes(h)));
+if (match) return match;
+
+// Fallback: prefer local (non-network) voices
+const local = voices.find(v => v.localService);
+return local || voices[0];
 }
 
-.sentence-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--gray-100);
+function loadSentences() {
+// Embedded data — no fetch needed (GitHub Pages compatible)
+allSentences = […DATA_A1_SENTENCES, …DATA_A2_SENTENCES];
 }
 
-.sentence-level-badge {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 3px 10px;
-  border-radius: 10px;
-  background: var(--navy);
-  color: var(--gold);
+// ─── GOOGLE TTS URL ───
+function getTTSUrl(text, lang = ‘fr’, slow = false) {
+const speed = slow ? ‘0.4’ : ‘1’;
+return `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&ttsspeed=${speed}&client=tw-ob`;
 }
 
-.sentence-topic {
-  font-size: 0.75rem;
-  color: var(--gray-400);
-  font-weight: 500;
+// ─── RENDER PRONUNCIATION PAGE ───
+function renderPronunciation() {
+const page = document.getElementById(‘page-pronunciation’);
+if (!page) return;
+
+// Use saved settings or defaults
+if (!currentVoice) currentVoice = AppState.settings.voice || ‘female’;
+if (!currentSpeed) currentSpeed = AppState.settings.speed || ‘normal’;
+
+const sentences = getFilteredSentences();
+
+page.innerHTML = `
+<div class="section-header">
+<h1 class="section-title">${t(‘pronunciation.title’)}</h1>
+<p class="section-subtitle">${t(‘pronunciation.subtitle’)}</p>
+</div>
+
+```
+<div class="pron-filters">
+  <div class="pron-filter-row">
+    ${['all','a1','a2'].map(f => `
+      <button class="chip ${pronFilter === f ? 'active' : ''}" onclick="setPronFilter('${f}')">
+        ${t('pronunciation.level_' + f)}
+      </button>
+    `).join('')}
+  </div>
+  <div class="pron-filter-row">
+    <button class="audio-chip ${currentVoice === 'male' ? 'active' : ''}" onclick="setVoice('male')">
+      🧔 ${t('pronunciation.male')}
+    </button>
+    <button class="audio-chip ${currentVoice === 'female' ? 'active' : ''}" onclick="setVoice('female')">
+      👩 ${t('pronunciation.female')}
+    </button>
+    <button class="audio-chip ${currentSpeed === 'normal' ? 'active' : ''}" onclick="setSpeed('normal')">
+      ▶️ ${t('pronunciation.normal')}
+    </button>
+    <button class="audio-chip ${currentSpeed === 'slow' ? 'active' : ''}" onclick="setSpeed('slow')">
+      🐢 ${t('pronunciation.slow')}
+    </button>
+  </div>
+</div>
+
+<div id="voice-picker-area" style="margin-bottom:16px">
+  ${renderVoicePicker()}
+</div>
+
+<div class="sentence-list">
+  ${sentences.map(s => renderSentenceCard(s)).join('')}
+</div>
+```
+
+`;
 }
 
-/* ─── SENTENCE TEXT ─── */
-.sentence-text-area {
-  padding: 20px 16px 14px;
+function setPronFilter(f) {
+pronFilter = f;
+renderPronunciation();
 }
 
-.sentence-words {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: baseline;
-  margin-bottom: 14px;
+function setVoice(v) {
+currentVoice = v;
+renderPronunciation();
 }
 
-.word-token {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.35rem;
-  font-weight: 600;
-  color: var(--navy);
-  padding: 2px 4px;
-  border-radius: 6px;
-  transition: all 0.25s ease;
-  line-height: 1.3;
+function setSpeed(s) {
+currentSpeed = s;
+renderPronunciation();
 }
 
-.word-token.highlighted {
-  color: var(--white);
-  background: var(--navy);
-  border-radius: 6px;
-  padding: 2px 6px;
+// ─── VOICE PICKER ───
+function renderVoicePicker() {
+loadFrVoices();
+
+if (!availableFrVoices.length) {
+return ` <div style="background:#fff8e6;border-radius:12px;padding:12px 14px;font-size:0.8rem;color:#b8860b;display:flex;align-items:center;gap:8px"> ⚠️ Fransızca ses bulunamadı. iPhone Ayarlar → Erişilebilirlik → Sözlü İçerik → Sesler → Fransızca ekleyin. </div>`;
 }
 
-.word-token.played {
-  color: var(--gold);
+return `<div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px 16px"> <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:10px"> 🎙️ Ses Seçimi — ${availableFrVoices.length} Fransızca ses bulundu </div> <div style="display:flex;flex-wrap:wrap;gap:7px"> ${availableFrVoices.map(v =>`
+<button
+class=“audio-chip ${selectedVoiceURI === v.voiceURI ? ‘active’ : ‘’}”
+onclick=“selectVoice(’${v.voiceURI.replace(/’/g, “\’”)}’)”
+title=”${v.lang} ${v.localService ? ‘(yerel)’ : ‘(ağ)’}”
+style=”${v.localService ? ‘’ : ‘opacity:0.7’}”
+>
+${v.localService ? ‘📱’ : ‘☁️’} ${v.name}
+</button>
+`).join('')} </div> <div style="margin-top:10px;font-size:0.72rem;color:var(--gray-400)"> 📱 = iPhone'da yüklü (önerilen) · ☁️ = ağ gerektirir </div> ${selectedVoiceURI ? `
+<button onclick="testVoice()" style="margin-top:10px;padding:7px 14px;border-radius:8px;border:1.5px solid var(--navy);background:transparent;color:var(--navy);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">
+🔊 Sesi Test Et
+</button>
+`: ''} </div>`;
 }
 
-/* ─── TRANSLATION ─── */
-.translation-area {
-  padding: 0 16px 14px;
-  min-height: 32px;
+function selectVoice(uri) {
+selectedVoiceURI = uri;
+// Update picker UI without full re-render
+const area = document.getElementById(‘voice-picker-area’);
+if (area) area.innerHTML = renderVoicePicker();
 }
 
-.translation-text {
-  font-size: 0.875rem;
-  color: var(--gray-600);
-  font-style: italic;
-  line-height: 1.5;
-  display: none;
+function testVoice() {
+if (‘speechSynthesis’ in window) {
+window.speechSynthesis.cancel();
+const utter = new SpeechSynthesisUtterance(‘Bonjour, je m'appelle Marie. Comment allez-vous ?’);
+utter.lang = ‘fr-FR’;
+utter.rate = currentSpeed === ‘slow’ ? 0.5 : 1.0;
+const voice = getBestVoice(currentVoice);
+if (voice) utter.voice = voice;
+window.speechSynthesis.speak(utter);
+}
 }
 
-.translation-text.visible { display: block; }
+// ─── RENDER SENTENCE CARD ───
+function renderSentenceCard(s) {
+const srData = AppState.progress.sentences[s.id];
+const due = isDue(srData);
+const learned = srData && srData.reps > 0 && !due;
 
-/* ─── AUDIO CONTROLS ─── */
-.audio-controls {
-  padding: 14px 16px;
-  background: var(--gray-100);
-  display: flex;
-  align-items: center;
-  gap: 10px;
+return `
+<div class="sentence-card" id="card-${s.id}">
+<div class="sentence-card-header">
+<span class="sentence-level-badge">${s.level}</span>
+<span class="sentence-topic">${s.topic || ‘’}</span>
+</div>
+
+```
+  <div class="sentence-text-area">
+    <div class="sentence-words" id="words-${s.id}">
+      ${s.words.map((w, i) => `
+        <span class="word-token" id="word-${s.id}-${i}">${w}</span>
+      `).join('')}
+    </div>
+    <div class="audio-progress" id="progress-${s.id}">
+      <div class="audio-progress-fill" id="progress-fill-${s.id}"></div>
+    </div>
+  </div>
+
+  <div class="translation-area" id="trans-area-${s.id}">
+    <div class="translation-text" id="trans-${s.id}">
+      ${AppState.settings.language === 'tr' ? s.translation_tr : s.translation_en}
+    </div>
+  </div>
+
+  <div class="sentence-actions">
+    <button class="translation-toggle-btn" onclick="toggleTranslation('${s.id}')">
+      👁️ <span id="trans-toggle-label-${s.id}">${t('pronunciation.showTranslation')}</span>
+    </button>
+    <div class="sr-indicator">
+      <div class="sr-dot ${due ? 'due' : ''} ${learned ? 'learned' : ''}"></div>
+      <span style="font-size:0.68rem;color:var(--gray-400)">
+        ${learned ? '✓' : due ? t('pronunciation.due') : ''}
+      </span>
+    </div>
+  </div>
+
+  <div class="audio-controls">
+    <button class="audio-play-btn" id="play-${s.id}" onclick="playSentence('${s.id}')">
+      ▶
+    </button>
+    <div class="audio-controls-right">
+      <div style="font-size:0.75rem;color:var(--gray-600);font-weight:500" id="play-status-${s.id}">
+        ${s.sentence.length > 50 ? s.sentence.substring(0,50) + '...' : s.sentence}
+      </div>
+      <div class="audio-option-row">
+        <button class="audio-chip ${currentVoice === 'male' ? 'active' : ''}" onclick="playWithSettings('${s.id}','male',currentSpeed)">
+          🧔 ${t('pronunciation.male')}
+        </button>
+        <button class="audio-chip ${currentVoice === 'female' ? 'active' : ''}" onclick="playWithSettings('${s.id}','female',currentSpeed)">
+          👩 ${t('pronunciation.female')}
+        </button>
+        <button class="audio-chip ${currentSpeed === 'slow' ? 'active' : ''}" onclick="toggleSpeed('${s.id}')">
+          🐢 ${currentSpeed === 'slow' ? t('pronunciation.slow') : t('pronunciation.normal')}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+`;
 }
 
-.audio-play-btn {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--navy);
-  color: var(--white);
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-  flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
+// ─── TRANSLATION TOGGLE ───
+function toggleTranslation(sentenceId) {
+const trans = document.getElementById(`trans-${sentenceId}`);
+const label = document.getElementById(`trans-toggle-label-${sentenceId}`);
+if (!trans) return;
+const visible = trans.classList.toggle(‘visible’);
+if (label) label.textContent = visible ? t(‘pronunciation.hideTranslation’) : t(‘pronunciation.showTranslation’);
 }
 
-.audio-play-btn:hover { background: #253060; transform: scale(1.05); }
-.audio-play-btn:active { transform: scale(0.95); }
-.audio-play-btn.playing { background: var(--gold); color: var(--navy); }
-
-.audio-controls-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+// ─── PLAY AUDIO ───
+function playSentence(sentenceId) {
+playWithSettings(sentenceId, currentVoice, currentSpeed);
 }
 
-.audio-option-row {
-  display: flex;
-  gap: 6px;
-  align-items: center;
+function toggleSpeed(sentenceId) {
+currentSpeed = currentSpeed === ‘slow’ ? ‘normal’ : ‘slow’;
+renderPronunciation();
 }
 
-.audio-chip {
-  padding: 5px 12px;
-  border-radius: 14px;
-  border: 1.5px solid var(--gray-200);
-  background: var(--white);
-  font-size: 0.72rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  color: var(--gray-600);
-  font-family: 'DM Sans', sans-serif;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+function playWithSettings(sentenceId, voice, speed) {
+const sentence = allSentences.find(s => s.id === sentenceId);
+if (!sentence) return;
+
+// Stop existing audio
+if (activeAudio) {
+activeAudio.pause();
+activeAudio = null;
 }
 
-.audio-chip.active {
-  background: var(--navy);
-  border-color: var(--navy);
-  color: var(--white);
+// Reset all play buttons
+document.querySelectorAll(’.audio-play-btn’).forEach(btn => {
+btn.classList.remove(‘playing’);
+btn.textContent = ‘▶’;
+});
+
+const isSlow = speed === ‘slow’;
+
+// Build TTS URL — Google Translate TTS
+// For male voice we use a different locale approach
+const lang = voice === ‘male’ ? ‘fr-FR’ : ‘fr’;
+const ttsUrl = getTTSUrl(sentence.sentence, ‘fr’, isSlow);
+
+const playBtn = document.getElementById(`play-${sentenceId}`);
+const statusEl = document.getElementById(`play-status-${sentenceId}`);
+
+if (playBtn) { playBtn.classList.add(‘playing’); playBtn.textContent = ‘⏸’; }
+if (statusEl) statusEl.textContent = t(‘pronunciation.playing’);
+
+// Use Web Speech API for word-by-word highlighting
+if (‘speechSynthesis’ in window) {
+window.speechSynthesis.cancel();
+
+```
+const utter = new SpeechSynthesisUtterance(sentence.sentence);
+utter.lang = 'fr-FR';
+utter.rate = isSlow ? 0.5 : 1.0;
+
+// Smart voice selection — iOS aware
+const chosenVoice = getBestVoice(voice);
+if (chosenVoice) {
+  utter.voice = chosenVoice;
 }
 
-/* ─── SENTENCE LIST ─── */
-.sentence-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+// Word boundary highlight
+const words = sentence.words;
+let wordIndex = 0;
+
+utter.onboundary = (event) => {
+  if (event.name === 'word') {
+    // Clear previous highlights
+    words.forEach((_, i) => {
+      const el = document.getElementById(`word-${sentenceId}-${i}`);
+      if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
+    });
+    if (wordIndex < words.length) {
+      const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
+      if (el) {
+        el.classList.remove('played');
+        el.classList.add('highlighted');
+      }
+      // Progress bar
+      const fill = document.getElementById(`progress-fill-${sentenceId}`);
+      if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
+      wordIndex++;
+    }
+  }
+};
+
+utter.onend = () => {
+  if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+  if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
+  // Clear highlights
+  words.forEach((_, i) => {
+    const el = document.getElementById(`word-${sentenceId}-${i}`);
+    if (el) { el.classList.remove('highlighted'); }
+  });
+  const fill = document.getElementById(`progress-fill-${sentenceId}`);
+  if (fill) fill.style.width = '0%';
+
+  // SR update
+  updateSentenceSR(sentenceId);
+};
+
+utter.onerror = () => {
+  if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+};
+
+window.speechSynthesis.speak(utter);
+```
+
+} else {
+// Fallback: Google TTS via audio element
+const audio = new Audio(ttsUrl);
+activeAudio = audio;
+
+```
+audio.onended = () => {
+  if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+  if (statusEl) statusEl.textContent = sentence.sentence;
+  updateSentenceSR(sentenceId);
+};
+
+audio.onerror = () => {
+  if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+  showToast('Ses yüklenemedi');
+};
+
+audio.play().catch(() => {
+  if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+  showToast('Ses oynatılamadı');
+});
+```
+
+}
 }
 
-/* ─── SENTENCE BOTTOM ROW ─── */
-.sentence-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 16px 14px;
+// ─── SR FOR SENTENCES ───
+function updateSentenceSR(sentenceId) {
+const existing = AppState.progress.sentences[sentenceId] || {};
+const result = sm2(existing, 4); // default “good” rating on listen
+AppState.progress.sentences[sentenceId] = { …existing, …result };
+saveState();
 }
 
-.translation-toggle-btn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-size: 0.78rem;
-  color: var(--gray-600);
-  font-weight: 500;
-  font-family: 'DM Sans', sans-serif;
-  padding: 4px 8px;
-  border-radius: 8px;
-  transition: var(--transition);
+// ─── SR FOR SENTENCES ───
+function updateSentenceSR(sentenceId) {
+const existing = AppState.progress.sentences[sentenceId] || {};
+const result = sm2(existing, 4);
+AppState.progress.sentences[sentenceId] = { …existing, …result };
+saveState();
 }
 
-.translation-toggle-btn:hover { background: var(--gray-100); color: var(--navy); }
+// ─── iOS VOICE INIT ───
+// iOS loads voices asynchronously — refresh picker when ready
+if (‘speechSynthesis’ in window) {
+// Initial load attempt
+loadFrVoices();
 
-.sr-indicator {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.72rem;
-  color: var(--gray-400);
+window.speechSynthesis.onvoiceschanged = () => {
+loadFrVoices();
+// If pronunciation page is open, refresh the voice picker
+if (AppState.currentPage === ‘pronunciation’) {
+const area = document.getElementById(‘voice-picker-area’);
+if (area) area.innerHTML = renderVoicePicker();
 }
-
-.sr-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--gray-200);
-}
-
-.sr-dot.due { background: var(--warning); }
-.sr-dot.learned { background: var(--success); }
-
-/* ─── AUDIO PROGRESS ─── */
-.audio-progress {
-  height: 3px;
-  background: var(--gray-200);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.audio-progress-fill {
-  height: 100%;
-  background: var(--gold);
-  border-radius: 2px;
-  transition: width 0.1s linear;
-  width: 0%;
+};
 }
