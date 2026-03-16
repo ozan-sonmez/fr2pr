@@ -1501,6 +1501,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── DATA ───
 let allWords = [];
 let filteredWords = [];
+let sessionQueue = [];   // fixed queue for current session
 let currentCardIndex = 0;
 let sessionStats = { again: 0, hard: 0, easy: 0 };
 let fcFilter = 'all';
@@ -1544,11 +1545,11 @@ function renderFlashcards() {
 
     <div class="fc-stats">
       <div class="fc-stat">
-        <div class="fc-stat-num" style="color:var(--warning)">${dueWords.length}</div>
+        <div class="fc-stat-num" style="color:var(--warning)" data-stat="due">${dueWords.length}</div>
         <div class="fc-stat-label">${t('flashcards.due')}</div>
       </div>
       <div class="fc-stat">
-        <div class="fc-stat-num" style="color:var(--success)">${learnedCount}</div>
+        <div class="fc-stat-num" style="color:var(--success)" data-stat="learned">${learnedCount}</div>
         <div class="fc-stat-label">${t('flashcards.learned')}</div>
       </div>
       <div class="fc-stat">
@@ -1571,10 +1572,11 @@ function renderFlashcards() {
   `;
 
   if (dueWords.length > 0) {
+    sessionQueue = [...dueWords];  // freeze the queue
     currentCardIndex = 0;
     sessionStats = { again: 0, hard: 0, easy: 0 };
     cardFlipped = false;
-    loadCardContent(dueWords[0]);
+    loadCardContent(sessionQueue[0]);
   }
 }
 
@@ -1583,14 +1585,14 @@ function setFcFilter(filter) {
   renderFlashcards();
 }
 
-function renderCardArea(dueWords) {
-  const card = dueWords[currentCardIndex];
+function renderCardArea(queue) {
+  const card = queue[currentCardIndex];
   return `
     <div class="card-counter">
-      <span class="counter-text">${currentCardIndex + 1} / ${dueWords.length}</span>
+      <span class="counter-text">${currentCardIndex + 1} / ${queue.length}</span>
     </div>
     <div class="progress-bar" style="margin-bottom:16px">
-      <div class="progress-fill" style="width:${(currentCardIndex / dueWords.length) * 100}%"></div>
+      <div class="progress-fill" style="width:${(currentCardIndex / queue.length) * 100}%"></div>
     </div>
 
     <div class="flashcard-scene">
@@ -1668,8 +1670,10 @@ function renderSessionComplete() {
   `;
 }
 
-// ─── LOAD CARD IMAGE ───
+// ─── LOAD CARD IMAGE + AUTO SPEAK ───
 async function loadCardContent(word) {
+  // Speak word immediately when card loads
+  setTimeout(() => speakWord(word.word), 300);
   const EMOJIS = {
     greetings:'👋', food:'🍽️', home:'🏠', animals:'🐾', transport:'🚗',
     places:'📍', people:'👥', nature:'🌿', objects:'📦', basics:'💬', verb:'✨'
@@ -1696,14 +1700,31 @@ function flipCard() {
   const btns = document.getElementById('sm2-buttons');
   if (card) card.classList.add('flipped');
   if (btns) btns.style.display = 'grid';
+  // Speak the word
+  if (sessionQueue[currentCardIndex]) {
+    speakWord(sessionQueue[currentCardIndex].word);
+  }
+}
+
+// ─── SPEAK WORD on flashcard ───
+function speakWord(text) {
+  if (!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'fr-FR';
+  utter.rate = 0.85;
+  // Pick French voice
+  const voices = window.speechSynthesis.getVoices();
+  const frVoices = voices.filter(v => v.lang && v.lang.startsWith('fr'));
+  if (frVoices.length > 0) utter.voice = frVoices[0];
+  window.speechSynthesis.speak(utter);
 }
 
 // ─── RATE ───
 function rateCard(quality) {
-  const dueWords = getDueWords();
-  if (currentCardIndex >= dueWords.length) return;
+  if (currentCardIndex >= sessionQueue.length) return;
 
-  const word = dueWords[currentCardIndex];
+  const word = sessionQueue[currentCardIndex];
   const existing = AppState.progress.cards[word.id] || {};
   const result = sm2(existing, quality);
   AppState.progress.cards[word.id] = { ...existing, ...result };
@@ -1714,22 +1735,33 @@ function rateCard(quality) {
 
   saveState();
 
+  // Update stats in header without full re-render
+  const allFiltered = getFilteredWords();
+  const learnedNow = allFiltered.filter(w => {
+    const c = AppState.progress.cards[w.id];
+    return c && c.reps > 0 && !isDue(c);
+  }).length;
+  const dueNow = allFiltered.filter(w => isDue(AppState.progress.cards[w.id])).length;
+  const dueEl = document.querySelector('.fc-stat-num[data-stat="due"]');
+  const learnedEl = document.querySelector('.fc-stat-num[data-stat="learned"]');
+  if (dueEl) dueEl.textContent = dueNow;
+  if (learnedEl) learnedEl.textContent = learnedNow;
+
   currentCardIndex++;
   cardFlipped = false;
 
-  const remaining = getDueWords();
   const fcContent = document.getElementById('fc-content');
   if (!fcContent) return;
 
-  if (remaining.length === 0 || currentCardIndex >= dueWords.length) {
+  if (currentCardIndex >= sessionQueue.length) {
     AppState.progress.totalSessions++;
     saveState();
     fcContent.innerHTML = renderSessionComplete();
     return;
   }
 
-  fcContent.innerHTML = renderCardArea(remaining);
-  loadCardContent(remaining[currentCardIndex] || remaining[0]);
+  fcContent.innerHTML = renderCardArea(sessionQueue);
+  loadCardContent(sessionQueue[currentCardIndex]);
 }
 
 // ─── DATA ───
