@@ -134,7 +134,7 @@ function isDue(cardData) {
 }
 
 // ─── INIT ───
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   loadState();
 
   // Nav
@@ -147,11 +147,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
   });
 
-  // Load data
-  await Promise.all([
-    loadWords(),
-    loadSentences()
-  ]);
+  // Load embedded data (no fetch needed)
+  loadWords();
+  loadSentences();
 
   navigate('flashcards');
 

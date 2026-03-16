@@ -5,28 +5,11 @@ let currentVoice = null;
 let currentSpeed = null;
 let activeAudio = null;
 
-async function loadSentences() {
-  try {
-    const [a1res, a2res] = await Promise.all([
-      fetch('./data/a1-sentences.json'),
-      fetch('./data/a2-sentences.json')
-    ]);
-    const a1 = await a1res.json();
-    const a2 = await a2res.json();
-    allSentences = [...a1, ...a2];
-  } catch(e) {
-    allSentences = [
-      {id:"s_a1_001",sentence:"Bonjour, je m'appelle Marie.",words:["Bonjour,","je","m'appelle","Marie."],translation_tr:"Merhaba, benim adım Marie.",translation_en:"Hello, my name is Marie.",level:"A1",topic:"introductions"},
-      {id:"s_a1_002",sentence:"J'habite à Paris.",words:["J'habite","à","Paris."],translation_tr:"Paris'te oturuyorum.",translation_en:"I live in Paris.",level:"A1",topic:"places"},
-      {id:"s_a1_005",sentence:"Je voudrais un café, s'il vous plaît.",words:["Je","voudrais","un","café,","s'il","vous","plaît."],translation_tr:"Bir kahve istiyorum, lütfen.",translation_en:"I would like a coffee, please.",level:"A1",topic:"cafe"}
-    ];
-  }
+function loadSentences() {
+  // Embedded data — no fetch needed (GitHub Pages compatible)
+  allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENTENCES];
 }
 
-function getFilteredSentences() {
-  if (pronFilter === 'all') return allSentences;
-  return allSentences.filter(s => s.level === pronFilter.toUpperCase());
-}
 
 // ─── GOOGLE TTS URL ───
 function getTTSUrl(text, lang = 'fr', slow = false) {

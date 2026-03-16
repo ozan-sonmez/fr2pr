@@ -6,26 +6,9 @@ let sessionStats = { again: 0, hard: 0, easy: 0 };
 let fcFilter = 'all';
 let cardFlipped = false;
 
-async function loadWords() {
-  try {
-    const [a1res, a2res] = await Promise.all([
-      fetch('./data/a1-words.json'),
-      fetch('./data/a2-words.json')
-    ]);
-    const a1 = await a1res.json();
-    const a2 = await a2res.json();
-    allWords = [...a1, ...a2];
-  } catch(e) {
-    // Fallback sample
-    allWords = [
-      {id:"a1_001",word:"bonjour",translation_tr:"merhaba",translation_en:"hello",phonetic:"bɔ̃.ʒuʁ",category:"greetings",level:"A1",pexels_query:"greeting hello",emoji:"👋"},
-      {id:"a1_002",word:"merci",translation_tr:"teşekkür ederim",translation_en:"thank you",phonetic:"mɛʁ.si",category:"greetings",level:"A1",pexels_query:"thank you gratitude",emoji:"🙏"},
-      {id:"a1_005",word:"maison",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",level:"A1",pexels_query:"house home",emoji:"🏠"},
-      {id:"a1_006",word:"eau",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",level:"A1",pexels_query:"water glass",emoji:"💧"},
-      {id:"a1_009",word:"chat",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",level:"A1",pexels_query:"cat kitten",emoji:"🐱"},
-      {id:"a1_010",word:"chien",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",level:"A1",pexels_query:"dog puppy",emoji:"🐶"},
-    ];
-  }
+function loadWords() {
+  // Embedded data — no fetch needed (GitHub Pages compatible)
+  allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS];
 }
 
 // ─── FILTER WORDS ───
