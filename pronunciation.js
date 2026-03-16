@@ -75,6 +75,13 @@ function renderPronunciation() {
   const sentences = getFilteredSentences();
 
   page.innerHTML = `
+  // iOS için sesler geç yükleniyor — 500ms sonra picker'ı yenile
+setTimeout(() => {
+  loadFrVoices();
+  const area = document.getElementById('voice-picker-area');
+  if (area) area.innerHTML = renderVoicePicker();
+}, 500);
+
     <div class="section-header">
       <h1 class="section-title">${t('pronunciation.title')}</h1>
       <p class="section-subtitle">${t('pronunciation.subtitle')}</p>
