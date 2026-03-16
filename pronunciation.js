@@ -5,11 +5,58 @@ let currentVoice = null;
 let currentSpeed = null;
 let activeAudio = null;
 
-function loadSentences() {
-  // Embedded data — no fetch needed (GitHub Pages compatible)
-  allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENTENCES];
+// ─── VOICE MANAGEMENT ───
+let availableFrVoices = [];
+let selectedVoiceURI = null;
+
+function loadFrVoices() {
+  const all = window.speechSynthesis.getVoices();
+  availableFrVoices = all.filter(v => v.lang.startsWith('fr'));
+  return availableFrVoices;
 }
 
+function getBestVoice(gender) {
+  if (selectedVoiceURI) {
+    const picked = availableFrVoices.find(v => v.voiceURI === selectedVoiceURI);
+    if (picked) return picked;
+  }
+
+  const voices = availableFrVoices.length ? availableFrVoices : loadFrVoices();
+  if (!voices.length) return null;
+
+  const femaleHints = ['amélie', 'amelie', 'marie', 'aurelie', 'aurélie', 'audrey', 'virginie', 'female', 'femme'];
+  const maleHints   = ['thomas', 'nicolas', 'pierre', 'male', 'homme'];
+
+  const hints = gender === 'male' ? maleHints : femaleHints;
+  const match = voices.find(v => hints.some(h => v.name.toLowerCase().includes(h)));
+  if (match) return match;
+
+  const local = voices.find(v => v.localService);
+  return local || voices[0];
+}
+
+async function loadSentences() {
+  try {
+    const [a1res, a2res] = await Promise.all([
+      fetch('./data/a1-sentences.json'),
+      fetch('./data/a2-sentences.json')
+    ]);
+    const a1 = await a1res.json();
+    const a2 = await a2res.json();
+    allSentences = [...a1, ...a2];
+  } catch(e) {
+    allSentences = [
+      {id:"s_a1_001",sentence:"Bonjour, je m'appelle Marie.",words:["Bonjour,","je","m'appelle","Marie."],translation_tr:"Merhaba, benim adım Marie.",translation_en:"Hello, my name is Marie.",level:"A1",topic:"introductions"},
+      {id:"s_a1_002",sentence:"J'habite à Paris.",words:["J'habite","à","Paris."],translation_tr:"Paris'te oturuyorum.",translation_en:"I live in Paris.",level:"A1",topic:"places"},
+      {id:"s_a1_005",sentence:"Je voudrais un café, s'il vous plaît.",words:["Je","voudrais","un","café,","s'il","vous","plaît."],translation_tr:"Bir kahve istiyorum, lütfen.",translation_en:"I would like a coffee, please.",level:"A1",topic:"cafe"}
+    ];
+  }
+}
+
+function getFilteredSentences() {
+  if (pronFilter === 'all') return allSentences;
+  return allSentences.filter(s => s.level === pronFilter.toUpperCase());
+}
 
 // ─── GOOGLE TTS URL ───
 function getTTSUrl(text, lang = 'fr', slow = false) {
@@ -22,7 +69,6 @@ function renderPronunciation() {
   const page = document.getElementById('page-pronunciation');
   if (!page) return;
 
-  // Use saved settings or defaults
   if (!currentVoice) currentVoice = AppState.settings.voice || 'female';
   if (!currentSpeed) currentSpeed = AppState.settings.speed || 'normal';
 
@@ -58,6 +104,10 @@ function renderPronunciation() {
       </div>
     </div>
 
+    <div id="voice-picker-area" style="margin-bottom:16px">
+      ${renderVoicePicker()}
+    </div>
+
     <div class="sentence-list">
       ${sentences.map(s => renderSentenceCard(s)).join('')}
     </div>
@@ -77,6 +127,180 @@ function setVoice(v) {
 function setSpeed(s) {
   currentSpeed = s;
   renderPronunciation();
+}
+
+// ─── VOICE PICKER ───
+function renderVoicePicker() {
+  loadFrVoices();
+
+  if (!availableFrVoices.length) {
+    return `
+      <div style="background:#fff8e6;border-radius:12px;padding:12px 14px;font-size:0.8rem;color:#b8860b;display:flex;align-items:center;gap:8px">
+        ⚠️ Fransızca ses bulunamadı. iPhone Ayarlar → Erişilebilirlik → Sözlü İçerik → Sesler → Fransızca ekleyin.
+      </div>`;
+  }
+
+  return `
+    <div style="background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-sm);padding:14px 16px">
+      <div style="font-size:0.72rem;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray-400);margin-bottom:10px">
+        🎙️ Ses Seçimi — ${availableFrVoices.length} Fransızca ses bulundu
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:7px">
+        ${availableFrVoices.map(v => `
+          <button
+            class="audio-chip ${selectedVoiceURI === v.voiceURI ? 'active' : ''}"
+            onclick="selectVoice('${v.voiceURI.replace(/'/g, "\\'")}')"
+            title="${v.lang} ${v.localService ? '(yerel)' : '(ağ)'}"
+            style="${v.localService ? '' : 'opacity:0.7'}"
+          >
+            ${v.localService ? '📱' : '☁️'} ${v.name}
+          </button>
+        `).join('')}
+      </div>
+      <div style="margin-top:10px;font-size:0.72rem;color:var(--gray-400)">
+        📱 = iPhone'da yüklü (önerilen) · ☁️ = ağ gerektirir
+      </div>
+      ${selectedVoiceURI ? `
+        <button onclick="testVoice()" style="margin-top:10px;padding:7px 14px;border-radius:8px;border:1.5px solid var(--navy);background:transparent;color:var(--navy);font-size:0.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif">
+          🔊 Sesi Test Et
+        </button>
+      ` : ''}
+    </div>
+  `;
+}
+
+function selectVoice(uri) {
+  selectedVoiceURI = uri;
+  const area = document.getElementById('voice-picker-area');
+  if (area) area.innerHTML = renderVoicePicker();
+}
+
+function testVoice() {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance('Bonjour, je m\'appelle Marie. Comment allez-vous ?');
+    utter.lang = 'fr-FR';
+    utter.rate = currentSpeed === 'slow' ? 0.5 : 1.0;
+    const voice = getBestVoice(currentVoice);
+    if (voice) utter.voice = voice;
+    window.speechSynthesis.speak(utter);
+  }
+}
+
+// ─── TRANSLATION TOGGLE ───
+function toggleTranslation(sentenceId) {
+  const trans = document.getElementById(`trans-${sentenceId}`);
+  const label = document.getElementById(`trans-toggle-label-${sentenceId}`);
+  if (!trans) return;
+  const visible = trans.classList.toggle('visible');
+  if (label) label.textContent = visible ? t('pronunciation.hideTranslation') : t('pronunciation.showTranslation');
+}
+
+// ─── PLAY AUDIO ───
+function playSentence(sentenceId) {
+  playWithSettings(sentenceId, currentVoice, currentSpeed);
+}
+
+function toggleSpeed(sentenceId) {
+  currentSpeed = currentSpeed === 'slow' ? 'normal' : 'slow';
+  renderPronunciation();
+}
+
+function playWithSettings(sentenceId, voice, speed) {
+  const sentence = allSentences.find(s => s.id === sentenceId);
+  if (!sentence) return;
+
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio = null;
+  }
+
+  document.querySelectorAll('.audio-play-btn').forEach(btn => {
+    btn.classList.remove('playing');
+    btn.textContent = '▶';
+  });
+
+  const isSlow = speed === 'slow';
+  const ttsUrl = getTTSUrl(sentence.sentence, 'fr', isSlow);
+
+  const playBtn = document.getElementById(`play-${sentenceId}`);
+  const statusEl = document.getElementById(`play-status-${sentenceId}`);
+
+  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
+  if (statusEl) statusEl.textContent = t('pronunciation.playing');
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(sentence.sentence);
+    utter.lang = 'fr-FR';
+    utter.rate = isSlow ? 0.5 : 1.0;
+
+    const chosenVoice = getBestVoice(voice);
+    if (chosenVoice) {
+      utter.voice = chosenVoice;
+    }
+
+    const words = sentence.words;
+    let wordIndex = 0;
+
+    utter.onboundary = (event) => {
+      if (event.name === 'word') {
+        words.forEach((_, i) => {
+          const el = document.getElementById(`word-${sentenceId}-${i}`);
+          if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
+        });
+        if (wordIndex < words.length) {
+          const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
+          if (el) {
+            el.classList.remove('played');
+            el.classList.add('highlighted');
+          }
+          const fill = document.getElementById(`progress-fill-${sentenceId}`);
+          if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
+          wordIndex++;
+        }
+      }
+    };
+
+    utter.onend = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
+      words.forEach((_, i) => {
+        const el = document.getElementById(`word-${sentenceId}-${i}`);
+        if (el) { el.classList.remove('highlighted'); }
+      });
+      const fill = document.getElementById(`progress-fill-${sentenceId}`);
+      if (fill) fill.style.width = '0%';
+      updateSentenceSR(sentenceId);
+    };
+
+    utter.onerror = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+    };
+
+    window.speechSynthesis.speak(utter);
+
+  } else {
+    const audio = new Audio(ttsUrl);
+    activeAudio = audio;
+
+    audio.onended = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      if (statusEl) statusEl.textContent = sentence.sentence;
+      updateSentenceSR(sentenceId);
+    };
+
+    audio.onerror = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses yüklenemedi');
+    };
+
+    audio.play().catch(() => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses oynatılamadı');
+    });
+  }
 }
 
 // ─── RENDER SENTENCE CARD ───
@@ -146,154 +370,23 @@ function renderSentenceCard(s) {
   `;
 }
 
-// ─── TRANSLATION TOGGLE ───
-function toggleTranslation(sentenceId) {
-  const trans = document.getElementById(`trans-${sentenceId}`);
-  const label = document.getElementById(`trans-toggle-label-${sentenceId}`);
-  if (!trans) return;
-  const visible = trans.classList.toggle('visible');
-  if (label) label.textContent = visible ? t('pronunciation.hideTranslation') : t('pronunciation.showTranslation');
-}
-
-// ─── PLAY AUDIO ───
-function playSentence(sentenceId) {
-  playWithSettings(sentenceId, currentVoice, currentSpeed);
-}
-
-function toggleSpeed(sentenceId) {
-  currentSpeed = currentSpeed === 'slow' ? 'normal' : 'slow';
-  renderPronunciation();
-}
-
-function playWithSettings(sentenceId, voice, speed) {
-  const sentence = allSentences.find(s => s.id === sentenceId);
-  if (!sentence) return;
-
-  // Stop existing audio
-  if (activeAudio) {
-    activeAudio.pause();
-    activeAudio = null;
-  }
-
-  // Reset all play buttons
-  document.querySelectorAll('.audio-play-btn').forEach(btn => {
-    btn.classList.remove('playing');
-    btn.textContent = '▶';
-  });
-
-  const isSlow = speed === 'slow';
-
-  // Build TTS URL — Google Translate TTS
-  // For male voice we use a different locale approach
-  const lang = voice === 'male' ? 'fr-FR' : 'fr';
-  const ttsUrl = getTTSUrl(sentence.sentence, 'fr', isSlow);
-
-  const playBtn = document.getElementById(`play-${sentenceId}`);
-  const statusEl = document.getElementById(`play-status-${sentenceId}`);
-
-  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
-  if (statusEl) statusEl.textContent = t('pronunciation.playing');
-
-  // Use Web Speech API for word-by-word highlighting
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-
-    const utter = new SpeechSynthesisUtterance(sentence.sentence);
-    utter.lang = 'fr-FR';
-    utter.rate = isSlow ? 0.5 : 1.0;
-
-    // Try to pick voice
-    const voices = window.speechSynthesis.getVoices();
-    const frVoices = voices.filter(v => v.lang.startsWith('fr'));
-    if (frVoices.length > 0) {
-      if (voice === 'male') {
-        const maleV = frVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('thomas') || v.name.toLowerCase().includes('nicolas'));
-        utter.voice = maleV || frVoices[frVoices.length - 1];
-      } else {
-        const femaleV = frVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('amelie') || v.name.toLowerCase().includes('marie') || v.name.toLowerCase().includes('aurelie'));
-        utter.voice = femaleV || frVoices[0];
-      }
-    }
-
-    // Word boundary highlight
-    const words = sentence.words;
-    let wordIndex = 0;
-
-    utter.onboundary = (event) => {
-      if (event.name === 'word') {
-        // Clear previous highlights
-        words.forEach((_, i) => {
-          const el = document.getElementById(`word-${sentenceId}-${i}`);
-          if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
-        });
-        if (wordIndex < words.length) {
-          const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
-          if (el) {
-            el.classList.remove('played');
-            el.classList.add('highlighted');
-          }
-          // Progress bar
-          const fill = document.getElementById(`progress-fill-${sentenceId}`);
-          if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
-          wordIndex++;
-        }
-      }
-    };
-
-    utter.onend = () => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
-      // Clear highlights
-      words.forEach((_, i) => {
-        const el = document.getElementById(`word-${sentenceId}-${i}`);
-        if (el) { el.classList.remove('highlighted'); }
-      });
-      const fill = document.getElementById(`progress-fill-${sentenceId}`);
-      if (fill) fill.style.width = '0%';
-
-      // SR update
-      updateSentenceSR(sentenceId);
-    };
-
-    utter.onerror = () => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-    };
-
-    window.speechSynthesis.speak(utter);
-
-  } else {
-    // Fallback: Google TTS via audio element
-    const audio = new Audio(ttsUrl);
-    activeAudio = audio;
-
-    audio.onended = () => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      if (statusEl) statusEl.textContent = sentence.sentence;
-      updateSentenceSR(sentenceId);
-    };
-
-    audio.onerror = () => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      showToast('Ses yüklenemedi');
-    };
-
-    audio.play().catch(() => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      showToast('Ses oynatılamadı');
-    });
-  }
-}
-
 // ─── SR FOR SENTENCES ───
 function updateSentenceSR(sentenceId) {
   const existing = AppState.progress.sentences[sentenceId] || {};
-  const result = sm2(existing, 4); // default "good" rating on listen
+  const result = sm2(existing, 4);
   AppState.progress.sentences[sentenceId] = { ...existing, ...result };
   saveState();
 }
 
-// Ensure voices are loaded
+// ─── iOS VOICE INIT ───
 if ('speechSynthesis' in window) {
-  window.speechSynthesis.getVoices();
-  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+  loadFrVoices();
+
+  window.speechSynthesis.onvoiceschanged = () => {
+    loadFrVoices();
+    if (AppState.currentPage === 'pronunciation') {
+      const area = document.getElementById('voice-picker-area');
+      if (area) area.innerHTML = renderVoicePicker();
+    }
+  };
 }
