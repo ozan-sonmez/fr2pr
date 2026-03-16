@@ -3,27 +3,1025 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="description" content="Fransızca öğrenme uygulaması — TCF uyumlu kelimeler ve cümleler">
   <meta name="theme-color" content="#1a2340">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Le Français — Fransızca Öğren</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="css/main.css">
-  <link rel="stylesheet" href="css/flashcards.css">
-  <link rel="stylesheet" href="css/pronunciation.css">
-  <link rel="stylesheet" href="css/settings.css">
+:root {
+  --navy: #1a2340;
+  --cream: #f5f0e8;
+  --gold: #c9a84c;
+  --gold-light: #e8d5a3;
+  --red: #c0392b;
+  --blue: #2980b9;
+  --white: #ffffff;
+  --gray-100: #f8f6f2;
+  --gray-200: #ede9e1;
+  --gray-400: #9e9789;
+  --gray-600: #6b6560;
+  --gray-800: #3d3a35;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --danger: #e74c3c;
+  --shadow-sm: 0 2px 8px rgba(26,35,64,0.08);
+  --shadow-md: 0 8px 24px rgba(26,35,64,0.12);
+  --shadow-lg: 0 20px 60px rgba(26,35,64,0.18);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-  <!-- Pexels API Key — Replace with your key from pexels.com/api -->
-  <script>
-    window.PEXELS_API_KEY = 'YOUR_PEXELS_API_KEY_HERE';
-  </script>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--cream);
+  color: var(--navy);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ─── HEADER ─── */
+.app-header {
+  background: var(--navy);
+  padding: 0 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.header-inner {
+  max-width: 480px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 58px;
+}
+
+.app-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.3rem;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.app-logo span { font-size: 1.4rem; }
+
+.lang-toggle {
+  display: flex;
+  background: rgba(255,255,255,0.1);
+  border-radius: 20px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.lang-btn {
+  padding: 4px 12px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.05em;
+}
+
+.lang-btn.active {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+/* ─── NAV ─── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--white);
+  border-top: 1px solid var(--gray-200);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(26,35,64,0.08);
+}
+
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0 12px;
+  gap: 4px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray-400);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.nav-item.active { color: var(--navy); }
+.nav-item.active .nav-icon { transform: scale(1.15); }
+
+.nav-icon { font-size: 1.4rem; transition: var(--transition); }
+.nav-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.03em; }
+
+/* ─── PAGE CONTAINER ─── */
+.page {
+  display: none;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 20px 16px 90px;
+  min-height: calc(100vh - 58px);
+}
+
+.page.active { display: block; }
+
+/* ─── SECTION TITLE ─── */
+.section-header {
+  margin-bottom: 20px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  color: var(--navy);
+  font-weight: 700;
+}
+
+.section-subtitle {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+
+/* ─── FILTER CHIPS ─── */
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar { display: none; }
+
+.chip {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white);
+  color: var(--gray-600);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  font-family: 'DM Sans', sans-serif;
+}
+
+.chip.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--white);
+}
+
+/* ─── CARDS ─── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.card-elevated {
+  box-shadow: var(--shadow-md);
+}
+
+/* ─── BUTTON STYLES ─── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 22px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: 0.01em;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: var(--navy);
+  color: var(--white);
+}
+
+.btn-primary:hover { background: #253060; }
+
+.btn-gold {
+  background: var(--gold);
+  color: var(--navy);
+}
+
+.btn-gold:hover { background: #b8972f; }
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--gray-200);
+  color: var(--gray-800);
+}
+
+.btn-outline:hover { border-color: var(--navy); color: var(--navy); }
+
+.btn-danger { background: var(--danger); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-warning { background: var(--warning); color: white; }
+
+.btn-icon {
+  width: 44px; height: 44px;
+  padding: 0;
+  border-radius: 50%;
+  font-size: 1.1rem;
+}
+
+/* ─── PROGRESS BAR ─── */
+.progress-bar {
+  background: var(--gray-200);
+  border-radius: 10px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--navy));
+  border-radius: 10px;
+  transition: width 0.5s ease;
+}
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--navy);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 24px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: var(--transition);
+  z-index: 200;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ─── LOADING ─── */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  color: var(--gray-400);
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 20px; height: 20px;
+  border: 2px solid var(--gray-200);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── EMPTY STATE ─── */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--gray-600);
+}
+
+.empty-state .empty-icon { font-size: 3rem; margin-bottom: 12px; }
+.empty-state h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--navy); margin-bottom: 8px; }
+.empty-state p { font-size: 0.875rem; line-height: 1.6; }
+
+/* ─── RESPONSIVE ─── */
+@media (min-width: 480px) {
+  .page { padding-left: 20px; padding-right: 20px; }
+}
+
+/* ─── FLASHCARD PAGE ─── */
+
+.fc-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.fc-stat {
+  background: var(--white);
+  border-radius: var(--radius-sm);
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.fc-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+  line-height: 1;
+}
+
+.fc-stat-label {
+  font-size: 0.7rem;
+  color: var(--gray-600);
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+/* ─── CARD FLIP ─── */
+.flashcard-scene {
+  perspective: 1000px;
+  margin-bottom: 24px;
+}
+
+.flashcard {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3/2;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.flashcard.flipped { transform: rotateY(180deg); }
+
+.flashcard-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+/* FRONT */
+.flashcard-front {
+  background: var(--navy);
+  display: flex;
+  flex-direction: column;
+}
+
+.fc-image {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.fc-image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fc-image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(26,35,64,0.85) 0%, rgba(26,35,64,0.1) 60%);
+}
+
+.fc-image-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  background: linear-gradient(135deg, #1a2340 0%, #2c3e6e 100%);
+}
+
+.fc-front-content {
+  padding: 16px 20px 20px;
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+}
+
+.fc-word {
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  line-height: 1.1;
+}
+
+.fc-phonetic {
+  font-size: 0.85rem;
+  color: var(--gold-light);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.fc-hint {
+  position: absolute;
+  top: 14px; right: 16px;
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.5);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* BACK */
+.flashcard-back {
+  transform: rotateY(180deg);
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px 24px;
+  gap: 12px;
+}
+
+.fc-back-emoji { font-size: 3.5rem; }
+
+.fc-translation {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-align: center;
+}
+
+.fc-back-word {
+  font-size: 0.95rem;
+  color: var(--gray-600);
+  text-align: center;
+}
+
+.fc-category-badge {
+  background: var(--navy);
+  color: var(--gold);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* ─── SM-2 BUTTONS ─── */
+.sm2-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.sm2-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 8px;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.sm2-btn:active { transform: scale(0.95); }
+
+.sm2-btn-again { background: #fef0ee; color: var(--danger); }
+.sm2-btn-hard { background: #fff8e6; color: var(--warning); }
+.sm2-btn-easy { background: #edfaf2; color: var(--success); }
+
+.sm2-btn-icon { font-size: 1.2rem; }
+.sm2-btn-label { font-size: 0.78rem; font-weight: 600; }
+.sm2-btn-interval { font-size: 0.68rem; color: var(--gray-600); }
+
+/* ─── CARD COUNTER ─── */
+.card-counter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.counter-text {
+  font-size: 0.85rem;
+  color: var(--gray-600);
+  font-weight: 500;
+}
+
+/* ─── SESSION COMPLETE ─── */
+.session-complete {
+  text-align: center;
+  padding: 40px 24px;
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+}
+
+.session-complete .trophy { font-size: 4rem; margin-bottom: 16px; }
+.session-complete h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.session-complete p { color: var(--gray-600); font-size: 0.9rem; margin-bottom: 24px; }
+
+.session-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.sess-stat {
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--gray-100);
+}
+
+.sess-stat-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.sess-stat-label { font-size: 0.7rem; color: var(--gray-600); margin-top: 2px; }
+
+/* ─── PRONUNCIATION PAGE ─── */
+
+.pron-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pron-filter-row {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── SENTENCE CARD ─── */
+.sentence-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+
+.sentence-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.sentence-level-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 10px;
+  border-radius: 10px;
+  background: var(--navy);
+  color: var(--gold);
+}
+
+.sentence-topic {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  font-weight: 500;
+}
+
+/* ─── SENTENCE TEXT ─── */
+.sentence-text-area {
+  padding: 20px 16px 14px;
+}
+
+.sentence-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+
+.word-token {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: var(--navy);
+  padding: 2px 4px;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+  line-height: 1.3;
+}
+
+.word-token.highlighted {
+  color: var(--white);
+  background: var(--navy);
+  border-radius: 6px;
+  padding: 2px 6px;
+}
+
+.word-token.played {
+  color: var(--gold);
+}
+
+/* ─── TRANSLATION ─── */
+.translation-area {
+  padding: 0 16px 14px;
+  min-height: 32px;
+}
+
+.translation-text {
+  font-size: 0.875rem;
+  color: var(--gray-600);
+  font-style: italic;
+  line-height: 1.5;
+  display: none;
+}
+
+.translation-text.visible { display: block; }
+
+/* ─── AUDIO CONTROLS ─── */
+.audio-controls {
+  padding: 14px 16px;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.audio-play-btn {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--white);
+  border: none;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+  flex-shrink: 0;
+  box-shadow: var(--shadow-sm);
+}
+
+.audio-play-btn:hover { background: #253060; transform: scale(1.05); }
+.audio-play-btn:active { transform: scale(0.95); }
+.audio-play-btn.playing { background: var(--gold); color: var(--navy); }
+
+.audio-controls-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.audio-option-row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.audio-chip {
+  padding: 5px 12px;
+  border-radius: 14px;
+  border: 1.5px solid var(--gray-200);
+  background: var(--white);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  color: var(--gray-600);
+  font-family: 'DM Sans', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.audio-chip.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: var(--white);
+}
+
+/* ─── SENTENCE LIST ─── */
+.sentence-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ─── SENTENCE BOTTOM ROW ─── */
+.sentence-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px 14px;
+}
+
+.translation-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  color: var(--gray-600);
+  font-weight: 500;
+  font-family: 'DM Sans', sans-serif;
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+
+.translation-toggle-btn:hover { background: var(--gray-100); color: var(--navy); }
+
+.sr-indicator {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  color: var(--gray-400);
+}
+
+.sr-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gray-200);
+}
+
+.sr-dot.due { background: var(--warning); }
+.sr-dot.learned { background: var(--success); }
+
+/* ─── AUDIO PROGRESS ─── */
+.audio-progress {
+  height: 3px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.audio-progress-fill {
+  height: 100%;
+  background: var(--gold);
+  border-radius: 2px;
+  transition: width 0.1s linear;
+  width: 0%;
+}
+
+/* ─── SETTINGS PAGE ─── */
+
+.settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settings-group {
+  background: var(--white);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.settings-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  padding: 14px 16px 8px;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-top: 1px solid var(--gray-100);
+  gap: 12px;
+}
+
+.settings-item:first-of-type { border-top: none; }
+
+.settings-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-icon {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: var(--gray-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+.settings-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--navy);
+}
+
+.settings-desc {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+  margin-top: 2px;
+}
+
+/* ─── TOGGLE SWITCH ─── */
+.toggle-switch {
+  position: relative;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--gray-200);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.toggle-slider:before {
+  content: '';
+  position: absolute;
+  width: 20px; height: 20px;
+  left: 3px; bottom: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: var(--transition);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+}
+
+.toggle-switch input:checked + .toggle-slider { background: var(--navy); }
+.toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
+
+/* ─── SELECT ─── */
+.settings-select {
+  border: 1.5px solid var(--gray-200);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.85rem;
+  color: var(--navy);
+  background: var(--gray-100);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 500;
+  outline: none;
+  transition: var(--transition);
+}
+
+.settings-select:focus { border-color: var(--navy); }
+
+/* ─── RANGE SLIDER ─── */
+.range-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.range-value {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--navy);
+  min-width: 28px;
+  text-align: right;
+}
+
+input[type=range] {
+  -webkit-appearance: none;
+  width: 120px;
+  height: 4px;
+  background: var(--gray-200);
+  border-radius: 2px;
+  outline: none;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: var(--navy);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+/* ─── PROGRESS STATS ─── */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  padding: 16px;
+}
+
+.stat-card {
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  text-align: center;
+}
+
+.stat-card-num {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--navy);
+}
+
+.stat-card-label {
+  font-size: 0.72rem;
+  color: var(--gray-600);
+  margin-top: 4px;
+}
+
+/* ─── DANGER ZONE ─── */
+.danger-btn {
+  width: 100%;
+  padding: 13px;
+  background: #fef0ee;
+  border: 1.5px solid #f5c6c0;
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+  font-family: 'DM Sans', sans-serif;
+}
+
+.danger-btn:hover { background: #fde0dc; }
+
+/* ─── VERSION BADGE ─── */
+.version-badge {
+  text-align: center;
+  padding: 20px;
+  font-size: 0.75rem;
+  color: var(--gray-400);
+}
+
+  </style>
 </head>
 <body>
 
-  <!-- HEADER -->
   <header class="app-header">
     <div class="header-inner">
       <div class="app-logo">
@@ -36,61 +1034,1175 @@
     </div>
   </header>
 
-  <!-- PAGES -->
   <main>
-
-    <!-- FLASHCARDS -->
     <section class="page active" id="page-flashcards">
-      <div class="loader">
-        <div class="spinner"></div>
-        Yükleniyor...
-      </div>
+      <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
     </section>
-
-    <!-- PRONUNCIATION -->
     <section class="page" id="page-pronunciation">
-      <div class="loader">
-        <div class="spinner"></div>
-        Yükleniyor...
-      </div>
+      <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
     </section>
-
-    <!-- SETTINGS -->
     <section class="page" id="page-settings">
-      <div class="loader">
-        <div class="spinner"></div>
-        Yükleniyor...
-      </div>
+      <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
     </section>
-
   </main>
 
-  <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <button class="nav-item active" data-page="flashcards">
       <span class="nav-icon">🃏</span>
-      <span class="nav-label" data-i18n="nav.flashcards">Kartlar</span>
+      <span class="nav-label">Kartlar</span>
     </button>
     <button class="nav-item" data-page="pronunciation">
       <span class="nav-icon">🎧</span>
-      <span class="nav-label" data-i18n="nav.pronunciation">Telaffuz</span>
+      <span class="nav-label">Telaffuz</span>
     </button>
     <button class="nav-item" data-page="settings">
       <span class="nav-icon">⚙️</span>
-      <span class="nav-label" data-i18n="nav.settings">Ayarlar</span>
+      <span class="nav-label">Ayarlar</span>
     </button>
   </nav>
 
-  <!-- TOAST -->
   <div class="toast" id="toast"></div>
 
-  <!-- JS — order matters -->
-  <script src="js/data.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/app.js"></script>
-  <script src="js/flashcards.js"></script>
-  <script src="js/pronunciation.js"></script>
-  <script src="js/settings.js"></script>
+  <script>
+  window.PEXELS_API_KEY = '';
+const I18N = {
+  tr: {
+    appName: "Le Français",
+    nav: {
+      flashcards: "Kartlar",
+      pronunciation: "Telaffuz",
+      settings: "Ayarlar"
+    },
+    flashcards: {
+      title: "Kelime Kartları",
+      subtitle: "Kartlara tıklayarak çevir",
+      due: "Bugün",
+      learned: "Öğrenildi",
+      total: "Toplam",
+      tapToFlip: "Çevirmek için tıkla",
+      again: "Tekrar",
+      hard: "Zor",
+      easy: "Kolay",
+      againInterval: "< 1 dk",
+      hardInterval: "1 gün",
+      easyInterval: "4 gün",
+      sessionDone: "Oturum Tamamlandı! 🎉",
+      sessionDoneMsg: "Harika iş çıkardın! Yarın tekrar çalış.",
+      newSession: "Yeni Oturum",
+      again_count: "Tekrar",
+      hard_count: "Zor",
+      easy_count: "Kolay",
+      loading: "Resimler yükleniyor...",
+      level_all: "Tümü",
+      level_a1: "A1",
+      level_a2: "A2",
+      level_verbs: "Fiiller"
+    },
+    pronunciation: {
+      title: "Telaffuz",
+      subtitle: "Dinle ve tekrar et",
+      level_all: "Tümü",
+      level_a1: "A1",
+      level_a2: "A2",
+      male: "Erkek",
+      female: "Kadın",
+      normal: "Normal",
+      slow: "Yavaş",
+      showTranslation: "Çeviriyi göster",
+      hideTranslation: "Çeviriyi gizle",
+      playing: "Oynatılıyor...",
+      due: "Bugün çalışılacak",
+      loading: "Yükleniyor..."
+    },
+    settings: {
+      title: "Ayarlar",
+      subtitle: "Çalışma tercihleriniz",
+      pronunciation: "Telaffuz Ayarları",
+      defaultVoice: "Varsayılan Ses",
+      male: "Erkek",
+      female: "Kadın",
+      defaultSpeed: "Varsayılan Hız",
+      normal: "Normal",
+      slow: "Yavaş",
+      autoPlay: "Otomatik Oynat",
+      autoPlayDesc: "Kart açılınca ses otomatik başlasın",
+      showPhonetic: "Fonetik Göster",
+      showPhoneticDesc: "Kelimenin IPA okunuşunu göster",
+      study: "Çalışma Ayarları",
+      dailyGoal: "Günlük Kart Hedefi",
+      language: "Dil / Language",
+      appLanguage: "Uygulama Dili",
+      progress: "İlerleme",
+      totalCards: "Toplam Kart",
+      learnedCards: "Öğrenilen",
+      studyDays: "Çalışma Günü",
+      accuracy: "Doğruluk",
+      resetProgress: "İlerlemeyi Sıfırla",
+      resetConfirm: "Tüm ilerleme silinecek. Emin misiniz?",
+      version: "Français App v1.0 — TCF Uyumlu"
+    }
+  },
+  en: {
+    appName: "Le Français",
+    nav: {
+      flashcards: "Cards",
+      pronunciation: "Pronunciation",
+      settings: "Settings"
+    },
+    flashcards: {
+      title: "Flashcards",
+      subtitle: "Tap a card to flip it",
+      due: "Due Today",
+      learned: "Learned",
+      total: "Total",
+      tapToFlip: "Tap to flip",
+      again: "Again",
+      hard: "Hard",
+      easy: "Easy",
+      againInterval: "< 1 min",
+      hardInterval: "1 day",
+      easyInterval: "4 days",
+      sessionDone: "Session Complete! 🎉",
+      sessionDoneMsg: "Great job! Come back tomorrow to review.",
+      newSession: "New Session",
+      again_count: "Again",
+      hard_count: "Hard",
+      easy_count: "Easy",
+      loading: "Loading images...",
+      level_all: "All",
+      level_a1: "A1",
+      level_a2: "A2",
+      level_verbs: "Verbs"
+    },
+    pronunciation: {
+      title: "Pronunciation",
+      subtitle: "Listen and repeat",
+      level_all: "All",
+      level_a1: "A1",
+      level_a2: "A2",
+      male: "Male",
+      female: "Female",
+      normal: "Normal",
+      slow: "Slow",
+      showTranslation: "Show translation",
+      hideTranslation: "Hide translation",
+      playing: "Playing...",
+      due: "Due today",
+      loading: "Loading..."
+    },
+    settings: {
+      title: "Settings",
+      subtitle: "Your study preferences",
+      pronunciation: "Pronunciation Settings",
+      defaultVoice: "Default Voice",
+      male: "Male",
+      female: "Female",
+      defaultSpeed: "Default Speed",
+      normal: "Normal",
+      slow: "Slow",
+      autoPlay: "Auto Play",
+      autoPlayDesc: "Auto play audio when card opens",
+      showPhonetic: "Show Phonetic",
+      showPhoneticDesc: "Show IPA pronunciation of words",
+      study: "Study Settings",
+      dailyGoal: "Daily Card Goal",
+      language: "Dil / Language",
+      appLanguage: "App Language",
+      progress: "Progress",
+      totalCards: "Total Cards",
+      learnedCards: "Learned",
+      studyDays: "Study Days",
+      accuracy: "Accuracy",
+      resetProgress: "Reset Progress",
+      resetConfirm: "All progress will be deleted. Are you sure?",
+      version: "Français App v1.0 — TCF Compatible"
+    }
+  }
+};
 
+function t(path) {
+  const lang = AppState.settings.language || 'tr';
+  const keys = path.split('.');
+  let val = I18N[lang];
+  for (const k of keys) { val = val?.[k]; }
+  return val || path;
+}
+
+// ─── EMBEDDED DATA — GitHub Pages uyumlu, fetch gerektirmez ───
+
+const DATA_A1_WORDS = [
+  {id:"a1_001",word:"bonjour",translation_tr:"merhaba",translation_en:"hello",phonetic:"bɔ̃.ʒuʁ",category:"greetings",level:"A1",pexels_query:"greeting wave hello",emoji:"👋"},
+  {id:"a1_002",word:"merci",translation_tr:"teşekkür ederim",translation_en:"thank you",phonetic:"mɛʁ.si",category:"greetings",level:"A1",pexels_query:"thank you gratitude",emoji:"🙏"},
+  {id:"a1_003",word:"oui",translation_tr:"evet",translation_en:"yes",phonetic:"wi",category:"basics",level:"A1",pexels_query:"yes thumbs up",emoji:"✅"},
+  {id:"a1_004",word:"non",translation_tr:"hayır",translation_en:"no",phonetic:"nɔ̃",category:"basics",level:"A1",pexels_query:"no rejection",emoji:"❌"},
+  {id:"a1_005",word:"maison",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",level:"A1",pexels_query:"house home building",emoji:"🏠"},
+  {id:"a1_006",word:"eau",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",level:"A1",pexels_query:"water glass drink",emoji:"💧"},
+  {id:"a1_007",word:"pain",translation_tr:"ekmek",translation_en:"bread",phonetic:"pɛ̃",category:"food",level:"A1",pexels_query:"bread bakery fresh",emoji:"🍞"},
+  {id:"a1_008",word:"livre",translation_tr:"kitap",translation_en:"book",phonetic:"livʁ",category:"objects",level:"A1",pexels_query:"book reading library",emoji:"📚"},
+  {id:"a1_009",word:"chat",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",level:"A1",pexels_query:"cat kitten cute",emoji:"🐱"},
+  {id:"a1_010",word:"chien",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",level:"A1",pexels_query:"dog puppy cute",emoji:"🐶"},
+  {id:"a1_011",word:"voiture",translation_tr:"araba",translation_en:"car",phonetic:"vwa.tyʁ",category:"transport",level:"A1",pexels_query:"car automobile road",emoji:"🚗"},
+  {id:"a1_012",word:"école",translation_tr:"okul",translation_en:"school",phonetic:"e.kɔl",category:"places",level:"A1",pexels_query:"school classroom building",emoji:"🏫"},
+  {id:"a1_013",word:"ami",translation_tr:"arkadaş",translation_en:"friend",phonetic:"a.mi",category:"people",level:"A1",pexels_query:"friends friendship together",emoji:"👫"},
+  {id:"a1_014",word:"famille",translation_tr:"aile",translation_en:"family",phonetic:"fa.mij",category:"people",level:"A1",pexels_query:"family together happy",emoji:"👨‍👩‍👧"},
+  {id:"a1_015",word:"enfant",translation_tr:"çocuk",translation_en:"child",phonetic:"ɑ̃.fɑ̃",category:"people",level:"A1",pexels_query:"child kid playing",emoji:"👶"},
+  {id:"a1_016",word:"soleil",translation_tr:"güneş",translation_en:"sun",phonetic:"sɔ.lɛj",category:"nature",level:"A1",pexels_query:"sun sunshine sky bright",emoji:"☀️"},
+  {id:"a1_017",word:"fleur",translation_tr:"çiçek",translation_en:"flower",phonetic:"flœʁ",category:"nature",level:"A1",pexels_query:"flower bloom garden",emoji:"🌸"},
+  {id:"a1_018",word:"pomme",translation_tr:"elma",translation_en:"apple",phonetic:"pɔm",category:"food",level:"A1",pexels_query:"apple fruit red",emoji:"🍎"},
+  {id:"a1_019",word:"lait",translation_tr:"süt",translation_en:"milk",phonetic:"lɛ",category:"food",level:"A1",pexels_query:"milk glass white",emoji:"🥛"},
+  {id:"a1_020",word:"table",translation_tr:"masa",translation_en:"table",phonetic:"tabl",category:"home",level:"A1",pexels_query:"table furniture wooden",emoji:"🪑"},
+  {id:"a1_021",word:"chaise",translation_tr:"sandalye",translation_en:"chair",phonetic:"ʃɛz",category:"home",level:"A1",pexels_query:"chair furniture",emoji:"🪑"},
+  {id:"a1_022",word:"fenêtre",translation_tr:"pencere",translation_en:"window",phonetic:"fə.nɛtʁ",category:"home",level:"A1",pexels_query:"window light room",emoji:"🪟"},
+  {id:"a1_023",word:"porte",translation_tr:"kapı",translation_en:"door",phonetic:"pɔʁt",category:"home",level:"A1",pexels_query:"door entrance wooden",emoji:"🚪"},
+  {id:"a1_024",word:"rue",translation_tr:"sokak",translation_en:"street",phonetic:"ʁy",category:"places",level:"A1",pexels_query:"street urban city road",emoji:"🛣️"},
+  {id:"a1_025",word:"ville",translation_tr:"şehir",translation_en:"city",phonetic:"vil",category:"places",level:"A1",pexels_query:"city urban buildings",emoji:"🏙️"},
+  {id:"a1_026",word:"pays",translation_tr:"ülke",translation_en:"country",phonetic:"pe.i",category:"places",level:"A1",pexels_query:"country landscape nature",emoji:"🗺️"},
+  {id:"a1_027",word:"homme",translation_tr:"adam / erkek",translation_en:"man",phonetic:"ɔm",category:"people",level:"A1",pexels_query:"man adult male",emoji:"👨"},
+  {id:"a1_028",word:"femme",translation_tr:"kadın",translation_en:"woman",phonetic:"fam",category:"people",level:"A1",pexels_query:"woman adult female",emoji:"👩"},
+  {id:"a1_029",word:"garçon",translation_tr:"oğlan / erkek çocuk",translation_en:"boy",phonetic:"ɡaʁ.sɔ̃",category:"people",level:"A1",pexels_query:"boy child young",emoji:"👦"},
+  {id:"a1_030",word:"fille",translation_tr:"kız çocuğu",translation_en:"girl",phonetic:"fij",category:"people",level:"A1",pexels_query:"girl child young",emoji:"👧"},
+  {id:"a1_031",word:"mère",translation_tr:"anne",translation_en:"mother",phonetic:"mɛʁ",category:"people",level:"A1",pexels_query:"mother mom family",emoji:"👩"},
+  {id:"a1_032",word:"père",translation_tr:"baba",translation_en:"father",phonetic:"pɛʁ",category:"people",level:"A1",pexels_query:"father dad family",emoji:"👨"},
+  {id:"a1_033",word:"frère",translation_tr:"erkek kardeş",translation_en:"brother",phonetic:"fʁɛʁ",category:"people",level:"A1",pexels_query:"brother siblings",emoji:"👦"},
+  {id:"a1_034",word:"sœur",translation_tr:"kız kardeş",translation_en:"sister",phonetic:"sœʁ",category:"people",level:"A1",pexels_query:"sister siblings girls",emoji:"👧"},
+  {id:"a1_035",word:"heure",translation_tr:"saat",translation_en:"hour/time",phonetic:"œʁ",category:"time",level:"A1",pexels_query:"clock time hour",emoji:"🕐"},
+  {id:"a1_036",word:"jour",translation_tr:"gün",translation_en:"day",phonetic:"ʒuʁ",category:"time",level:"A1",pexels_query:"day daylight sunrise",emoji:"📅"},
+  {id:"a1_037",word:"nuit",translation_tr:"gece",translation_en:"night",phonetic:"nɥi",category:"time",level:"A1",pexels_query:"night sky dark stars",emoji:"🌙"},
+  {id:"a1_038",word:"matin",translation_tr:"sabah",translation_en:"morning",phonetic:"ma.tɛ̃",category:"time",level:"A1",pexels_query:"morning sunrise coffee",emoji:"🌅"},
+  {id:"a1_039",word:"soir",translation_tr:"akşam",translation_en:"evening",phonetic:"swaʁ",category:"time",level:"A1",pexels_query:"evening sunset dusk",emoji:"🌆"},
+  {id:"a1_040",word:"semaine",translation_tr:"hafta",translation_en:"week",phonetic:"sə.mɛn",category:"time",level:"A1",pexels_query:"calendar week planner",emoji:"🗓️"},
+  {id:"a1_041",word:"café",translation_tr:"kahve / kafe",translation_en:"coffee / café",phonetic:"ka.fe",category:"food",level:"A1",pexels_query:"coffee cafe cup",emoji:"☕"},
+  {id:"a1_042",word:"restaurant",translation_tr:"restoran",translation_en:"restaurant",phonetic:"ʁɛs.tɔ.ʁɑ̃",category:"places",level:"A1",pexels_query:"restaurant dining food",emoji:"🍽️"},
+  {id:"a1_043",word:"supermarché",translation_tr:"süpermarket",translation_en:"supermarket",phonetic:"sy.pɛʁ.maʁ.ʃe",category:"places",level:"A1",pexels_query:"supermarket grocery store",emoji:"🛒"},
+  {id:"a1_044",word:"hôpital",translation_tr:"hastane",translation_en:"hospital",phonetic:"o.pi.tal",category:"places",level:"A1",pexels_query:"hospital medical building",emoji:"🏥"},
+  {id:"a1_045",word:"pharmacie",translation_tr:"eczane",translation_en:"pharmacy",phonetic:"faʁ.ma.si",category:"places",level:"A1",pexels_query:"pharmacy medicine store",emoji:"💊"},
+  {id:"a1_046",word:"banque",translation_tr:"banka",translation_en:"bank",phonetic:"bɑ̃k",category:"places",level:"A1",pexels_query:"bank finance building",emoji:"🏦"},
+  {id:"a1_047",word:"train",translation_tr:"tren",translation_en:"train",phonetic:"tʁɛ̃",category:"transport",level:"A1",pexels_query:"train railway station",emoji:"🚂"},
+  {id:"a1_048",word:"bus",translation_tr:"otobüs",translation_en:"bus",phonetic:"bys",category:"transport",level:"A1",pexels_query:"bus public transport",emoji:"🚌"},
+  {id:"a1_049",word:"avion",translation_tr:"uçak",translation_en:"airplane",phonetic:"a.vjɔ̃",category:"transport",level:"A1",pexels_query:"airplane sky flight",emoji:"✈️"},
+  {id:"a1_050",word:"vélo",translation_tr:"bisiklet",translation_en:"bicycle",phonetic:"ve.lo",category:"transport",level:"A1",pexels_query:"bicycle bike ride",emoji:"🚲"}
+];
+
+const DATA_A2_WORDS = [
+  {id:"a2_001",word:"travail",translation_tr:"iş",translation_en:"work",phonetic:"tʁa.vaj",category:"work",level:"A2",pexels_query:"work office desk",emoji:"💼"},
+  {id:"a2_002",word:"réunion",translation_tr:"toplantı",translation_en:"meeting",phonetic:"ʁe.y.njɔ̃",category:"work",level:"A2",pexels_query:"meeting conference business",emoji:"🤝"},
+  {id:"a2_003",word:"appartement",translation_tr:"daire",translation_en:"apartment",phonetic:"a.paʁ.tə.mɑ̃",category:"home",level:"A2",pexels_query:"apartment interior living",emoji:"🏢"},
+  {id:"a2_004",word:"cuisine",translation_tr:"mutfak",translation_en:"kitchen",phonetic:"kɥi.zin",category:"home",level:"A2",pexels_query:"kitchen cooking home",emoji:"👨‍🍳"},
+  {id:"a2_005",word:"chambre",translation_tr:"yatak odası",translation_en:"bedroom",phonetic:"ʃɑ̃bʁ",category:"home",level:"A2",pexels_query:"bedroom bed room",emoji:"🛏️"},
+  {id:"a2_006",word:"vacances",translation_tr:"tatil",translation_en:"vacation",phonetic:"va.kɑ̃s",category:"leisure",level:"A2",pexels_query:"vacation holiday travel beach",emoji:"🏖️"},
+  {id:"a2_007",word:"voyage",translation_tr:"seyahat",translation_en:"trip/travel",phonetic:"vwa.jaʒ",category:"leisure",level:"A2",pexels_query:"travel journey adventure",emoji:"🧳"},
+  {id:"a2_008",word:"sport",translation_tr:"spor",translation_en:"sport",phonetic:"spɔʁ",category:"leisure",level:"A2",pexels_query:"sport exercise fitness",emoji:"⚽"},
+  {id:"a2_009",word:"musique",translation_tr:"müzik",translation_en:"music",phonetic:"my.zik",category:"leisure",level:"A2",pexels_query:"music concert headphones",emoji:"🎵"},
+  {id:"a2_010",word:"cinéma",translation_tr:"sinema",translation_en:"cinema",phonetic:"si.ne.ma",category:"leisure",level:"A2",pexels_query:"cinema movie theater",emoji:"🎬"},
+  {id:"a2_011",word:"magasin",translation_tr:"mağaza / dükkan",translation_en:"store/shop",phonetic:"ma.ɡa.zɛ̃",category:"places",level:"A2",pexels_query:"store shop retail",emoji:"🏪"},
+  {id:"a2_012",word:"marché",translation_tr:"pazar",translation_en:"market",phonetic:"maʁ.ʃe",category:"places",level:"A2",pexels_query:"market outdoor food stalls",emoji:"🛍️"},
+  {id:"a2_013",word:"météo",translation_tr:"hava durumu",translation_en:"weather",phonetic:"me.te.o",category:"nature",level:"A2",pexels_query:"weather forecast sky clouds",emoji:"⛅"},
+  {id:"a2_014",word:"pluie",translation_tr:"yağmur",translation_en:"rain",phonetic:"plɥi",category:"nature",level:"A2",pexels_query:"rain rainy weather",emoji:"🌧️"},
+  {id:"a2_015",word:"neige",translation_tr:"kar",translation_en:"snow",phonetic:"nɛʒ",category:"nature",level:"A2",pexels_query:"snow winter cold",emoji:"❄️"},
+  {id:"a2_016",word:"rendez-vous",translation_tr:"randevu",translation_en:"appointment",phonetic:"ʁɑ̃.de.vu",category:"social",level:"A2",pexels_query:"appointment calendar meeting",emoji:"📅"},
+  {id:"a2_017",word:"invitation",translation_tr:"davet",translation_en:"invitation",phonetic:"ɛ̃.vi.ta.sjɔ̃",category:"social",level:"A2",pexels_query:"invitation party celebration",emoji:"💌"},
+  {id:"a2_018",word:"cadeau",translation_tr:"hediye",translation_en:"gift",phonetic:"ka.do",category:"social",level:"A2",pexels_query:"gift present wrapped",emoji:"🎁"},
+  {id:"a2_019",word:"anniversaire",translation_tr:"doğum günü / yıldönümü",translation_en:"birthday/anniversary",phonetic:"a.ni.vɛʁ.sɛʁ",category:"social",level:"A2",pexels_query:"birthday cake celebration",emoji:"🎂"},
+  {id:"a2_020",word:"santé",translation_tr:"sağlık",translation_en:"health",phonetic:"sɑ̃.te",category:"health",level:"A2",pexels_query:"health wellness medical",emoji:"❤️"}
+];
+
+const DATA_A1_SENTENCES = [
+  {id:"s_a1_001",sentence:"Bonjour, je m'appelle Marie.",words:["Bonjour,","je","m'appelle","Marie."],translation_tr:"Merhaba, benim adım Marie.",translation_en:"Hello, my name is Marie.",level:"A1",topic:"introductions"},
+  {id:"s_a1_002",sentence:"Comment vous appelez-vous ?",words:["Comment","vous","appelez-vous","?"],translation_tr:"Adınız ne?",translation_en:"What is your name?",level:"A1",topic:"introductions"},
+  {id:"s_a1_003",sentence:"J'habite à Paris.",words:["J'habite","à","Paris."],translation_tr:"Paris'te oturuyorum.",translation_en:"I live in Paris.",level:"A1",topic:"places"},
+  {id:"s_a1_004",sentence:"Il fait beau aujourd'hui.",words:["Il","fait","beau","aujourd'hui."],translation_tr:"Bugün hava güzel.",translation_en:"The weather is nice today.",level:"A1",topic:"weather"},
+  {id:"s_a1_005",sentence:"Je voudrais un café, s'il vous plaît.",words:["Je","voudrais","un","café,","s'il","vous","plaît."],translation_tr:"Bir kahve istiyorum, lütfen.",translation_en:"I would like a coffee, please.",level:"A1",topic:"cafe"},
+  {id:"s_a1_006",sentence:"Où est la gare ?",words:["Où","est","la","gare","?"],translation_tr:"Tren garı nerede?",translation_en:"Where is the train station?",level:"A1",topic:"directions"},
+  {id:"s_a1_007",sentence:"Je parle un peu français.",words:["Je","parle","un","peu","français."],translation_tr:"Biraz Fransızca konuşuyorum.",translation_en:"I speak a little French.",level:"A1",topic:"language"},
+  {id:"s_a1_008",sentence:"La maison est grande.",words:["La","maison","est","grande."],translation_tr:"Ev büyük.",translation_en:"The house is big.",level:"A1",topic:"home"},
+  {id:"s_a1_009",sentence:"J'aime beaucoup la musique.",words:["J'aime","beaucoup","la","musique."],translation_tr:"Müziği çok seviyorum.",translation_en:"I love music very much.",level:"A1",topic:"hobbies"},
+  {id:"s_a1_010",sentence:"Je mange une pomme.",words:["Je","mange","une","pomme."],translation_tr:"Bir elma yiyorum.",translation_en:"I am eating an apple.",level:"A1",topic:"food"},
+  {id:"s_a1_011",sentence:"Mon chat s'appelle Minou.",words:["Mon","chat","s'appelle","Minou."],translation_tr:"Kedimin adı Minou.",translation_en:"My cat is called Minou.",level:"A1",topic:"animals"},
+  {id:"s_a1_012",sentence:"Je vais à l'école en bus.",words:["Je","vais","à","l'école","en","bus."],translation_tr:"Okula otobüsle gidiyorum.",translation_en:"I go to school by bus.",level:"A1",topic:"transport"},
+  {id:"s_a1_013",sentence:"Bonne nuit, à demain !",words:["Bonne","nuit,","à","demain","!"],translation_tr:"İyi geceler, yarına kadar!",translation_en:"Good night, see you tomorrow!",level:"A1",topic:"greetings"},
+  {id:"s_a1_014",sentence:"Il y a un parc près d'ici.",words:["Il","y","a","un","parc","près","d'ici."],translation_tr:"Buranın yakınında bir park var.",translation_en:"There is a park near here.",level:"A1",topic:"places"},
+  {id:"s_a1_015",sentence:"Quel âge avez-vous ?",words:["Quel","âge","avez-vous","?"],translation_tr:"Kaç yaşındasınız?",translation_en:"How old are you?",level:"A1",topic:"introductions"}
+];
+
+const DATA_A2_SENTENCES = [
+  {id:"s_a2_001",sentence:"Je travaille dans une entreprise depuis deux ans.",words:["Je","travaille","dans","une","entreprise","depuis","deux","ans."],translation_tr:"İki yıldır bir şirkette çalışıyorum.",translation_en:"I have been working in a company for two years.",level:"A2",topic:"work"},
+  {id:"s_a2_002",sentence:"Est-ce que vous pouvez répéter, s'il vous plaît ?",words:["Est-ce","que","vous","pouvez","répéter,","s'il","vous","plaît","?"],translation_tr:"Tekrar edebilir misiniz, lütfen?",translation_en:"Can you repeat that, please?",level:"A2",topic:"communication"},
+  {id:"s_a2_003",sentence:"Le week-end, j'aime faire du sport.",words:["Le","week-end,","j'aime","faire","du","sport."],translation_tr:"Hafta sonları spor yapmayı seviyorum.",translation_en:"On weekends, I like to do sports.",level:"A2",topic:"hobbies"},
+  {id:"s_a2_004",sentence:"Je suis allé au cinéma hier soir.",words:["Je","suis","allé","au","cinéma","hier","soir."],translation_tr:"Dün gece sinemaya gittim.",translation_en:"I went to the cinema last night.",level:"A2",topic:"leisure"},
+  {id:"s_a2_005",sentence:"Pouvez-vous m'indiquer le chemin pour aller à la poste ?",words:["Pouvez-vous","m'indiquer","le","chemin","pour","aller","à","la","poste","?"],translation_tr:"Postaneye giden yolu gösterebilir misiniz?",translation_en:"Can you show me the way to the post office?",level:"A2",topic:"directions"},
+  {id:"s_a2_006",sentence:"J'ai besoin d'acheter des médicaments.",words:["J'ai","besoin","d'acheter","des","médicaments."],translation_tr:"İlaç satın almam gerekiyor.",translation_en:"I need to buy some medicine.",level:"A2",topic:"health"},
+  {id:"s_a2_007",sentence:"Le restaurant est ouvert tous les jours sauf le lundi.",words:["Le","restaurant","est","ouvert","tous","les","jours","sauf","le","lundi."],translation_tr:"Restoran pazartesi hariç her gün açık.",translation_en:"The restaurant is open every day except Monday.",level:"A2",topic:"food"},
+  {id:"s_a2_008",sentence:"Je préfère voyager en train plutôt qu'en avion.",words:["Je","préfère","voyager","en","train","plutôt","qu'en","avion."],translation_tr:"Uçakla seyahat etmek yerine trenle gitmeyi tercih ederim.",translation_en:"I prefer to travel by train rather than by plane.",level:"A2",topic:"transport"},
+  {id:"s_a2_009",sentence:"Mon appartement est au troisième étage.",words:["Mon","appartement","est","au","troisième","étage."],translation_tr:"Dairem üçüncü katta.",translation_en:"My apartment is on the third floor.",level:"A2",topic:"home"},
+  {id:"s_a2_010",sentence:"Depuis combien de temps apprenez-vous le français ?",words:["Depuis","combien","de","temps","apprenez-vous","le","français","?"],translation_tr:"Ne zamandır Fransızca öğreniyorsunuz?",translation_en:"How long have you been learning French?",level:"A2",topic:"language"}
+];
+
+// ─── APP STATE ───
+const AppState = {
+  currentPage: 'flashcards',
+  settings: {
+    language: 'tr',
+    voice: 'female',
+    speed: 'normal',
+    autoPlay: false,
+    showPhonetic: true,
+    dailyGoal: 20
+  },
+  progress: {
+    // SM-2 data per card: { ef, interval, nextReview, reps, again, hard, easy }
+    cards: {},
+    // SR data per sentence
+    sentences: {},
+    studyDays: new Set(),
+    totalSessions: 0
+  }
+};
+
+// ─── LOCAL STORAGE ───
+function saveState() {
+  try {
+    const toSave = {
+      settings: AppState.settings,
+      progress: {
+        cards: AppState.progress.cards,
+        sentences: AppState.progress.sentences,
+        studyDays: [...AppState.progress.studyDays],
+        totalSessions: AppState.progress.totalSessions
+      }
+    };
+    localStorage.setItem('francais_state', JSON.stringify(toSave));
+  } catch(e) {}
+}
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem('francais_state');
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (saved.settings) Object.assign(AppState.settings, saved.settings);
+    if (saved.progress) {
+      AppState.progress.cards = saved.progress.cards || {};
+      AppState.progress.sentences = saved.progress.sentences || {};
+      AppState.progress.studyDays = new Set(saved.progress.studyDays || []);
+      AppState.progress.totalSessions = saved.progress.totalSessions || 0;
+    }
+  } catch(e) {}
+}
+
+// ─── ROUTER ───
+function navigate(page) {
+  AppState.currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${page}`)?.classList.add('active');
+  document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+
+  if (page === 'flashcards') renderFlashcards();
+  if (page === 'pronunciation') renderPronunciation();
+  if (page === 'settings') renderSettings();
+  updateLangToggle();
+}
+
+// ─── LANGUAGE ───
+function setLanguage(lang) {
+  AppState.settings.language = lang;
+  saveState();
+  updateLangToggle();
+  navigate(AppState.currentPage);
+}
+
+function updateLangToggle() {
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.lang === AppState.settings.language);
+  });
+}
+
+// ─── TOAST ───
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+// ─── PEXELS IMAGE CACHE ───
+const imageCache = {};
+
+async function fetchPexelsImage(query, wordId) {
+  if (imageCache[wordId]) return imageCache[wordId];
+  const PEXELS_KEY = window.PEXELS_API_KEY || '';
+  if (!PEXELS_KEY) return null;
+  try {
+    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, {
+      headers: { Authorization: PEXELS_KEY }
+    });
+    const data = await res.json();
+    const url = data.photos?.[0]?.src?.medium || null;
+    if (url) imageCache[wordId] = url;
+    return url;
+  } catch { return null; }
+}
+
+// ─── SM-2 ALGORITHM ───
+function sm2(card, quality) {
+  // quality: 0=again, 3=hard, 5=easy
+  let { ef = 2.5, interval = 1, reps = 0 } = card;
+
+  if (quality < 3) {
+    reps = 0;
+    interval = 1;
+  } else {
+    if (reps === 0) interval = 1;
+    else if (reps === 1) interval = 6;
+    else interval = Math.round(interval * ef);
+    reps++;
+  }
+
+  ef = Math.max(1.3, ef + 0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02));
+
+  const nextReview = Date.now() + interval * 24 * 60 * 60 * 1000;
+  return { ef, interval, reps, nextReview };
+}
+
+function isDue(cardData) {
+  if (!cardData || !cardData.nextReview) return true;
+  return Date.now() >= cardData.nextReview;
+}
+
+// ─── INIT ───
+document.addEventListener('DOMContentLoaded', () => {
+  loadState();
+
+  // Nav
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => navigate(btn.dataset.page));
+  });
+
+  // Lang toggle
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
+  });
+
+  // Load embedded data (no fetch needed)
+  loadWords();
+  loadSentences();
+
+  navigate('flashcards');
+
+  // Mark study day
+  const today = new Date().toISOString().split('T')[0];
+  AppState.progress.studyDays.add(today);
+  saveState();
+});
+
+// ─── DATA ───
+let allWords = [];
+let filteredWords = [];
+let currentCardIndex = 0;
+let sessionStats = { again: 0, hard: 0, easy: 0 };
+let fcFilter = 'all';
+let cardFlipped = false;
+
+function loadWords() {
+  // Embedded data — no fetch needed (GitHub Pages compatible)
+  allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS];
+}
+
+// ─── FILTER WORDS ───
+function getFilteredWords() {
+  let words = [...allWords];
+  if (fcFilter === 'a1') words = words.filter(w => w.level === 'A1');
+  else if (fcFilter === 'a2') words = words.filter(w => w.level === 'A2');
+  else if (fcFilter === 'verbs') words = words.filter(w => w.category === 'verb');
+  return words;
+}
+
+function getDueWords() {
+  return getFilteredWords().filter(w => isDue(AppState.progress.cards[w.id]));
+}
+
+// ─── RENDER FLASHCARDS PAGE ───
+function renderFlashcards() {
+  const page = document.getElementById('page-flashcards');
+  if (!page) return;
+
+  filteredWords = getFilteredWords();
+  const dueWords = getDueWords();
+  const learnedCount = filteredWords.filter(w => {
+    const c = AppState.progress.cards[w.id];
+    return c && c.reps > 0 && !isDue(c);
+  }).length;
+
+  page.innerHTML = `
+    <div class="section-header">
+      <h1 class="section-title">${t('flashcards.title')}</h1>
+      <p class="section-subtitle">${t('flashcards.subtitle')}</p>
+    </div>
+
+    <div class="fc-stats">
+      <div class="fc-stat">
+        <div class="fc-stat-num" style="color:var(--warning)">${dueWords.length}</div>
+        <div class="fc-stat-label">${t('flashcards.due')}</div>
+      </div>
+      <div class="fc-stat">
+        <div class="fc-stat-num" style="color:var(--success)">${learnedCount}</div>
+        <div class="fc-stat-label">${t('flashcards.learned')}</div>
+      </div>
+      <div class="fc-stat">
+        <div class="fc-stat-num">${filteredWords.length}</div>
+        <div class="fc-stat-label">${t('flashcards.total')}</div>
+      </div>
+    </div>
+
+    <div class="filter-row">
+      ${['all','a1','a2','verbs'].map(f => `
+        <button class="chip ${fcFilter === f ? 'active' : ''}" onclick="setFcFilter('${f}')">
+          ${t('flashcards.level_' + f)}
+        </button>
+      `).join('')}
+    </div>
+
+    <div id="fc-content">
+      ${dueWords.length === 0 ? renderSessionComplete() : renderCardArea(dueWords)}
+    </div>
+  `;
+
+  if (dueWords.length > 0) {
+    currentCardIndex = 0;
+    sessionStats = { again: 0, hard: 0, easy: 0 };
+    cardFlipped = false;
+    loadCardContent(dueWords[0]);
+  }
+}
+
+function setFcFilter(filter) {
+  fcFilter = filter;
+  renderFlashcards();
+}
+
+function renderCardArea(dueWords) {
+  const card = dueWords[currentCardIndex];
+  return `
+    <div class="card-counter">
+      <span class="counter-text">${currentCardIndex + 1} / ${dueWords.length}</span>
+    </div>
+    <div class="progress-bar" style="margin-bottom:16px">
+      <div class="progress-fill" style="width:${(currentCardIndex / dueWords.length) * 100}%"></div>
+    </div>
+
+    <div class="flashcard-scene">
+      <div class="flashcard" id="flashcard" onclick="flipCard()">
+        <div class="flashcard-face flashcard-front">
+          <div class="fc-image" id="fc-image">
+            <div class="fc-image-placeholder" id="fc-placeholder">
+              <span id="fc-emoji">⏳</span>
+            </div>
+          </div>
+          <div class="fc-image-overlay"></div>
+          <div class="fc-hint">👆 ${t('flashcards.tapToFlip')}</div>
+          <div class="fc-front-content">
+            <div class="fc-word" id="fc-word">${card.word}</div>
+            ${AppState.settings.showPhonetic ? `<div class="fc-phonetic" id="fc-phonetic">${card.phonetic || ''}</div>` : ''}
+          </div>
+        </div>
+        <div class="flashcard-face flashcard-back">
+          <div class="fc-back-emoji" id="fc-back-emoji">🇫🇷</div>
+          <div class="fc-translation" id="fc-translation">
+            ${AppState.settings.language === 'tr' ? card.translation_tr : card.translation_en}
+          </div>
+          <div class="fc-back-word" id="fc-back-word">${card.word}</div>
+          <div class="fc-category-badge">${card.category || card.level || 'A1'}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm2-buttons" id="sm2-buttons" style="display:none">
+      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)">
+        <span class="sm2-btn-icon">😰</span>
+        <span class="sm2-btn-label">${t('flashcards.again')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.againInterval')}</span>
+      </button>
+      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)">
+        <span class="sm2-btn-icon">😐</span>
+        <span class="sm2-btn-label">${t('flashcards.hard')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span>
+      </button>
+      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)">
+        <span class="sm2-btn-icon">😄</span>
+        <span class="sm2-btn-label">${t('flashcards.easy')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span>
+      </button>
+    </div>
+  `;
+}
+
+function renderSessionComplete() {
+  const total = sessionStats.again + sessionStats.hard + sessionStats.easy;
+  const acc = total > 0 ? Math.round((sessionStats.easy / total) * 100) : 0;
+  return `
+    <div class="session-complete">
+      <div class="trophy">🏆</div>
+      <h2>${t('flashcards.sessionDone')}</h2>
+      <p>${t('flashcards.sessionDoneMsg')}</p>
+      <div class="session-stats">
+        <div class="sess-stat">
+          <div class="sess-stat-num" style="color:var(--danger)">${sessionStats.again}</div>
+          <div class="sess-stat-label">${t('flashcards.again_count')}</div>
+        </div>
+        <div class="sess-stat">
+          <div class="sess-stat-num" style="color:var(--warning)">${sessionStats.hard}</div>
+          <div class="sess-stat-label">${t('flashcards.hard_count')}</div>
+        </div>
+        <div class="sess-stat">
+          <div class="sess-stat-num" style="color:var(--success)">${sessionStats.easy}</div>
+          <div class="sess-stat-label">${t('flashcards.easy_count')}</div>
+        </div>
+      </div>
+      <button class="btn btn-primary" onclick="renderFlashcards()" style="width:100%">
+        ${t('flashcards.newSession')}
+      </button>
+    </div>
+  `;
+}
+
+// ─── LOAD CARD IMAGE ───
+async function loadCardContent(word) {
+  const EMOJIS = {
+    greetings:'👋', food:'🍽️', home:'🏠', animals:'🐾', transport:'🚗',
+    places:'📍', people:'👥', nature:'🌿', objects:'📦', basics:'💬', verb:'✨'
+  };
+  const emoji = word.emoji || EMOJIS[word.category] || '🇫🇷';
+  const placeholder = document.getElementById('fc-placeholder');
+  if (placeholder) placeholder.querySelector('#fc-emoji').textContent = emoji;
+
+  // Try Pexels
+  const imgUrl = await fetchPexelsImage(word.pexels_query || word.word, word.id);
+  if (imgUrl) {
+    const fcImage = document.getElementById('fc-image');
+    if (fcImage) {
+      fcImage.innerHTML = `<img src="${imgUrl}" alt="${word.word}" loading="lazy"><div class="fc-image-overlay"></div>`;
+    }
+  }
+}
+
+// ─── FLIP ───
+function flipCard() {
+  if (cardFlipped) return;
+  cardFlipped = true;
+  const card = document.getElementById('flashcard');
+  const btns = document.getElementById('sm2-buttons');
+  if (card) card.classList.add('flipped');
+  if (btns) btns.style.display = 'grid';
+}
+
+// ─── RATE ───
+function rateCard(quality) {
+  const dueWords = getDueWords();
+  if (currentCardIndex >= dueWords.length) return;
+
+  const word = dueWords[currentCardIndex];
+  const existing = AppState.progress.cards[word.id] || {};
+  const result = sm2(existing, quality);
+  AppState.progress.cards[word.id] = { ...existing, ...result };
+
+  if (quality === 0) sessionStats.again++;
+  else if (quality === 3) sessionStats.hard++;
+  else sessionStats.easy++;
+
+  saveState();
+
+  currentCardIndex++;
+  cardFlipped = false;
+
+  const remaining = getDueWords();
+  const fcContent = document.getElementById('fc-content');
+  if (!fcContent) return;
+
+  if (remaining.length === 0 || currentCardIndex >= dueWords.length) {
+    AppState.progress.totalSessions++;
+    saveState();
+    fcContent.innerHTML = renderSessionComplete();
+    return;
+  }
+
+  fcContent.innerHTML = renderCardArea(remaining);
+  loadCardContent(remaining[currentCardIndex] || remaining[0]);
+}
+
+// ─── DATA ───
+let allSentences = [];
+let pronFilter = 'all';
+let currentVoice = null;
+let currentSpeed = null;
+let activeAudio = null;
+
+function loadSentences() {
+  // Embedded data — no fetch needed (GitHub Pages compatible)
+  allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENTENCES];
+}
+
+
+// ─── GOOGLE TTS URL ───
+function getTTSUrl(text, lang = 'fr', slow = false) {
+  const speed = slow ? '0.4' : '1';
+  return `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(text)}&tl=${lang}&ttsspeed=${speed}&client=tw-ob`;
+}
+
+// ─── RENDER PRONUNCIATION PAGE ───
+function renderPronunciation() {
+  const page = document.getElementById('page-pronunciation');
+  if (!page) return;
+
+  // Use saved settings or defaults
+  if (!currentVoice) currentVoice = AppState.settings.voice || 'female';
+  if (!currentSpeed) currentSpeed = AppState.settings.speed || 'normal';
+
+  const sentences = getFilteredSentences();
+
+  page.innerHTML = `
+    <div class="section-header">
+      <h1 class="section-title">${t('pronunciation.title')}</h1>
+      <p class="section-subtitle">${t('pronunciation.subtitle')}</p>
+    </div>
+
+    <div class="pron-filters">
+      <div class="pron-filter-row">
+        ${['all','a1','a2'].map(f => `
+          <button class="chip ${pronFilter === f ? 'active' : ''}" onclick="setPronFilter('${f}')">
+            ${t('pronunciation.level_' + f)}
+          </button>
+        `).join('')}
+      </div>
+      <div class="pron-filter-row">
+        <button class="audio-chip ${currentVoice === 'male' ? 'active' : ''}" onclick="setVoice('male')">
+          🧔 ${t('pronunciation.male')}
+        </button>
+        <button class="audio-chip ${currentVoice === 'female' ? 'active' : ''}" onclick="setVoice('female')">
+          👩 ${t('pronunciation.female')}
+        </button>
+        <button class="audio-chip ${currentSpeed === 'normal' ? 'active' : ''}" onclick="setSpeed('normal')">
+          ▶️ ${t('pronunciation.normal')}
+        </button>
+        <button class="audio-chip ${currentSpeed === 'slow' ? 'active' : ''}" onclick="setSpeed('slow')">
+          🐢 ${t('pronunciation.slow')}
+        </button>
+      </div>
+    </div>
+
+    <div class="sentence-list">
+      ${sentences.map(s => renderSentenceCard(s)).join('')}
+    </div>
+  `;
+}
+
+function setPronFilter(f) {
+  pronFilter = f;
+  renderPronunciation();
+}
+
+function setVoice(v) {
+  currentVoice = v;
+  renderPronunciation();
+}
+
+function setSpeed(s) {
+  currentSpeed = s;
+  renderPronunciation();
+}
+
+// ─── RENDER SENTENCE CARD ───
+function renderSentenceCard(s) {
+  const srData = AppState.progress.sentences[s.id];
+  const due = isDue(srData);
+  const learned = srData && srData.reps > 0 && !due;
+
+  return `
+    <div class="sentence-card" id="card-${s.id}">
+      <div class="sentence-card-header">
+        <span class="sentence-level-badge">${s.level}</span>
+        <span class="sentence-topic">${s.topic || ''}</span>
+      </div>
+
+      <div class="sentence-text-area">
+        <div class="sentence-words" id="words-${s.id}">
+          ${s.words.map((w, i) => `
+            <span class="word-token" id="word-${s.id}-${i}">${w}</span>
+          `).join('')}
+        </div>
+        <div class="audio-progress" id="progress-${s.id}">
+          <div class="audio-progress-fill" id="progress-fill-${s.id}"></div>
+        </div>
+      </div>
+
+      <div class="translation-area" id="trans-area-${s.id}">
+        <div class="translation-text" id="trans-${s.id}">
+          ${AppState.settings.language === 'tr' ? s.translation_tr : s.translation_en}
+        </div>
+      </div>
+
+      <div class="sentence-actions">
+        <button class="translation-toggle-btn" onclick="toggleTranslation('${s.id}')">
+          👁️ <span id="trans-toggle-label-${s.id}">${t('pronunciation.showTranslation')}</span>
+        </button>
+        <div class="sr-indicator">
+          <div class="sr-dot ${due ? 'due' : ''} ${learned ? 'learned' : ''}"></div>
+          <span style="font-size:0.68rem;color:var(--gray-400)">
+            ${learned ? '✓' : due ? t('pronunciation.due') : ''}
+          </span>
+        </div>
+      </div>
+
+      <div class="audio-controls">
+        <button class="audio-play-btn" id="play-${s.id}" onclick="playSentence('${s.id}')">
+          ▶
+        </button>
+        <div class="audio-controls-right">
+          <div style="font-size:0.75rem;color:var(--gray-600);font-weight:500" id="play-status-${s.id}">
+            ${s.sentence.length > 50 ? s.sentence.substring(0,50) + '...' : s.sentence}
+          </div>
+          <div class="audio-option-row">
+            <button class="audio-chip ${currentVoice === 'male' ? 'active' : ''}" onclick="playWithSettings('${s.id}','male',currentSpeed)">
+              🧔 ${t('pronunciation.male')}
+            </button>
+            <button class="audio-chip ${currentVoice === 'female' ? 'active' : ''}" onclick="playWithSettings('${s.id}','female',currentSpeed)">
+              👩 ${t('pronunciation.female')}
+            </button>
+            <button class="audio-chip ${currentSpeed === 'slow' ? 'active' : ''}" onclick="toggleSpeed('${s.id}')">
+              🐢 ${currentSpeed === 'slow' ? t('pronunciation.slow') : t('pronunciation.normal')}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── TRANSLATION TOGGLE ───
+function toggleTranslation(sentenceId) {
+  const trans = document.getElementById(`trans-${sentenceId}`);
+  const label = document.getElementById(`trans-toggle-label-${sentenceId}`);
+  if (!trans) return;
+  const visible = trans.classList.toggle('visible');
+  if (label) label.textContent = visible ? t('pronunciation.hideTranslation') : t('pronunciation.showTranslation');
+}
+
+// ─── PLAY AUDIO ───
+function playSentence(sentenceId) {
+  playWithSettings(sentenceId, currentVoice, currentSpeed);
+}
+
+function toggleSpeed(sentenceId) {
+  currentSpeed = currentSpeed === 'slow' ? 'normal' : 'slow';
+  renderPronunciation();
+}
+
+function playWithSettings(sentenceId, voice, speed) {
+  const sentence = allSentences.find(s => s.id === sentenceId);
+  if (!sentence) return;
+
+  // Stop existing audio
+  if (activeAudio) {
+    activeAudio.pause();
+    activeAudio = null;
+  }
+
+  // Reset all play buttons
+  document.querySelectorAll('.audio-play-btn').forEach(btn => {
+    btn.classList.remove('playing');
+    btn.textContent = '▶';
+  });
+
+  const isSlow = speed === 'slow';
+
+  // Build TTS URL — Google Translate TTS
+  // For male voice we use a different locale approach
+  const lang = voice === 'male' ? 'fr-FR' : 'fr';
+  const ttsUrl = getTTSUrl(sentence.sentence, 'fr', isSlow);
+
+  const playBtn = document.getElementById(`play-${sentenceId}`);
+  const statusEl = document.getElementById(`play-status-${sentenceId}`);
+
+  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
+  if (statusEl) statusEl.textContent = t('pronunciation.playing');
+
+  // Use Web Speech API for word-by-word highlighting
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(sentence.sentence);
+    utter.lang = 'fr-FR';
+    utter.rate = isSlow ? 0.5 : 1.0;
+
+    // Try to pick voice
+    const voices = window.speechSynthesis.getVoices();
+    const frVoices = voices.filter(v => v.lang.startsWith('fr'));
+    if (frVoices.length > 0) {
+      if (voice === 'male') {
+        const maleV = frVoices.find(v => v.name.toLowerCase().includes('male') || v.name.toLowerCase().includes('thomas') || v.name.toLowerCase().includes('nicolas'));
+        utter.voice = maleV || frVoices[frVoices.length - 1];
+      } else {
+        const femaleV = frVoices.find(v => v.name.toLowerCase().includes('female') || v.name.toLowerCase().includes('amelie') || v.name.toLowerCase().includes('marie') || v.name.toLowerCase().includes('aurelie'));
+        utter.voice = femaleV || frVoices[0];
+      }
+    }
+
+    // Word boundary highlight
+    const words = sentence.words;
+    let wordIndex = 0;
+
+    utter.onboundary = (event) => {
+      if (event.name === 'word') {
+        // Clear previous highlights
+        words.forEach((_, i) => {
+          const el = document.getElementById(`word-${sentenceId}-${i}`);
+          if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
+        });
+        if (wordIndex < words.length) {
+          const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
+          if (el) {
+            el.classList.remove('played');
+            el.classList.add('highlighted');
+          }
+          // Progress bar
+          const fill = document.getElementById(`progress-fill-${sentenceId}`);
+          if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
+          wordIndex++;
+        }
+      }
+    };
+
+    utter.onend = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
+      // Clear highlights
+      words.forEach((_, i) => {
+        const el = document.getElementById(`word-${sentenceId}-${i}`);
+        if (el) { el.classList.remove('highlighted'); }
+      });
+      const fill = document.getElementById(`progress-fill-${sentenceId}`);
+      if (fill) fill.style.width = '0%';
+
+      // SR update
+      updateSentenceSR(sentenceId);
+    };
+
+    utter.onerror = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+    };
+
+    window.speechSynthesis.speak(utter);
+
+  } else {
+    // Fallback: Google TTS via audio element
+    const audio = new Audio(ttsUrl);
+    activeAudio = audio;
+
+    audio.onended = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      if (statusEl) statusEl.textContent = sentence.sentence;
+      updateSentenceSR(sentenceId);
+    };
+
+    audio.onerror = () => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses yüklenemedi');
+    };
+
+    audio.play().catch(() => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses oynatılamadı');
+    });
+  }
+}
+
+// ─── SR FOR SENTENCES ───
+function updateSentenceSR(sentenceId) {
+  const existing = AppState.progress.sentences[sentenceId] || {};
+  const result = sm2(existing, 4); // default "good" rating on listen
+  AppState.progress.sentences[sentenceId] = { ...existing, ...result };
+  saveState();
+}
+
+// Ensure voices are loaded
+if ('speechSynthesis' in window) {
+  window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+}
+
+function renderSettings() {
+  const page = document.getElementById('page-settings');
+  if (!page) return;
+
+  const s = AppState.settings;
+  const p = AppState.progress;
+
+  const totalCards = allWords.length;
+  const learnedCards = Object.values(p.cards).filter(c => c.reps > 0 && !isDue(c)).length;
+  const studyDays = p.studyDays.size;
+
+  const totalRatings = Object.values(p.cards).reduce((acc, c) => acc + (c.reps || 0), 0);
+  const easyRatings = Object.values(p.cards).reduce((acc, c) => acc + (c.easy || 0), 0);
+  const accuracy = totalRatings > 0 ? Math.round((easyRatings / totalRatings) * 100) : 0;
+
+  page.innerHTML = `
+    <div class="section-header">
+      <h1 class="section-title">${t('settings.title')}</h1>
+      <p class="section-subtitle">${t('settings.subtitle')}</p>
+    </div>
+
+    <div class="settings-list">
+
+      <!-- PRONUNCIATION -->
+      <div class="settings-group">
+        <div class="settings-group-title">${t('settings.pronunciation')}</div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">🎙️</div>
+            <div>
+              <div class="settings-label">${t('settings.defaultVoice')}</div>
+            </div>
+          </div>
+          <select class="settings-select" onchange="updateSetting('voice', this.value)">
+            <option value="female" ${s.voice === 'female' ? 'selected' : ''}>${t('settings.female')}</option>
+            <option value="male" ${s.voice === 'male' ? 'selected' : ''}>${t('settings.male')}</option>
+          </select>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">🐢</div>
+            <div>
+              <div class="settings-label">${t('settings.defaultSpeed')}</div>
+            </div>
+          </div>
+          <select class="settings-select" onchange="updateSetting('speed', this.value)">
+            <option value="normal" ${s.speed === 'normal' ? 'selected' : ''}>${t('settings.normal')}</option>
+            <option value="slow" ${s.speed === 'slow' ? 'selected' : ''}>${t('settings.slow')}</option>
+          </select>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">▶️</div>
+            <div>
+              <div class="settings-label">${t('settings.autoPlay')}</div>
+              <div class="settings-desc">${t('settings.autoPlayDesc')}</div>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" ${s.autoPlay ? 'checked' : ''} onchange="updateSetting('autoPlay', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">🔤</div>
+            <div>
+              <div class="settings-label">${t('settings.showPhonetic')}</div>
+              <div class="settings-desc">${t('settings.showPhoneticDesc')}</div>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" ${s.showPhonetic ? 'checked' : ''} onchange="updateSetting('showPhonetic', this.checked)">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- STUDY -->
+      <div class="settings-group">
+        <div class="settings-group-title">${t('settings.study')}</div>
+
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">🎯</div>
+            <div>
+              <div class="settings-label">${t('settings.dailyGoal')}</div>
+            </div>
+          </div>
+          <div class="range-wrapper">
+            <input type="range" min="5" max="50" step="5" value="${s.dailyGoal}"
+              oninput="updateSetting('dailyGoal', parseInt(this.value)); document.getElementById('goal-val').textContent = this.value">
+            <span class="range-value" id="goal-val">${s.dailyGoal}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- LANGUAGE -->
+      <div class="settings-group">
+        <div class="settings-group-title">${t('settings.language')}</div>
+        <div class="settings-item">
+          <div class="settings-item-left">
+            <div class="settings-icon">🌍</div>
+            <div>
+              <div class="settings-label">${t('settings.appLanguage')}</div>
+            </div>
+          </div>
+          <select class="settings-select" onchange="setLanguage(this.value)">
+            <option value="tr" ${s.language === 'tr' ? 'selected' : ''}>Türkçe</option>
+            <option value="en" ${s.language === 'en' ? 'selected' : ''}>English</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- PROGRESS -->
+      <div class="settings-group">
+        <div class="settings-group-title">${t('settings.progress')}</div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-num">${totalCards}</div>
+            <div class="stat-card-label">${t('settings.totalCards')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" style="color:var(--success)">${learnedCards}</div>
+            <div class="stat-card-label">${t('settings.learnedCards')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" style="color:var(--gold)">${studyDays}</div>
+            <div class="stat-card-label">${t('settings.studyDays')}</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-num" style="color:var(--blue)">${accuracy}%</div>
+            <div class="stat-card-label">${t('settings.accuracy')}</div>
+          </div>
+        </div>
+        <div style="padding:0 16px 16px">
+          <button class="danger-btn" onclick="confirmReset()">
+            🗑️ ${t('settings.resetProgress')}
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="version-badge">${t('settings.version')}</div>
+  `;
+}
+
+function updateSetting(key, value) {
+  AppState.settings[key] = value;
+  saveState();
+  if (key === 'showPhonetic') renderSettings();
+}
+
+function confirmReset() {
+  const msg = t('settings.resetConfirm');
+  if (confirm(msg)) {
+    AppState.progress.cards = {};
+    AppState.progress.sentences = {};
+    AppState.progress.studyDays = new Set();
+    AppState.progress.totalSessions = 0;
+    saveState();
+    renderSettings();
+    showToast('✓ Sıfırlandı');
+  }
+}
+
+  </script>
 </body>
 </html>
