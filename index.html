@@ -809,8 +809,8 @@ function testVoice() {
 
 // ─── GOOGLE CLOUD TTS ───
 async function googleTTS(text, slow = false) {
-  const key = window.GOOGLE_TTS_KEY |AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE| '';
-  if (!key) return null;
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) { showToast('API key eksik!'); return null; }
   const voiceName = (AppState.settings.voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
   const speakingRate = slow ? 0.65 : 1.0;
   try {
@@ -824,9 +824,11 @@ async function googleTTS(text, slow = false) {
       })
     });
     const data = await res.json();
-    if (!data.audioContent) return null;
+    if (data.error) { showToast('Hata: ' + data.error.message); return null; }
+    if (!data.audioContent) { showToast('Ses verisi yok!'); return null; }
     return 'data:audio/mp3;base64,' + data.audioContent;
-  } catch { return null; }
+  } catch(e) { showToast('Bağlantı hatası: ' + e.message); return null; }
+}
 }
 
 async function speakWord(text) {
