@@ -1316,5 +1316,31 @@ function debugVoices() {
     all.map(v => `<span style="color:${v.lang.startsWith('fr')?'green':'gray'}">${v.lang.startsWith('fr')?'🇫🇷 ':''}${v.name} (${v.lang}) ${v.localService?'📱':''}</span>`).join('<br>');
 }
 </script>
+  <button onclick="debugVoices()" style="position:fixed;top:70px;right:10px;z-index:999;background:#c9a84c;border:none;padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer">
+  🎙️ FR Sesleri
+</button>
+<div id="debug-out" style="position:fixed;top:110px;right:10px;left:10px;z-index:999;background:white;border:2px solid #1a2340;border-radius:8px;padding:12px;font-size:0.75rem;display:none;max-height:60vh;overflow-y:auto;word-break:break-all"></div>
+<script>
+function debugVoices() {
+  const el = document.getElementById('debug-out');
+  el.style.display = 'block';
+  el.innerHTML = 'Yükleniyor...';
+  const attempt = (label, voices) => {
+    const fr = voices.filter(v => v.lang && v.lang.toLowerCase().includes('fr'));
+    return '<b>' + label + ' (' + fr.length + ' FR ses):</b><br>' +
+      (fr.length ? fr.map(v => '• ' + v.name + ' | ' + v.lang + ' | ' + (v.localService ? '📱 yerel' : '☁️ ağ') + ' | ' + v.voiceURI).join('<br>') : 'YOK') + '<br><br>';
+  };
+  let html = attempt('Anlık', window.speechSynthesis.getVoices());
+  el.innerHTML = html;
+  setTimeout(() => {
+    html += attempt('500ms sonra', window.speechSynthesis.getVoices());
+    el.innerHTML = html;
+  }, 500);
+  setTimeout(() => {
+    html += attempt('1500ms sonra', window.speechSynthesis.getVoices());
+    el.innerHTML = html;
+  }, 1500);
+}
+</script>
 </body>
 </html>
