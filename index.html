@@ -221,6 +221,14 @@ body {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* GENDER COLORS */
+.flashcard-front.gender-m { background: linear-gradient(135deg, #1a3a5c 0%, #1e4976 100%); }
+.flashcard-front.gender-f { background: linear-gradient(135deg, #5c1a2e 0%, #7a1f3d 100%); }
+.flashcard-front.gender-v { background: linear-gradient(135deg, #1a2340 0%, #2c3e6e 100%); }
+.gender-badge-m { background: #1e4976; color: #7ab8f5; }
+.gender-badge-f { background: #7a1f3d; color: #f5a7be; }
+.gender-badge-v { background: #2c3e6e; color: var(--gold); }
+
 /* FLASHCARDS */
 .fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
 .fc-stat { background: var(--white); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; box-shadow: var(--shadow-sm); }
@@ -258,7 +266,8 @@ body {
 }
 .fc-front-content { padding: 16px 20px 20px; position: absolute; bottom: 0; left: 0; right: 0; }
 .fc-word { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1.1; }
-.fc-phonetic { font-size: 0.85rem; color: var(--gold-light); margin-top: 4px; font-style: italic; }
+.fc-article { font-size: 1rem; font-weight: 400; opacity: 0.8; margin-right: 6px; }
+.fc-phonetic { font-size: 1rem; color: var(--gold-light); margin-top: 6px; font-style: italic; }
 .fc-hint { position: absolute; top: 14px; right: 16px; font-size: 0.72rem; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
 .flashcard-back {
   transform: rotateY(180deg);
@@ -447,8 +456,8 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 // ═══════════════════════════════════════
 // API KEYS
 // ═══════════════════════════════════════
-window.PEXELS_API_KEY = 'Ml4BpmvIdeI8gfyUYxFiodEB7HhB7B47pYUwuf1ErQmdYEl4gmpIM1ug';
-window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
+window.PEXELS_API_KEY = '';
+window.GOOGLE_TTS_KEY = '';
 
 // ═══════════════════════════════════════
 // I18N
@@ -543,79 +552,79 @@ function t(path) {
 // DATA
 // ═══════════════════════════════════════
 const DATA_A1_WORDS = [
-  {id:"a1_001",word:"bonjour",translation_tr:"merhaba",translation_en:"hello",phonetic:"bɔ̃.ʒuʁ",category:"greetings",level:"A1",pexels_query:"greeting wave hello",emoji:"👋"},
-  {id:"a1_002",word:"merci",translation_tr:"teşekkür ederim",translation_en:"thank you",phonetic:"mɛʁ.si",category:"greetings",level:"A1",pexels_query:"thank you gratitude",emoji:"🙏"},
-  {id:"a1_003",word:"oui",translation_tr:"evet",translation_en:"yes",phonetic:"wi",category:"basics",level:"A1",pexels_query:"yes thumbs up",emoji:"✅"},
-  {id:"a1_004",word:"non",translation_tr:"hayır",translation_en:"no",phonetic:"nɔ̃",category:"basics",level:"A1",pexels_query:"no rejection",emoji:"❌"},
-  {id:"a1_005",word:"maison",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",level:"A1",pexels_query:"house home building",emoji:"🏠"},
-  {id:"a1_006",word:"eau",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",level:"A1",pexels_query:"water glass drink",emoji:"💧"},
-  {id:"a1_007",word:"pain",translation_tr:"ekmek",translation_en:"bread",phonetic:"pɛ̃",category:"food",level:"A1",pexels_query:"bread bakery fresh",emoji:"🍞"},
-  {id:"a1_008",word:"livre",translation_tr:"kitap",translation_en:"book",phonetic:"livʁ",category:"objects",level:"A1",pexels_query:"book reading library",emoji:"📚"},
-  {id:"a1_009",word:"chat",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",level:"A1",pexels_query:"cat kitten cute",emoji:"🐱"},
-  {id:"a1_010",word:"chien",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",level:"A1",pexels_query:"dog puppy cute",emoji:"🐶"},
-  {id:"a1_011",word:"voiture",translation_tr:"araba",translation_en:"car",phonetic:"vwa.tyʁ",category:"transport",level:"A1",pexels_query:"car automobile road",emoji:"🚗"},
-  {id:"a1_012",word:"école",translation_tr:"okul",translation_en:"school",phonetic:"e.kɔl",category:"places",level:"A1",pexels_query:"school classroom building",emoji:"🏫"},
-  {id:"a1_013",word:"ami",translation_tr:"arkadaş",translation_en:"friend",phonetic:"a.mi",category:"people",level:"A1",pexels_query:"friends friendship together",emoji:"👫"},
-  {id:"a1_014",word:"famille",translation_tr:"aile",translation_en:"family",phonetic:"fa.mij",category:"people",level:"A1",pexels_query:"family together happy",emoji:"👨‍👩‍👧"},
-  {id:"a1_015",word:"enfant",translation_tr:"çocuk",translation_en:"child",phonetic:"ɑ̃.fɑ̃",category:"people",level:"A1",pexels_query:"child kid playing",emoji:"👶"},
-  {id:"a1_016",word:"soleil",translation_tr:"güneş",translation_en:"sun",phonetic:"sɔ.lɛj",category:"nature",level:"A1",pexels_query:"sun sunshine sky bright",emoji:"☀️"},
-  {id:"a1_017",word:"fleur",translation_tr:"çiçek",translation_en:"flower",phonetic:"flœʁ",category:"nature",level:"A1",pexels_query:"flower bloom garden",emoji:"🌸"},
-  {id:"a1_018",word:"pomme",translation_tr:"elma",translation_en:"apple",phonetic:"pɔm",category:"food",level:"A1",pexels_query:"apple fruit red",emoji:"🍎"},
-  {id:"a1_019",word:"lait",translation_tr:"süt",translation_en:"milk",phonetic:"lɛ",category:"food",level:"A1",pexels_query:"milk glass white",emoji:"🥛"},
-  {id:"a1_020",word:"table",translation_tr:"masa",translation_en:"table",phonetic:"tabl",category:"home",level:"A1",pexels_query:"table furniture wooden",emoji:"🪑"},
-  {id:"a1_021",word:"chaise",translation_tr:"sandalye",translation_en:"chair",phonetic:"ʃɛz",category:"home",level:"A1",pexels_query:"chair furniture",emoji:"🪑"},
-  {id:"a1_022",word:"fenêtre",translation_tr:"pencere",translation_en:"window",phonetic:"fə.nɛtʁ",category:"home",level:"A1",pexels_query:"window light room",emoji:"🪟"},
-  {id:"a1_023",word:"porte",translation_tr:"kapı",translation_en:"door",phonetic:"pɔʁt",category:"home",level:"A1",pexels_query:"door entrance wooden",emoji:"🚪"},
-  {id:"a1_024",word:"rue",translation_tr:"sokak",translation_en:"street",phonetic:"ʁy",category:"places",level:"A1",pexels_query:"street urban city road",emoji:"🛣️"},
-  {id:"a1_025",word:"ville",translation_tr:"şehir",translation_en:"city",phonetic:"vil",category:"places",level:"A1",pexels_query:"city urban buildings",emoji:"🏙️"},
-  {id:"a1_026",word:"pays",translation_tr:"ülke",translation_en:"country",phonetic:"pe.i",category:"places",level:"A1",pexels_query:"country landscape nature",emoji:"🗺️"},
-  {id:"a1_027",word:"homme",translation_tr:"adam / erkek",translation_en:"man",phonetic:"ɔm",category:"people",level:"A1",pexels_query:"man adult male",emoji:"👨"},
-  {id:"a1_028",word:"femme",translation_tr:"kadın",translation_en:"woman",phonetic:"fam",category:"people",level:"A1",pexels_query:"woman adult female",emoji:"👩"},
-  {id:"a1_029",word:"garçon",translation_tr:"oğlan",translation_en:"boy",phonetic:"ɡaʁ.sɔ̃",category:"people",level:"A1",pexels_query:"boy child young",emoji:"👦"},
-  {id:"a1_030",word:"fille",translation_tr:"kız",translation_en:"girl",phonetic:"fij",category:"people",level:"A1",pexels_query:"girl child young",emoji:"👧"},
-  {id:"a1_031",word:"mère",translation_tr:"anne",translation_en:"mother",phonetic:"mɛʁ",category:"people",level:"A1",pexels_query:"mother mom family",emoji:"👩"},
-  {id:"a1_032",word:"père",translation_tr:"baba",translation_en:"father",phonetic:"pɛʁ",category:"people",level:"A1",pexels_query:"father dad family",emoji:"👨"},
-  {id:"a1_033",word:"frère",translation_tr:"erkek kardeş",translation_en:"brother",phonetic:"fʁɛʁ",category:"people",level:"A1",pexels_query:"brother siblings",emoji:"👦"},
-  {id:"a1_034",word:"sœur",translation_tr:"kız kardeş",translation_en:"sister",phonetic:"sœʁ",category:"people",level:"A1",pexels_query:"sister siblings girls",emoji:"👧"},
-  {id:"a1_035",word:"heure",translation_tr:"saat",translation_en:"hour",phonetic:"œʁ",category:"time",level:"A1",pexels_query:"clock time hour",emoji:"🕐"},
-  {id:"a1_036",word:"jour",translation_tr:"gün",translation_en:"day",phonetic:"ʒuʁ",category:"time",level:"A1",pexels_query:"day daylight sunrise",emoji:"📅"},
-  {id:"a1_037",word:"nuit",translation_tr:"gece",translation_en:"night",phonetic:"nɥi",category:"time",level:"A1",pexels_query:"night sky dark stars",emoji:"🌙"},
-  {id:"a1_038",word:"matin",translation_tr:"sabah",translation_en:"morning",phonetic:"ma.tɛ̃",category:"time",level:"A1",pexels_query:"morning sunrise coffee",emoji:"🌅"},
-  {id:"a1_039",word:"soir",translation_tr:"akşam",translation_en:"evening",phonetic:"swaʁ",category:"time",level:"A1",pexels_query:"evening sunset dusk",emoji:"🌆"},
-  {id:"a1_040",word:"semaine",translation_tr:"hafta",translation_en:"week",phonetic:"sə.mɛn",category:"time",level:"A1",pexels_query:"calendar week planner",emoji:"🗓️"},
-  {id:"a1_041",word:"café",translation_tr:"kahve / kafe",translation_en:"coffee",phonetic:"ka.fe",category:"food",level:"A1",pexels_query:"coffee cafe cup",emoji:"☕"},
-  {id:"a1_042",word:"restaurant",translation_tr:"restoran",translation_en:"restaurant",phonetic:"ʁɛs.tɔ.ʁɑ̃",category:"places",level:"A1",pexels_query:"restaurant dining food",emoji:"🍽️"},
-  {id:"a1_043",word:"supermarché",translation_tr:"süpermarket",translation_en:"supermarket",phonetic:"sy.pɛʁ.maʁ.ʃe",category:"places",level:"A1",pexels_query:"supermarket grocery store",emoji:"🛒"},
-  {id:"a1_044",word:"hôpital",translation_tr:"hastane",translation_en:"hospital",phonetic:"o.pi.tal",category:"places",level:"A1",pexels_query:"hospital medical building",emoji:"🏥"},
-  {id:"a1_045",word:"pharmacie",translation_tr:"eczane",translation_en:"pharmacy",phonetic:"faʁ.ma.si",category:"places",level:"A1",pexels_query:"pharmacy medicine store",emoji:"💊"},
-  {id:"a1_046",word:"banque",translation_tr:"banka",translation_en:"bank",phonetic:"bɑ̃k",category:"places",level:"A1",pexels_query:"bank finance building",emoji:"🏦"},
-  {id:"a1_047",word:"train",translation_tr:"tren",translation_en:"train",phonetic:"tʁɛ̃",category:"transport",level:"A1",pexels_query:"train railway station",emoji:"🚂"},
-  {id:"a1_048",word:"bus",translation_tr:"otobüs",translation_en:"bus",phonetic:"bys",category:"transport",level:"A1",pexels_query:"bus public transport",emoji:"🚌"},
-  {id:"a1_049",word:"avion",translation_tr:"uçak",translation_en:"airplane",phonetic:"a.vjɔ̃",category:"transport",level:"A1",pexels_query:"airplane sky flight",emoji:"✈️"},
-  {id:"a1_050",word:"vélo",translation_tr:"bisiklet",translation_en:"bicycle",phonetic:"ve.lo",category:"transport",level:"A1",pexels_query:"bicycle bike ride",emoji:"🚲"}
+  {id:"a1_001",word:"bonjour",article:"",translation_tr:"merhaba",translation_en:"hello",phonetic:"bɔ̃.ʒuʁ",category:"greetings",gender:"v",level:"A1",pexels_query:"greeting wave hello",emoji:"👋"},
+  {id:"a1_002",word:"merci",article:"",translation_tr:"teşekkür ederim",translation_en:"thank you",phonetic:"mɛʁ.si",category:"greetings",gender:"v",level:"A1",pexels_query:"thank you gratitude",emoji:"🙏"},
+  {id:"a1_003",word:"oui",article:"",translation_tr:"evet",translation_en:"yes",phonetic:"wi",category:"basics",gender:"v",level:"A1",pexels_query:"yes thumbs up",emoji:"✅"},
+  {id:"a1_004",word:"non",article:"",translation_tr:"hayır",translation_en:"no",phonetic:"nɔ̃",category:"basics",gender:"v",level:"A1",pexels_query:"no rejection",emoji:"❌"},
+  {id:"a1_005",word:"maison",article:"la",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",gender:"f",level:"A1",pexels_query:"house home building",emoji:"🏠"},
+  {id:"a1_006",word:"eau",article:"l'",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",gender:"f",level:"A1",pexels_query:"water glass drink",emoji:"💧"},
+  {id:"a1_007",word:"pain",article:"le",translation_tr:"ekmek",translation_en:"bread",phonetic:"pɛ̃",category:"food",gender:"m",level:"A1",pexels_query:"bread bakery fresh",emoji:"🍞"},
+  {id:"a1_008",word:"livre",article:"le",translation_tr:"kitap",translation_en:"book",phonetic:"livʁ",category:"objects",gender:"m",level:"A1",pexels_query:"book reading library",emoji:"📚"},
+  {id:"a1_009",word:"chat",article:"le",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",gender:"m",level:"A1",pexels_query:"cat kitten cute",emoji:"🐱"},
+  {id:"a1_010",word:"chien",article:"le",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",gender:"m",level:"A1",pexels_query:"dog puppy cute",emoji:"🐶"},
+  {id:"a1_011",word:"voiture",article:"la",translation_tr:"araba",translation_en:"car",phonetic:"vwa.tyʁ",category:"transport",gender:"f",level:"A1",pexels_query:"car automobile road",emoji:"🚗"},
+  {id:"a1_012",word:"école",article:"l'",translation_tr:"okul",translation_en:"school",phonetic:"e.kɔl",category:"places",gender:"f",level:"A1",pexels_query:"school classroom building",emoji:"🏫"},
+  {id:"a1_013",word:"ami",article:"l'",translation_tr:"arkadaş",translation_en:"friend",phonetic:"a.mi",category:"people",gender:"m",level:"A1",pexels_query:"friends friendship together",emoji:"👫"},
+  {id:"a1_014",word:"famille",article:"la",translation_tr:"aile",translation_en:"family",phonetic:"fa.mij",category:"people",gender:"f",level:"A1",pexels_query:"family together happy",emoji:"👨‍👩‍👧"},
+  {id:"a1_015",word:"enfant",article:"l'",translation_tr:"çocuk",translation_en:"child",phonetic:"ɑ̃.fɑ̃",category:"people",gender:"m",level:"A1",pexels_query:"child kid playing",emoji:"👶"},
+  {id:"a1_016",word:"soleil",article:"le",translation_tr:"güneş",translation_en:"sun",phonetic:"sɔ.lɛj",category:"nature",gender:"m",level:"A1",pexels_query:"sun sunshine sky bright",emoji:"☀️"},
+  {id:"a1_017",word:"fleur",article:"la",translation_tr:"çiçek",translation_en:"flower",phonetic:"flœʁ",category:"nature",gender:"f",level:"A1",pexels_query:"flower bloom garden",emoji:"🌸"},
+  {id:"a1_018",word:"pomme",article:"la",translation_tr:"elma",translation_en:"apple",phonetic:"pɔm",category:"food",gender:"f",level:"A1",pexels_query:"apple fruit red",emoji:"🍎"},
+  {id:"a1_019",word:"lait",article:"le",translation_tr:"süt",translation_en:"milk",phonetic:"lɛ",category:"food",gender:"m",level:"A1",pexels_query:"milk glass white",emoji:"🥛"},
+  {id:"a1_020",word:"table",article:"la",translation_tr:"masa",translation_en:"table",phonetic:"tabl",category:"home",gender:"f",level:"A1",pexels_query:"table furniture wooden",emoji:"🪑"},
+  {id:"a1_021",word:"chaise",article:"la",translation_tr:"sandalye",translation_en:"chair",phonetic:"ʃɛz",category:"home",gender:"f",level:"A1",pexels_query:"chair furniture",emoji:"🪑"},
+  {id:"a1_022",word:"fenêtre",article:"la",translation_tr:"pencere",translation_en:"window",phonetic:"fə.nɛtʁ",category:"home",gender:"f",level:"A1",pexels_query:"window light room",emoji:"🪟"},
+  {id:"a1_023",word:"porte",article:"la",translation_tr:"kapı",translation_en:"door",phonetic:"pɔʁt",category:"home",gender:"f",level:"A1",pexels_query:"door entrance wooden",emoji:"🚪"},
+  {id:"a1_024",word:"rue",article:"la",translation_tr:"sokak",translation_en:"street",phonetic:"ʁy",category:"places",gender:"f",level:"A1",pexels_query:"street urban city road",emoji:"🛣️"},
+  {id:"a1_025",word:"ville",article:"la",translation_tr:"şehir",translation_en:"city",phonetic:"vil",category:"places",gender:"f",level:"A1",pexels_query:"city urban buildings",emoji:"🏙️"},
+  {id:"a1_026",word:"pays",article:"le",translation_tr:"ülke",translation_en:"country",phonetic:"pe.i",category:"places",gender:"m",level:"A1",pexels_query:"country landscape nature",emoji:"🗺️"},
+  {id:"a1_027",word:"homme",article:"l'",translation_tr:"adam",translation_en:"man",phonetic:"ɔm",category:"people",gender:"m",level:"A1",pexels_query:"man adult male",emoji:"👨"},
+  {id:"a1_028",word:"femme",article:"la",translation_tr:"kadın",translation_en:"woman",phonetic:"fam",category:"people",gender:"f",level:"A1",pexels_query:"woman adult female",emoji:"👩"},
+  {id:"a1_029",word:"garçon",article:"le",translation_tr:"oğlan",translation_en:"boy",phonetic:"ɡaʁ.sɔ̃",category:"people",gender:"m",level:"A1",pexels_query:"boy child young",emoji:"👦"},
+  {id:"a1_030",word:"fille",article:"la",translation_tr:"kız",translation_en:"girl",phonetic:"fij",category:"people",gender:"f",level:"A1",pexels_query:"girl child young",emoji:"👧"},
+  {id:"a1_031",word:"mère",article:"la",translation_tr:"anne",translation_en:"mother",phonetic:"mɛʁ",category:"people",gender:"f",level:"A1",pexels_query:"mother mom family",emoji:"👩"},
+  {id:"a1_032",word:"père",article:"le",translation_tr:"baba",translation_en:"father",phonetic:"pɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"father dad family",emoji:"👨"},
+  {id:"a1_033",word:"frère",article:"le",translation_tr:"erkek kardeş",translation_en:"brother",phonetic:"fʁɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"brother siblings",emoji:"👦"},
+  {id:"a1_034",word:"sœur",article:"la",translation_tr:"kız kardeş",translation_en:"sister",phonetic:"sœʁ",category:"people",gender:"f",level:"A1",pexels_query:"sister siblings girls",emoji:"👧"},
+  {id:"a1_035",word:"heure",article:"l'",translation_tr:"saat",translation_en:"hour",phonetic:"œʁ",category:"time",gender:"f",level:"A1",pexels_query:"clock time hour",emoji:"🕐"},
+  {id:"a1_036",word:"jour",article:"le",translation_tr:"gün",translation_en:"day",phonetic:"ʒuʁ",category:"time",gender:"m",level:"A1",pexels_query:"day daylight sunrise",emoji:"📅"},
+  {id:"a1_037",word:"nuit",article:"la",translation_tr:"gece",translation_en:"night",phonetic:"nɥi",category:"time",gender:"f",level:"A1",pexels_query:"night sky dark stars",emoji:"🌙"},
+  {id:"a1_038",word:"matin",article:"le",translation_tr:"sabah",translation_en:"morning",phonetic:"ma.tɛ̃",category:"time",gender:"m",level:"A1",pexels_query:"morning sunrise coffee",emoji:"🌅"},
+  {id:"a1_039",word:"soir",article:"le",translation_tr:"akşam",translation_en:"evening",phonetic:"swaʁ",category:"time",gender:"m",level:"A1",pexels_query:"evening sunset dusk",emoji:"🌆"},
+  {id:"a1_040",word:"semaine",article:"la",translation_tr:"hafta",translation_en:"week",phonetic:"sə.mɛn",category:"time",gender:"f",level:"A1",pexels_query:"calendar week planner",emoji:"🗓️"},
+  {id:"a1_041",word:"café",article:"le",translation_tr:"kahve",translation_en:"coffee",phonetic:"ka.fe",category:"food",gender:"m",level:"A1",pexels_query:"coffee cafe cup",emoji:"☕"},
+  {id:"a1_042",word:"restaurant",article:"le",translation_tr:"restoran",translation_en:"restaurant",phonetic:"ʁɛs.tɔ.ʁɑ̃",category:"places",gender:"m",level:"A1",pexels_query:"restaurant dining food",emoji:"🍽️"},
+  {id:"a1_043",word:"supermarché",article:"le",translation_tr:"süpermarket",translation_en:"supermarket",phonetic:"sy.pɛʁ.maʁ.ʃe",category:"places",gender:"m",level:"A1",pexels_query:"supermarket grocery store",emoji:"🛒"},
+  {id:"a1_044",word:"hôpital",article:"l'",translation_tr:"hastane",translation_en:"hospital",phonetic:"o.pi.tal",category:"places",gender:"m",level:"A1",pexels_query:"hospital medical building",emoji:"🏥"},
+  {id:"a1_045",word:"pharmacie",article:"la",translation_tr:"eczane",translation_en:"pharmacy",phonetic:"faʁ.ma.si",category:"places",gender:"f",level:"A1",pexels_query:"pharmacy medicine store",emoji:"💊"},
+  {id:"a1_046",word:"banque",article:"la",translation_tr:"banka",translation_en:"bank",phonetic:"bɑ̃k",category:"places",gender:"f",level:"A1",pexels_query:"bank finance building",emoji:"🏦"},
+  {id:"a1_047",word:"train",article:"le",translation_tr:"tren",translation_en:"train",phonetic:"tʁɛ̃",category:"transport",gender:"m",level:"A1",pexels_query:"train railway station",emoji:"🚂"},
+  {id:"a1_048",word:"bus",article:"le",translation_tr:"otobüs",translation_en:"bus",phonetic:"bys",category:"transport",gender:"m",level:"A1",pexels_query:"bus public transport",emoji:"🚌"},
+  {id:"a1_049",word:"avion",article:"l'",translation_tr:"uçak",translation_en:"airplane",phonetic:"a.vjɔ̃",category:"transport",gender:"m",level:"A1",pexels_query:"airplane sky flight",emoji:"✈️"},
+  {id:"a1_050",word:"vélo",article:"le",translation_tr:"bisiklet",translation_en:"bicycle",phonetic:"ve.lo",category:"transport",gender:"m",level:"A1",pexels_query:"bicycle bike ride",emoji:"🚲"}
 ];
 
 const DATA_A2_WORDS = [
-  {id:"a2_001",word:"travail",translation_tr:"iş",translation_en:"work",phonetic:"tʁa.vaj",category:"work",level:"A2",pexels_query:"work office desk",emoji:"💼"},
-  {id:"a2_002",word:"réunion",translation_tr:"toplantı",translation_en:"meeting",phonetic:"ʁe.y.njɔ̃",category:"work",level:"A2",pexels_query:"meeting conference business",emoji:"🤝"},
-  {id:"a2_003",word:"appartement",translation_tr:"daire",translation_en:"apartment",phonetic:"a.paʁ.tə.mɑ̃",category:"home",level:"A2",pexels_query:"apartment interior living",emoji:"🏢"},
-  {id:"a2_004",word:"cuisine",translation_tr:"mutfak",translation_en:"kitchen",phonetic:"kɥi.zin",category:"home",level:"A2",pexels_query:"kitchen cooking home",emoji:"👨‍🍳"},
-  {id:"a2_005",word:"chambre",translation_tr:"yatak odası",translation_en:"bedroom",phonetic:"ʃɑ̃bʁ",category:"home",level:"A2",pexels_query:"bedroom bed room",emoji:"🛏️"},
-  {id:"a2_006",word:"vacances",translation_tr:"tatil",translation_en:"vacation",phonetic:"va.kɑ̃s",category:"leisure",level:"A2",pexels_query:"vacation holiday travel beach",emoji:"🏖️"},
-  {id:"a2_007",word:"voyage",translation_tr:"seyahat",translation_en:"travel",phonetic:"vwa.jaʒ",category:"leisure",level:"A2",pexels_query:"travel journey adventure",emoji:"🧳"},
-  {id:"a2_008",word:"sport",translation_tr:"spor",translation_en:"sport",phonetic:"spɔʁ",category:"leisure",level:"A2",pexels_query:"sport exercise fitness",emoji:"⚽"},
-  {id:"a2_009",word:"musique",translation_tr:"müzik",translation_en:"music",phonetic:"my.zik",category:"leisure",level:"A2",pexels_query:"music concert headphones",emoji:"🎵"},
-  {id:"a2_010",word:"cinéma",translation_tr:"sinema",translation_en:"cinema",phonetic:"si.ne.ma",category:"leisure",level:"A2",pexels_query:"cinema movie theater",emoji:"🎬"},
-  {id:"a2_011",word:"magasin",translation_tr:"mağaza",translation_en:"store",phonetic:"ma.ɡa.zɛ̃",category:"places",level:"A2",pexels_query:"store shop retail",emoji:"🏪"},
-  {id:"a2_012",word:"marché",translation_tr:"pazar",translation_en:"market",phonetic:"maʁ.ʃe",category:"places",level:"A2",pexels_query:"market outdoor food stalls",emoji:"🛍️"},
-  {id:"a2_013",word:"météo",translation_tr:"hava durumu",translation_en:"weather",phonetic:"me.te.o",category:"nature",level:"A2",pexels_query:"weather forecast sky clouds",emoji:"⛅"},
-  {id:"a2_014",word:"pluie",translation_tr:"yağmur",translation_en:"rain",phonetic:"plɥi",category:"nature",level:"A2",pexels_query:"rain rainy weather",emoji:"🌧️"},
-  {id:"a2_015",word:"neige",translation_tr:"kar",translation_en:"snow",phonetic:"nɛʒ",category:"nature",level:"A2",pexels_query:"snow winter cold",emoji:"❄️"},
-  {id:"a2_016",word:"rendez-vous",translation_tr:"randevu",translation_en:"appointment",phonetic:"ʁɑ̃.de.vu",category:"social",level:"A2",pexels_query:"appointment calendar meeting",emoji:"📅"},
-  {id:"a2_017",word:"invitation",translation_tr:"davet",translation_en:"invitation",phonetic:"ɛ̃.vi.ta.sjɔ̃",category:"social",level:"A2",pexels_query:"invitation party celebration",emoji:"💌"},
-  {id:"a2_018",word:"cadeau",translation_tr:"hediye",translation_en:"gift",phonetic:"ka.do",category:"social",level:"A2",pexels_query:"gift present wrapped",emoji:"🎁"},
-  {id:"a2_019",word:"anniversaire",translation_tr:"doğum günü",translation_en:"birthday",phonetic:"a.ni.vɛʁ.sɛʁ",category:"social",level:"A2",pexels_query:"birthday cake celebration",emoji:"🎂"},
-  {id:"a2_020",word:"santé",translation_tr:"sağlık",translation_en:"health",phonetic:"sɑ̃.te",category:"health",level:"A2",pexels_query:"health wellness medical",emoji:"❤️"}
+  {id:"a2_001",word:"travail",article:"le",translation_tr:"iş",translation_en:"work",phonetic:"tʁa.vaj",category:"work",gender:"m",level:"A2",pexels_query:"work office desk",emoji:"💼"},
+  {id:"a2_002",word:"réunion",article:"la",translation_tr:"toplantı",translation_en:"meeting",phonetic:"ʁe.y.njɔ̃",category:"work",gender:"f",level:"A2",pexels_query:"meeting conference business",emoji:"🤝"},
+  {id:"a2_003",word:"appartement",article:"l'",translation_tr:"daire",translation_en:"apartment",phonetic:"a.paʁ.tə.mɑ̃",category:"home",gender:"m",level:"A2",pexels_query:"apartment interior living",emoji:"🏢"},
+  {id:"a2_004",word:"cuisine",article:"la",translation_tr:"mutfak",translation_en:"kitchen",phonetic:"kɥi.zin",category:"home",gender:"f",level:"A2",pexels_query:"kitchen cooking home",emoji:"👨‍🍳"},
+  {id:"a2_005",word:"chambre",article:"la",translation_tr:"yatak odası",translation_en:"bedroom",phonetic:"ʃɑ̃bʁ",category:"home",gender:"f",level:"A2",pexels_query:"bedroom bed room",emoji:"🛏️"},
+  {id:"a2_006",word:"vacances",article:"les",translation_tr:"tatil",translation_en:"vacation",phonetic:"va.kɑ̃s",category:"leisure",gender:"f",level:"A2",pexels_query:"vacation holiday travel beach",emoji:"🏖️"},
+  {id:"a2_007",word:"voyage",article:"le",translation_tr:"seyahat",translation_en:"travel",phonetic:"vwa.jaʒ",category:"leisure",gender:"m",level:"A2",pexels_query:"travel journey adventure",emoji:"🧳"},
+  {id:"a2_008",word:"sport",article:"le",translation_tr:"spor",translation_en:"sport",phonetic:"spɔʁ",category:"leisure",gender:"m",level:"A2",pexels_query:"sport exercise fitness",emoji:"⚽"},
+  {id:"a2_009",word:"musique",article:"la",translation_tr:"müzik",translation_en:"music",phonetic:"my.zik",category:"leisure",gender:"f",level:"A2",pexels_query:"music concert headphones",emoji:"🎵"},
+  {id:"a2_010",word:"cinéma",article:"le",translation_tr:"sinema",translation_en:"cinema",phonetic:"si.ne.ma",category:"leisure",gender:"m",level:"A2",pexels_query:"cinema movie theater",emoji:"🎬"},
+  {id:"a2_011",word:"magasin",article:"le",translation_tr:"mağaza",translation_en:"store",phonetic:"ma.ɡa.zɛ̃",category:"places",gender:"m",level:"A2",pexels_query:"store shop retail",emoji:"🏪"},
+  {id:"a2_012",word:"marché",article:"le",translation_tr:"pazar",translation_en:"market",phonetic:"maʁ.ʃe",category:"places",gender:"m",level:"A2",pexels_query:"market outdoor food stalls",emoji:"🛍️"},
+  {id:"a2_013",word:"météo",article:"la",translation_tr:"hava durumu",translation_en:"weather",phonetic:"me.te.o",category:"nature",gender:"f",level:"A2",pexels_query:"weather forecast sky clouds",emoji:"⛅"},
+  {id:"a2_014",word:"pluie",article:"la",translation_tr:"yağmur",translation_en:"rain",phonetic:"plɥi",category:"nature",gender:"f",level:"A2",pexels_query:"rain rainy weather",emoji:"🌧️"},
+  {id:"a2_015",word:"neige",article:"la",translation_tr:"kar",translation_en:"snow",phonetic:"nɛʒ",category:"nature",gender:"f",level:"A2",pexels_query:"snow winter cold",emoji:"❄️"},
+  {id:"a2_016",word:"rendez-vous",article:"le",translation_tr:"randevu",translation_en:"appointment",phonetic:"ʁɑ̃.de.vu",category:"social",gender:"m",level:"A2",pexels_query:"appointment calendar meeting",emoji:"📅"},
+  {id:"a2_017",word:"invitation",article:"l'",translation_tr:"davet",translation_en:"invitation",phonetic:"ɛ̃.vi.ta.sjɔ̃",category:"social",gender:"f",level:"A2",pexels_query:"invitation party celebration",emoji:"💌"},
+  {id:"a2_018",word:"cadeau",article:"le",translation_tr:"hediye",translation_en:"gift",phonetic:"ka.do",category:"social",gender:"m",level:"A2",pexels_query:"gift present wrapped",emoji:"🎁"},
+  {id:"a2_019",word:"anniversaire",article:"l'",translation_tr:"doğum günü",translation_en:"birthday",phonetic:"a.ni.vɛʁ.sɛʁ",category:"social",gender:"m",level:"A2",pexels_query:"birthday cake celebration",emoji:"🎂"},
+  {id:"a2_020",word:"santé",article:"la",translation_tr:"sağlık",translation_en:"health",phonetic:"sɑ̃.te",category:"health",gender:"f",level:"A2",pexels_query:"health wellness medical",emoji:"❤️"}
 ];
 
 const DATA_A1_SENTENCES = [
@@ -835,20 +844,27 @@ async function googleTTS(text, slow = false) {
   } catch { return null; }
 }
 
-async function speakWord(text) {
-  const audioSrc = await googleTTS(text, false);
-  if (audioSrc) {
-    const audio = new Audio(audioSrc);
+async function speakWord(text, gender) {
+  // gender: 'm' → erkek ses, 'f' → kadın ses, 'v'/undefined → ayarlardaki ses
+  const voiceGender = gender === 'm' ? 'male' : gender === 'f' ? 'female' : (AppState.settings.voice || 'female');
+  const voiceName = voiceGender === 'male' ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) return;
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text },
+        voice: { languageCode: 'fr-FR', name: voiceName },
+        audioConfig: { audioEncoding: 'MP3', speakingRate: 0.9 }
+      })
+    });
+    const data = await res.json();
+    if (!data.audioContent) return;
+    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
     audio.play().catch(() => {});
-  } else if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(text);
-    utter.lang = 'fr-FR';
-    utter.rate = 0.85;
-    const voice = getBestVoice(AppState.settings.voice);
-    if (voice) utter.voice = voice;
-    window.speechSynthesis.speak(utter);
-  }
+  } catch {}
 }
 
 if (window.speechSynthesis) {
@@ -915,10 +931,8 @@ function renderFlashcards() {
       <h1 class="section-title">${t('flashcards.title')}</h1>
       <p class="section-subtitle">${t('flashcards.subtitle')}</p>
     </div>
-    <div class="fc-stats">
-      <div class="fc-stat"><div class="fc-stat-num" style="color:var(--warning)" data-stat="due">${dueWords.length}</div><div class="fc-stat-label">${t('flashcards.due')}</div></div>
-      <div class="fc-stat"><div class="fc-stat-num" style="color:var(--success)" data-stat="learned">${learnedCount}</div><div class="fc-stat-label">${t('flashcards.learned')}</div></div>
-      <div class="fc-stat"><div class="fc-stat-num">${filtered.length}</div><div class="fc-stat-label">${t('flashcards.total')}</div></div>
+    <div style="text-align:center;margin-bottom:16px">
+      <span style="font-size:0.9rem;color:var(--gray-600);font-weight:500">🃏 ${dueWords.length} kart bekliyor · ✅ ${learnedCount} öğrenildi</span>
     </div>
     <div class="filter-row">
       ${['all','a1','a2','verbs'].map(f=>`<button class="chip ${fcFilter===f?'active':''}" onclick="setFcFilter('${f}')">${t('flashcards.level_'+f)}</button>`).join('')}
@@ -939,35 +953,55 @@ function renderFlashcards() {
 
 function setFcFilter(f) { fcFilter=f; renderFlashcards(); }
 
+let cardShowingFR = true; // true = FR yüzü, false = TR yüzü
+
 function renderCardArea(queue) {
   const card = queue[currentCardIndex];
+  const gender = card.gender || 'v';
+  const article = card.article || '';
+  const genderClass = `gender-${gender}`;
+  const displayWord = article ? `${article} ${card.word}` : card.word;
+  const translation = AppState.settings.language === 'tr' ? card.translation_tr : card.translation_en;
+
   return `
-    <div class="card-counter"><span class="counter-text">${currentCardIndex+1} / ${queue.length}</span></div>
+    <div class="card-counter"><span class="counter-text">${currentCardIndex + 1} / ${queue.length} kart</span></div>
     <div class="progress-bar" style="margin-bottom:16px">
-      <div class="progress-fill" style="width:${(currentCardIndex/queue.length)*100}%"></div>
+      <div class="progress-fill" style="width:${(currentCardIndex / queue.length) * 100}%"></div>
     </div>
-    <div class="flashcard-scene">
-      <div class="flashcard" id="flashcard" onclick="flipCard()">
-        <div class="flashcard-face flashcard-front">
+
+    <div class="flashcard-scene" onclick="toggleCard()">
+      <div class="flashcard ${cardShowingFR ? '' : 'flipped'}" id="flashcard">
+
+        <!-- FR YÜZ -->
+        <div class="flashcard-face flashcard-front ${genderClass}">
           <div class="fc-image" id="fc-image">
             <div class="fc-image-placeholder" id="fc-placeholder"><span id="fc-emoji">⏳</span></div>
           </div>
           <div class="fc-image-overlay"></div>
-          <div class="fc-hint">👆 ${t('flashcards.tapToFlip')}</div>
+          <div class="fc-hint">👆 Çevir</div>
           <div class="fc-front-content">
-            <div class="fc-word">${card.word}</div>
-            ${AppState.settings.showPhonetic ? `<div class="fc-phonetic">${card.phonetic||''}</div>` : ''}
+            <div class="fc-word">
+              ${article ? `<span class="fc-article">${article}</span>` : ''}${card.word}
+            </div>
+            <div class="fc-phonetic">${card.phonetic || ''}</div>
           </div>
         </div>
+
+        <!-- TR YÜZ -->
         <div class="flashcard-face flashcard-back">
-          <div class="fc-back-emoji">🇫🇷</div>
-          <div class="fc-translation">${AppState.settings.language==='tr' ? card.translation_tr : card.translation_en}</div>
-          <div class="fc-back-word">${card.word}</div>
-          <div class="fc-category-badge">${card.category||card.level||'A1'}</div>
+          <div class="fc-back-emoji">${card.emoji || '🇫🇷'}</div>
+          <div class="fc-translation">${translation}</div>
+          <div class="fc-back-word">
+            <span style="opacity:0.6">${article}</span> ${card.word}
+          </div>
+          <div class="fc-category-badge ${`gender-badge-${gender}`}">
+            ${gender === 'm' ? '🔵 Masculin' : gender === 'f' ? '🔴 Féminin' : '⚪ ' + (card.category || '')}
+          </div>
         </div>
       </div>
     </div>
-    <div class="sm2-buttons" id="sm2-buttons" style="display:none">
+
+    <div class="sm2-buttons">
       <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)"><span class="sm2-btn-icon">😰</span><span class="sm2-btn-label">${t('flashcards.again')}</span><span class="sm2-btn-interval">${t('flashcards.againInterval')}</span></button>
       <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)"><span class="sm2-btn-icon">😐</span><span class="sm2-btn-label">${t('flashcards.hard')}</span><span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span></button>
       <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)"><span class="sm2-btn-icon">😄</span><span class="sm2-btn-label">${t('flashcards.easy')}</span><span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span></button>
@@ -992,25 +1026,30 @@ function renderSessionComplete() {
 }
 
 async function loadCardContent(word) {
-  setTimeout(() => speakWord(word.word), 300);
+  cardShowingFR = true; // Her yeni kartta FR yüzünden başla
+  setTimeout(() => speakWord(word.word, word.gender), 300);
   const EMOJIS = {greetings:'👋',food:'🍽️',home:'🏠',animals:'🐾',transport:'🚗',places:'📍',people:'👥',nature:'🌿',objects:'📦',basics:'💬',verb:'✨'};
   const emoji = word.emoji || EMOJIS[word.category] || '🇫🇷';
   const placeholder = document.getElementById('fc-placeholder');
   if (placeholder) placeholder.querySelector('#fc-emoji').textContent = emoji;
-  const imgUrl = await fetchPexelsImage(word.pexels_query||word.word, word.id);
+  const imgUrl = await fetchPexelsImage(word.pexels_query || word.word, word.id);
   if (imgUrl) {
     const fcImage = document.getElementById('fc-image');
     if (fcImage) fcImage.innerHTML = `<img src="${imgUrl}" alt="${word.word}" loading="lazy"><div class="fc-image-overlay"></div>`;
   }
 }
 
-function flipCard() {
-  if (cardFlipped) return;
-  cardFlipped = true;
-  document.getElementById('flashcard')?.classList.add('flipped');
-  document.getElementById('sm2-buttons').style.display = 'grid';
-  if (sessionQueue[currentCardIndex]) speakWord(sessionQueue[currentCardIndex].word);
+function toggleCard() {
+  cardShowingFR = !cardShowingFR;
+  const card = document.getElementById('flashcard');
+  if (card) card.classList.toggle('flipped', !cardShowingFR);
+  // Her tıklamada ses çal — gender'a göre ses seç
+  if (sessionQueue[currentCardIndex]) {
+    speakWord(sessionQueue[currentCardIndex].word, sessionQueue[currentCardIndex].gender);
+  }
 }
+
+function flipCard() { toggleCard(); } // eski referanslar için
 
 function rateCard(quality) {
   if (currentCardIndex >= sessionQueue.length) return;
