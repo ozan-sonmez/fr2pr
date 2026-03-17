@@ -445,6 +445,12 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 
 <script>
 // ═══════════════════════════════════════
+// API KEYS
+// ═══════════════════════════════════════
+window.PEXELS_API_KEY = 'Ml4BpmvIdeI8gfyUYxFiodEB7HhB7B47pYUwuf1ErQmdYEl4gmpIM1ug';
+window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
+
+// ═══════════════════════════════════════
 // I18N
 // ═══════════════════════════════════════
 const I18N = {
@@ -809,8 +815,8 @@ function testVoice() {
 
 // ─── GOOGLE CLOUD TTS ───
 async function googleTTS(text, slow = false) {
-  const key = window.GOOGLE_TTS_KEY || 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
-  if (!key) { showToast('API key eksik!'); return null; }
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) return null;
   const voiceName = (AppState.settings.voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
   const speakingRate = slow ? 0.65 : 1.0;
   try {
@@ -824,11 +830,9 @@ async function googleTTS(text, slow = false) {
       })
     });
     const data = await res.json();
-    if (data.error) { showToast('Hata: ' + data.error.message); return null; }
-    if (!data.audioContent) { showToast('Ses verisi yok!'); return null; }
+    if (!data.audioContent) return null;
     return 'data:audio/mp3;base64,' + data.audioContent;
-  } catch(e) { showToast('Bağlantı hatası: ' + e.message); return null; }
-}
+  } catch { return null; }
 }
 
 async function speakWord(text) {
@@ -865,7 +869,6 @@ const imageCache = {};
 async function fetchPexelsImage(query, wordId) {
   if (imageCache[wordId]) return imageCache[wordId];
   const PEXELS_KEY = window.PEXELS_API_KEY || '';
-  window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
   if (!PEXELS_KEY) return null;
   try {
     const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, { headers:{ Authorization:PEXELS_KEY } });
@@ -1177,16 +1180,49 @@ async function playWithSettings(sentenceId, voice, speed) {
   if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
   if (statusEl) statusEl.textContent = t('pronunciation.playing');
 
-  // Ses seçimini güncelle
   AppState.settings.voice = voice;
 
-  const audioSrc = await googleTTS(sentence.sentence, isSlow);
+  // iOS fix: Audio nesnesini kullanıcı etkileşimi anında oluştur ve hemen play et
+  const audio = new Audio();
+  activeAudio = audio;
+  audio.play().catch(() => {}); // iOS kilidini aç
 
-  if (audioSrc) {
-    const audio = new Audio(audioSrc);
-    activeAudio = audio;
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) {
+    showToast('API key eksik!');
+    if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+    return;
+  }
 
-    // Kelime highlight — süre tahmini ile
+  const voiceName = (voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  const speakingRate = isSlow ? 0.65 : 1.0;
+
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text: sentence.sentence },
+        voice: { languageCode: 'fr-FR', name: voiceName },
+        audioConfig: { audioEncoding: 'MP3', speakingRate }
+      })
+    });
+    const data = await res.json();
+
+    if (data.error) {
+      showToast('Hata: ' + data.error.message);
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      return;
+    }
+
+    if (!data.audioContent) {
+      showToast('Ses verisi alınamadı');
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      return;
+    }
+
+    audio.src = 'data:audio/mp3;base64,' + data.audioContent;
+
     const words = sentence.words;
     const totalDuration = isSlow ? sentence.sentence.length * 80 : sentence.sentence.length * 45;
     const wordDuration = totalDuration / words.length;
@@ -1221,29 +1257,18 @@ async function playWithSettings(sentenceId, voice, speed) {
     audio.onerror = () => {
       clearInterval(highlightInterval);
       if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      showToast('Ses yüklenemedi');
+      showToast('Ses çalınamadı');
     };
 
-    audio.play().catch(() => {
+    audio.load();
+    audio.play().catch(e => {
       if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
       showToast('Ses oynatılamadı');
     });
 
-  } else {
-    // Fallback: Web Speech API
-    if (window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-      const utter = new SpeechSynthesisUtterance(sentence.sentence);
-      utter.lang = 'fr-FR';
-      utter.rate = isSlow ? 0.5 : 1.0;
-      const chosenVoice = getBestVoice(voice);
-      if (chosenVoice) utter.voice = chosenVoice;
-      utter.onend = () => {
-        if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-        updateSentenceSR(sentenceId);
-      };
-      window.speechSynthesis.speak(utter);
-    }
+  } catch(e) {
+    showToast('Bağlantı hatası');
+    if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
   }
 }
 
@@ -1366,46 +1391,6 @@ document.addEventListener('DOMContentLoaded', () => {
   AppState.progress.studyDays.add(new Date().toISOString().split('T')[0]);
   saveState();
 });
-</script>
-  <button onclick="debugVoices()" style="position:fixed;top:70px;right:10px;z-index:999;background:#c9a84c;border:none;padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer">
-  🎙️ Sesleri Listele
-</button>
-<div id="debug-out" style="position:fixed;top:110px;right:10px;left:10px;z-index:999;background:white;border:2px solid #1a2340;border-radius:8px;padding:12px;font-size:0.7rem;display:none;max-height:60vh;overflow-y:auto"></div>
-
-<script>
-function debugVoices() {
-  const all = window.speechSynthesis.getVoices();
-  const el = document.getElementById('debug-out');
-  el.style.display = 'block';
-  el.innerHTML = `<b>Toplam: ${all.length} ses</b><br><br>` +
-    all.map(v => `<span style="color:${v.lang.startsWith('fr')?'green':'gray'}">${v.lang.startsWith('fr')?'🇫🇷 ':''}${v.name} (${v.lang}) ${v.localService?'📱':''}</span>`).join('<br>');
-}
-</script>
-  <button onclick="debugVoices()" style="position:fixed;top:70px;right:10px;z-index:999;background:#c9a84c;border:none;padding:8px 12px;border-radius:8px;font-size:0.75rem;font-weight:700;cursor:pointer">
-  🎙️ FR Sesleri
-</button>
-<div id="debug-out" style="position:fixed;top:110px;right:10px;left:10px;z-index:999;background:white;border:2px solid #1a2340;border-radius:8px;padding:12px;font-size:0.75rem;display:none;max-height:60vh;overflow-y:auto;word-break:break-all"></div>
-<script>
-function debugVoices() {
-  const el = document.getElementById('debug-out');
-  el.style.display = 'block';
-  el.innerHTML = 'Yükleniyor...';
-  const attempt = (label, voices) => {
-    const fr = voices.filter(v => v.lang && v.lang.toLowerCase().includes('fr'));
-    return '<b>' + label + ' (' + fr.length + ' FR ses):</b><br>' +
-      (fr.length ? fr.map(v => '• ' + v.name + ' | ' + v.lang + ' | ' + (v.localService ? '📱 yerel' : '☁️ ağ') + ' | ' + v.voiceURI).join('<br>') : 'YOK') + '<br><br>';
-  };
-  let html = attempt('Anlık', window.speechSynthesis.getVoices());
-  el.innerHTML = html;
-  setTimeout(() => {
-    html += attempt('500ms sonra', window.speechSynthesis.getVoices());
-    el.innerHTML = html;
-  }, 500);
-  setTimeout(() => {
-    html += attempt('1500ms sonra', window.speechSynthesis.getVoices());
-    el.innerHTML = html;
-  }, 1500);
-}
 </script>
 </body>
 </html>
