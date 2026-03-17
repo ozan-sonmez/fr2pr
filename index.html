@@ -15,8 +15,8 @@
   --white:#ffffff; --gray-100:#f8f6f2; --gray-200:#ede9e1; --gray-400:#9e9789;
   --gray-600:#6b6560; --gray-800:#3d3a35;
   --success:#27ae60; --warning:#f39c12; --danger:#e74c3c; --blue:#2980b9;
-  --masc:#1a3a6e; --masc-light:#7ab8f5; --masc-text:#e8f3ff;
-  --fem:#6e1a2e; --fem-light:#f5a7be; --fem-text:#ffe8ef;
+  --masc:#1a3a6e; --masc-light:#00aaff; --masc-text:#e8f3ff;
+  --fem:#6e1a2e; --fem-light:#ff3355; --fem-text:#ffe8ef;
   --shadow-sm:0 2px 8px rgba(26,35,64,0.08);
   --shadow-md:0 8px 24px rgba(26,35,64,0.12);
   --shadow-lg:0 20px 60px rgba(26,35,64,0.18);
@@ -92,8 +92,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);
 
 /* FRONT */
 .flashcard-front{display:flex;flex-direction:column;}
-.flashcard-front.gender-m{background:linear-gradient(135deg,#1a3a6e 0%,#1e4f9a 100%);}
-.flashcard-front.gender-f{background:linear-gradient(135deg,#6e1a2e 0%,#9a1f3d 100%);}
+.flashcard-front.gender-m{background:linear-gradient(135deg,#0a1a40 0%,#0a2a6e 100%);}
+.flashcard-front.gender-f{background:linear-gradient(135deg,#3a0a12 0%,#6e0a1e 100%);}
 .flashcard-front.gender-v{background:linear-gradient(135deg,#1a2340 0%,#2c3e6e 100%);}
 
 .fc-image{flex:1;position:relative;overflow:hidden;}
@@ -102,15 +102,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);
 .fc-image-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;}
 .fc-hint{position:absolute;top:12px;right:14px;font-size:.7rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px;}
 .fc-front-content{padding:14px 18px 18px;position:absolute;bottom:0;left:0;right:0;}
-.fc-article{font-size:1.1rem;font-weight:400;opacity:.75;margin-right:4px;}
-.fc-word{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;color:var(--white);line-height:1.1;}
+.fc-article{font-size:1.1rem;font-weight:400;opacity:.85;margin-right:4px;}
+.fc-word{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;line-height:1.1;}
+.fc-word.gender-m{color:#00aaff;}
+.fc-word.gender-f{color:#ff3355;}
+.fc-word.gender-v{color:var(--white);}
 .fc-phonetic{font-size:1rem;color:var(--gold-light);margin-top:5px;font-style:italic;letter-spacing:.02em;}
 
 /* BACK */
 .flashcard-back{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;gap:12px;background:var(--cream);}
 .fc-back-translation{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;text-align:center;}
-.fc-back-translation.gender-m{color:var(--masc);}
-.fc-back-translation.gender-f{color:var(--fem);}
+.fc-back-translation.gender-m{color:#00aaff;}
+.fc-back-translation.gender-f{color:#ff3355;}
 .fc-back-translation.gender-v{color:var(--navy);}
 .fc-back-subword{font-size:.9rem;color:var(--gray-400);text-align:center;}
 
@@ -701,7 +704,7 @@ function renderCardArea(queue) {
           <div class="fc-image-overlay"></div>
           <div class="fc-hint">👆 tıkla</div>
           <div class="fc-front-content">
-            <div class="fc-word">
+            <div class="fc-word gender-${g}">
               ${article?`<span class="fc-article">${article}</span>`:''}${card.word}
             </div>
             <div class="fc-phonetic">${card.phonetic||''}</div>
@@ -712,7 +715,7 @@ function renderCardArea(queue) {
           <div style="font-size:3rem;margin-bottom:8px">${card.emoji||'🇫🇷'}</div>
           <div class="fc-back-translation gender-${g}">${translation}</div>
           <div class="fc-back-subword" style="margin-top:6px">
-            ${article ? `<span style="color:${g==='m' ? '#7ab8f5' : g==='f' ? '#f5a7be' : '#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
+            ${article ? `<span style="color:${g==='m' ? '#00aaff' : g==='f' ? '#ff3355' : '#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
           </div>
           <div style="font-size:.75rem;color:var(--gray-400);margin-top:4px">${card.phonetic||''}</div>
         </div>
@@ -868,14 +871,12 @@ function renderSentenceCard(s) {
         </div>
       </div>
       <div class="translation-area">
-        <div class="translation-text" id="trans-${s.id}">
+        <div class="translation-text visible" id="trans-${s.id}">
           ${AppState.settings.language==='tr'?s.translation_tr:s.translation_en}
         </div>
       </div>
       <div class="sentence-actions">
-        <button class="translation-toggle-btn" onclick="toggleTranslation('${s.id}')">
-          👁️ <span id="trans-toggle-label-${s.id}">${t('pronunciation.showTranslation')}</span>
-        </button>
+        <div></div>
         <div class="sr-indicator">
           <div class="sr-dot ${due?'due':''} ${learned?'learned':''}"></div>
           <span style="font-size:.68rem;color:var(--gray-400)">${learned?'✓':due?t('pronunciation.due'):''}</span>
@@ -1078,4 +1079,3 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
-
