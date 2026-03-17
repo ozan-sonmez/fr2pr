@@ -712,7 +712,7 @@ function renderCardArea(queue) {
           <div style="font-size:3rem;margin-bottom:8px">${card.emoji||'🇫🇷'}</div>
           <div class="fc-back-translation gender-${g}">${translation}</div>
           <div class="fc-back-subword" style="margin-top:6px">
-            ${article?`<span style="color:${g==='m'?'var(--masc-light)':g==='f'?'var(--fem-light)':'var(--gray-400)';font-size:.9rem}">${article}</span> `:''}${card.word}
+            ${article ? `<span style="color:${g==='m' ? '#7ab8f5' : g==='f' ? '#f5a7be' : '#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
           </div>
           <div style="font-size:.75rem;color:var(--gray-400);margin-top:4px">${card.phonetic||''}</div>
         </div>
@@ -1078,3 +1078,4 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 </body>
 </html>
+
