@@ -836,6 +836,7 @@ const imageCache = {};
 async function fetchPexelsImage(query, wordId) {
   if (imageCache[wordId]) return imageCache[wordId];
   const PEXELS_KEY = window.PEXELS_API_KEY || '';
+  window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
   if (!PEXELS_KEY) return null;
   try {
     const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, { headers:{ Authorization:PEXELS_KEY } });
