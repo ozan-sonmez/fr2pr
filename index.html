@@ -7,408 +7,199 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Le Français — Fransızca Öğren</title>
+  <title>Le Français</title>
   <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
-
 :root {
-  --navy: #1a2340;
-  --cream: #f5f0e8;
-  --gold: #c9a84c;
-  --gold-light: #e8d5a3;
-  --white: #ffffff;
-  --gray-100: #f8f6f2;
-  --gray-200: #ede9e1;
-  --gray-400: #9e9789;
-  --gray-600: #6b6560;
-  --gray-800: #3d3a35;
-  --success: #27ae60;
-  --warning: #f39c12;
-  --danger: #e74c3c;
-  --blue: #2980b9;
-  --shadow-sm: 0 2px 8px rgba(26,35,64,0.08);
-  --shadow-md: 0 8px 24px rgba(26,35,64,0.12);
-  --shadow-lg: 0 20px 60px rgba(26,35,64,0.18);
-  --radius: 16px;
-  --radius-sm: 10px;
-  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --navy:#1a2340; --cream:#f5f0e8; --gold:#c9a84c; --gold-light:#e8d5a3;
+  --white:#ffffff; --gray-100:#f8f6f2; --gray-200:#ede9e1; --gray-400:#9e9789;
+  --gray-600:#6b6560; --gray-800:#3d3a35;
+  --success:#27ae60; --warning:#f39c12; --danger:#e74c3c; --blue:#2980b9;
+  --masc:#1a3a6e; --masc-light:#7ab8f5; --masc-text:#e8f3ff;
+  --fem:#6e1a2e; --fem-light:#f5a7be; --fem-text:#ffe8ef;
+  --shadow-sm:0 2px 8px rgba(26,35,64,0.08);
+  --shadow-md:0 8px 24px rgba(26,35,64,0.12);
+  --shadow-lg:0 20px 60px rgba(26,35,64,0.18);
+  --radius:16px; --radius-sm:10px;
+  --transition:all 0.3s cubic-bezier(0.4,0,0.2,1);
 }
+*{box-sizing:border-box;margin:0;padding:0;}
+html{font-size:16px;scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--navy);min-height:100vh;overflow-x:hidden;}
 
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; scroll-behavior: smooth; }
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--cream);
-  color: var(--navy);
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+/* HEADER */
+.app-header{background:var(--navy);padding:0 20px;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-md);}
+.header-inner{max-width:480px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:58px;}
+.app-logo{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--gold);letter-spacing:.02em;display:flex;align-items:center;gap:8px;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.lang-toggle{display:flex;background:rgba(255,255,255,0.1);border-radius:20px;padding:3px;gap:2px;}
+.lang-btn{padding:4px 12px;border:none;background:transparent;color:rgba(255,255,255,0.6);font-size:.75rem;font-weight:600;border-radius:16px;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;}
+.lang-btn.active{background:var(--gold);color:var(--navy);}
+.menu-btn{background:none;border:none;color:var(--white);font-size:1.4rem;cursor:pointer;padding:4px 8px;border-radius:8px;transition:var(--transition);}
+.menu-btn:hover{background:rgba(255,255,255,0.1);}
 
-.app-header {
-  background: var(--navy);
-  padding: 0 20px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  box-shadow: var(--shadow-md);
-}
-.header-inner {
-  max-width: 480px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 58px;
-}
-.app-logo {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.3rem;
-  color: var(--gold);
-  letter-spacing: 0.02em;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.lang-toggle {
-  display: flex;
-  background: rgba(255,255,255,0.1);
-  border-radius: 20px;
-  padding: 3px;
-  gap: 2px;
-}
-.lang-btn {
-  padding: 4px 12px;
-  border: none;
-  background: transparent;
-  color: rgba(255,255,255,0.6);
-  font-size: 0.75rem;
-  font-weight: 600;
-  border-radius: 16px;
-  cursor: pointer;
-  transition: var(--transition);
-  font-family: 'DM Sans', sans-serif;
-  letter-spacing: 0.05em;
-}
-.lang-btn.active { background: var(--gold); color: var(--navy); }
+/* SIDE MENU */
+.menu-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;}
+.menu-overlay.open{opacity:1;pointer-events:all;}
+.side-menu{position:fixed;top:0;right:-280px;width:280px;height:100vh;background:var(--white);z-index:201;transition:right .3s cubic-bezier(.4,0,.2,1);box-shadow:var(--shadow-lg);display:flex;flex-direction:column;}
+.side-menu.open{right:0;}
+.side-menu-header{background:var(--navy);padding:20px;display:flex;align-items:center;justify-content:space-between;}
+.side-menu-title{font-family:'Playfair Display',serif;color:var(--gold);font-size:1.1rem;}
+.side-menu-close{background:none;border:none;color:var(--white);font-size:1.3rem;cursor:pointer;}
+.side-menu-item{display:flex;align-items:center;gap:14px;padding:16px 20px;border:none;background:none;width:100%;text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.95rem;font-weight:500;color:var(--navy);border-bottom:1px solid var(--gray-100);transition:var(--transition);}
+.side-menu-item:hover{background:var(--gray-100);}
+.side-menu-item.active{color:var(--gold);background:var(--gray-100);}
+.side-menu-icon{font-size:1.2rem;width:28px;text-align:center;}
 
-.bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--white);
-  border-top: 1px solid var(--gray-200);
-  display: flex;
-  z-index: 100;
-  box-shadow: 0 -4px 20px rgba(26,35,64,0.08);
-}
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 0 12px;
-  gap: 4px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  transition: var(--transition);
-  color: var(--gray-400);
-  font-family: 'DM Sans', sans-serif;
-}
-.nav-item.active { color: var(--navy); }
-.nav-item.active .nav-icon { transform: scale(1.15); }
-.nav-icon { font-size: 1.4rem; transition: var(--transition); }
-.nav-label { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.03em; }
+/* PAGE */
+.page{display:none;max-width:480px;margin:0 auto;padding:20px 16px 40px;min-height:calc(100vh - 58px);}
+.page.active{display:block;}
+.section-header{margin-bottom:20px;}
+.section-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--navy);font-weight:700;}
+.section-subtitle{font-size:.85rem;color:var(--gray-600);margin-top:4px;}
 
-.page {
-  display: none;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: 20px 16px 90px;
-  min-height: calc(100vh - 58px);
-}
-.page.active { display: block; }
+/* CHIPS */
+.filter-row{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.filter-row::-webkit-scrollbar{display:none;}
+.chip{padding:7px 16px;border-radius:20px;border:1.5px solid var(--gray-200);background:var(--white);color:var(--gray-600);font-size:.8rem;font-weight:500;cursor:pointer;transition:var(--transition);white-space:nowrap;font-family:'DM Sans',sans-serif;}
+.chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
 
-.section-header { margin-bottom: 20px; }
-.section-title { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--navy); font-weight: 700; }
-.section-subtitle { font-size: 0.85rem; color: var(--gray-600); margin-top: 4px; }
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 22px;border:none;border-radius:var(--radius-sm);font-size:.9rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--navy);color:var(--white);}
 
-.filter-row {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 20px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  scrollbar-width: none;
-}
-.filter-row::-webkit-scrollbar { display: none; }
+/* PROGRESS */
+.progress-bar{background:var(--gray-200);border-radius:10px;height:6px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--navy));border-radius:10px;transition:width .5s ease;}
 
-.chip {
-  padding: 7px 16px;
-  border-radius: 20px;
-  border: 1.5px solid var(--gray-200);
-  background: var(--white);
-  color: var(--gray-600);
-  font-size: 0.8rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-  white-space: nowrap;
-  font-family: 'DM Sans', sans-serif;
-}
-.chip.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
+/* TOAST */
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--navy);color:white;padding:12px 24px;border-radius:24px;font-size:.85rem;font-weight:500;opacity:0;transition:var(--transition);z-index:300;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 11px 22px;
-  border: none;
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: var(--transition);
-  font-family: 'DM Sans', sans-serif;
-}
-.btn:active { transform: scale(0.97); }
-.btn-primary { background: var(--navy); color: var(--white); }
-.btn-primary:hover { background: #253060; }
+/* LOADER */
+.loader{display:flex;align-items:center;justify-content:center;padding:40px;color:var(--gray-400);gap:10px;font-size:.9rem;}
+.spinner{width:20px;height:20px;border:2px solid var(--gray-200);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-.progress-bar { background: var(--gray-200); border-radius: 10px; height: 6px; overflow: hidden; }
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--gold), var(--navy));
-  border-radius: 10px;
-  transition: width 0.5s ease;
-}
+/* ─── FLASHCARD ─── */
+.fc-meta{text-align:center;margin-bottom:14px;font-size:.85rem;color:var(--gray-600);font-weight:500;}
 
-.toast {
-  position: fixed;
-  bottom: 90px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--navy);
-  color: white;
-  padding: 12px 24px;
-  border-radius: 24px;
-  font-size: 0.85rem;
-  font-weight: 500;
-  opacity: 0;
-  transition: var(--transition);
-  z-index: 200;
-  pointer-events: none;
-  white-space: nowrap;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+.flashcard-scene{perspective:1000px;margin-bottom:20px;cursor:pointer;}
+.flashcard{position:relative;width:100%;aspect-ratio:5/3;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.4,0,.2,1);}
+.flashcard.flipped{transform:rotateY(180deg);}
+.flashcard-face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lg);}
 
-.loader {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px;
-  color: var(--gray-400);
-  gap: 10px;
-  font-size: 0.9rem;
-}
-.spinner {
-  width: 20px; height: 20px;
-  border: 2px solid var(--gray-200);
-  border-top-color: var(--navy);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
+/* FRONT */
+.flashcard-front{display:flex;flex-direction:column;}
+.flashcard-front.gender-m{background:linear-gradient(135deg,#1a3a6e 0%,#1e4f9a 100%);}
+.flashcard-front.gender-f{background:linear-gradient(135deg,#6e1a2e 0%,#9a1f3d 100%);}
+.flashcard-front.gender-v{background:linear-gradient(135deg,#1a2340 0%,#2c3e6e 100%);}
 
-/* GENDER COLORS */
-.flashcard-front.gender-m { background: linear-gradient(135deg, #1a3a5c 0%, #1e4976 100%); }
-.flashcard-front.gender-f { background: linear-gradient(135deg, #5c1a2e 0%, #7a1f3d 100%); }
-.flashcard-front.gender-v { background: linear-gradient(135deg, #1a2340 0%, #2c3e6e 100%); }
-.gender-badge-m { background: #1e4976; color: #7ab8f5; }
-.gender-badge-f { background: #7a1f3d; color: #f5a7be; }
-.gender-badge-v { background: #2c3e6e; color: var(--gold); }
+.fc-image{flex:1;position:relative;overflow:hidden;}
+.fc-image img{width:100%;height:100%;object-fit:cover;display:block;}
+.fc-image-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.75) 0%,rgba(0,0,0,.1) 60%);}
+.fc-image-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:4rem;}
+.fc-hint{position:absolute;top:12px;right:14px;font-size:.7rem;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:4px;}
+.fc-front-content{padding:14px 18px 18px;position:absolute;bottom:0;left:0;right:0;}
+.fc-article{font-size:1.1rem;font-weight:400;opacity:.75;margin-right:4px;}
+.fc-word{font-family:'Playfair Display',serif;font-size:2.1rem;font-weight:700;color:var(--white);line-height:1.1;}
+.fc-phonetic{font-size:1rem;color:var(--gold-light);margin-top:5px;font-style:italic;letter-spacing:.02em;}
 
-/* FLASHCARDS */
-.fc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.fc-stat { background: var(--white); border-radius: var(--radius-sm); padding: 14px 10px; text-align: center; box-shadow: var(--shadow-sm); }
-.fc-stat-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--navy); line-height: 1; }
-.fc-stat-label { font-size: 0.7rem; color: var(--gray-600); margin-top: 4px; font-weight: 500; }
+/* BACK */
+.flashcard-back{transform:rotateY(180deg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 24px;gap:12px;background:var(--cream);}
+.fc-back-translation{font-family:'Playfair Display',serif;font-size:2rem;font-weight:700;text-align:center;}
+.fc-back-translation.gender-m{color:var(--masc);}
+.fc-back-translation.gender-f{color:var(--fem);}
+.fc-back-translation.gender-v{color:var(--navy);}
+.fc-back-subword{font-size:.9rem;color:var(--gray-400);text-align:center;}
 
-.flashcard-scene { perspective: 1000px; margin-bottom: 24px; }
-.flashcard {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 3/2;
-  transform-style: preserve-3d;
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  cursor: pointer;
-}
-.flashcard.flipped { transform: rotateY(180deg); }
-.flashcard-face {
-  position: absolute;
-  inset: 0;
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-  border-radius: var(--radius);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-}
-.flashcard-front { background: var(--navy); display: flex; flex-direction: column; }
-.fc-image { flex: 1; position: relative; overflow: hidden; }
-.fc-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.fc-image-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(26,35,64,0.85) 0%, rgba(26,35,64,0.1) 60%); }
-.fc-image-placeholder {
-  width: 100%; height: 100%;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 4rem;
-  background: linear-gradient(135deg, #1a2340 0%, #2c3e6e 100%);
-}
-.fc-front-content { padding: 16px 20px 20px; position: absolute; bottom: 0; left: 0; right: 0; }
-.fc-word { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700; color: var(--white); line-height: 1.1; }
-.fc-article { font-size: 1rem; font-weight: 400; opacity: 0.8; margin-right: 6px; }
-.fc-phonetic { font-size: 1rem; color: var(--gold-light); margin-top: 6px; font-style: italic; }
-.fc-hint { position: absolute; top: 14px; right: 16px; font-size: 0.72rem; color: rgba(255,255,255,0.5); display: flex; align-items: center; gap: 4px; }
-.flashcard-back {
-  transform: rotateY(180deg);
-  background: var(--cream);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 28px 24px; gap: 12px;
-}
-.fc-back-emoji { font-size: 3.5rem; }
-.fc-translation { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; color: var(--navy); text-align: center; }
-.fc-back-word { font-size: 0.95rem; color: var(--gray-600); text-align: center; }
-.fc-category-badge { background: var(--navy); color: var(--gold); padding: 4px 12px; border-radius: 12px; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+/* SM2 BUTTONS — always visible */
+.sm2-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:4px;}
+.sm2-btn{display:flex;flex-direction:column;align-items:center;gap:4px;padding:13px 8px;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;}
+.sm2-btn:active{transform:scale(.95);}
+.sm2-btn-again{background:#fef0ee;color:var(--danger);}
+.sm2-btn-hard{background:#fff8e6;color:var(--warning);}
+.sm2-btn-easy{background:#edfaf2;color:var(--success);}
+.sm2-btn-icon{font-size:1.3rem;}
+.sm2-btn-label{font-size:.8rem;font-weight:600;}
+.sm2-btn-interval{font-size:.68rem;color:var(--gray-600);}
 
-.sm2-buttons { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-.sm2-btn { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 8px; border: none; border-radius: var(--radius-sm); cursor: pointer; transition: var(--transition); font-family: 'DM Sans', sans-serif; }
-.sm2-btn:active { transform: scale(0.95); }
-.sm2-btn-again { background: #fef0ee; color: var(--danger); }
-.sm2-btn-hard { background: #fff8e6; color: var(--warning); }
-.sm2-btn-easy { background: #edfaf2; color: var(--success); }
-.sm2-btn-icon { font-size: 1.2rem; }
-.sm2-btn-label { font-size: 0.78rem; font-weight: 600; }
-.sm2-btn-interval { font-size: 0.68rem; color: var(--gray-600); }
+.card-counter{text-align:center;margin-bottom:12px;}
+.counter-text{font-size:.85rem;color:var(--gray-600);font-weight:500;}
 
-.card-counter { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 16px; }
-.counter-text { font-size: 0.85rem; color: var(--gray-600); font-weight: 500; }
-
-.session-complete { text-align: center; padding: 40px 24px; background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-md); }
-.session-complete .trophy { font-size: 4rem; margin-bottom: 16px; }
-.session-complete h2 { font-family: 'Playfair Display', serif; font-size: 1.5rem; color: var(--navy); margin-bottom: 8px; }
-.session-complete p { color: var(--gray-600); font-size: 0.9rem; margin-bottom: 24px; }
-.session-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 24px; }
-.sess-stat { padding: 12px; border-radius: var(--radius-sm); background: var(--gray-100); }
-.sess-stat-num { font-family: 'Playfair Display', serif; font-size: 1.4rem; font-weight: 700; }
-.sess-stat-label { font-size: 0.7rem; color: var(--gray-600); margin-top: 2px; }
+.session-complete{text-align:center;padding:40px 24px;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-md);}
+.session-complete .trophy{font-size:4rem;margin-bottom:16px;}
+.session-complete h2{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--navy);margin-bottom:8px;}
+.session-complete p{color:var(--gray-600);font-size:.9rem;margin-bottom:24px;}
+.session-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:24px;}
+.sess-stat{padding:12px;border-radius:var(--radius-sm);background:var(--gray-100);}
+.sess-stat-num{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;}
+.sess-stat-label{font-size:.7rem;color:var(--gray-600);margin-top:2px;}
 
 /* PRONUNCIATION */
-.pron-filters { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
-.pron-filter-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-.sentence-card { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-md); margin-bottom: 16px; overflow: hidden; }
-.sentence-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 10px; border-bottom: 1px solid var(--gray-100); }
-.sentence-level-badge { font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em; padding: 3px 10px; border-radius: 10px; background: var(--navy); color: var(--gold); }
-.sentence-topic { font-size: 0.75rem; color: var(--gray-400); font-weight: 500; }
-
-.sentence-text-area { padding: 20px 16px 14px; }
-.sentence-words { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; margin-bottom: 14px; }
-.word-token { font-family: 'Playfair Display', serif; font-size: 1.35rem; font-weight: 600; color: var(--navy); padding: 2px 4px; border-radius: 6px; transition: all 0.25s ease; line-height: 1.3; }
-.word-token.highlighted { color: var(--white); background: var(--navy); padding: 2px 6px; }
-.word-token.played { color: var(--gold); }
-
-.translation-area { padding: 0 16px 14px; min-height: 32px; }
-.translation-text { font-size: 0.875rem; color: var(--gray-600); font-style: italic; line-height: 1.5; display: none; }
-.translation-text.visible { display: block; }
-
-.audio-controls { padding: 14px 16px; background: var(--gray-100); display: flex; align-items: center; gap: 10px; }
-.audio-play-btn {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  background: var(--navy); color: var(--white);
-  border: none; font-size: 1.1rem; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: var(--transition); flex-shrink: 0;
-  box-shadow: var(--shadow-sm);
-}
-.audio-play-btn:hover { background: #253060; transform: scale(1.05); }
-.audio-play-btn:active { transform: scale(0.95); }
-.audio-play-btn.playing { background: var(--gold); color: var(--navy); }
-.audio-controls-right { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-.audio-option-row { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
-.audio-chip {
-  padding: 5px 12px; border-radius: 14px;
-  border: 1.5px solid var(--gray-200);
-  background: var(--white); font-size: 0.72rem; font-weight: 600;
-  cursor: pointer; transition: var(--transition); color: var(--gray-600);
-  font-family: 'DM Sans', sans-serif;
-  display: flex; align-items: center; gap: 4px;
-}
-.audio-chip.active { background: var(--navy); border-color: var(--navy); color: var(--white); }
-
-.sentence-list { display: flex; flex-direction: column; gap: 14px; }
-.sentence-actions { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px 14px; }
-.translation-toggle-btn {
-  display: flex; align-items: center; gap: 6px;
-  background: none; border: none; cursor: pointer;
-  font-size: 0.78rem; color: var(--gray-600); font-weight: 500;
-  font-family: 'DM Sans', sans-serif; padding: 4px 8px; border-radius: 8px;
-  transition: var(--transition);
-}
-.translation-toggle-btn:hover { background: var(--gray-100); color: var(--navy); }
-.sr-indicator { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--gray-400); }
-.sr-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gray-200); }
-.sr-dot.due { background: var(--warning); }
-.sr-dot.learned { background: var(--success); }
-
-.audio-progress { height: 3px; background: var(--gray-200); border-radius: 2px; overflow: hidden; }
-.audio-progress-fill { height: 100%; background: var(--gold); border-radius: 2px; transition: width 0.1s linear; width: 0%; }
-
-/* VOICE PICKER */
-.voice-picker-box { background: var(--white); border-radius: var(--radius); box-shadow: var(--shadow-sm); padding: 14px 16px; margin-bottom: 16px; }
-.voice-picker-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); margin-bottom: 10px; }
-.voice-picker-chips { display: flex; flex-wrap: wrap; gap: 7px; }
-.voice-picker-note { margin-top: 10px; font-size: 0.72rem; color: var(--gray-400); }
-.voice-test-btn {
-  margin-top: 10px; padding: 7px 14px;
-  border-radius: 8px; border: 1.5px solid var(--navy);
-  background: transparent; color: var(--navy);
-  font-size: 0.8rem; font-weight: 600; cursor: pointer;
-  font-family: 'DM Sans', sans-serif;
-}
-.voice-warning { background: #fff8e6; border-radius: 12px; padding: 12px 14px; font-size: 0.8rem; color: #b8860b; margin-bottom: 16px; }
+.pron-filters{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.pron-filter-row{display:flex;gap:8px;flex-wrap:wrap;}
+.sentence-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow-md);margin-bottom:14px;overflow:hidden;}
+.sentence-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px 10px;border-bottom:1px solid var(--gray-100);}
+.sentence-level-badge{font-size:.68rem;font-weight:700;letter-spacing:.08em;padding:3px 10px;border-radius:10px;background:var(--navy);color:var(--gold);}
+.sentence-topic{font-size:.75rem;color:var(--gray-400);font-weight:500;}
+.sentence-text-area{padding:18px 16px 12px;}
+.sentence-words{display:flex;flex-wrap:wrap;gap:6px;align-items:baseline;margin-bottom:12px;}
+.word-token{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:600;color:var(--navy);padding:2px 4px;border-radius:6px;transition:all .25s ease;line-height:1.3;}
+.word-token.highlighted{color:var(--white);background:var(--navy);padding:2px 6px;}
+.word-token.played{color:var(--gold);}
+.translation-area{padding:0 16px 12px;min-height:28px;}
+.translation-text{font-size:.875rem;color:var(--gray-600);font-style:italic;line-height:1.5;display:none;}
+.translation-text.visible{display:block;}
+.audio-controls{padding:12px 16px;background:var(--gray-100);display:flex;align-items:center;gap:10px;}
+.audio-play-btn{width:48px;height:48px;border-radius:50%;background:var(--navy);color:var(--white);border:none;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:var(--transition);flex-shrink:0;box-shadow:var(--shadow-sm);}
+.audio-play-btn:active{transform:scale(.95);}
+.audio-play-btn.playing{background:var(--gold);color:var(--navy);}
+.audio-controls-right{flex:1;display:flex;flex-direction:column;gap:6px;}
+.audio-option-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.audio-chip{padding:5px 12px;border-radius:14px;border:1.5px solid var(--gray-200);background:var(--white);font-size:.72rem;font-weight:600;cursor:pointer;transition:var(--transition);color:var(--gray-600);font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:4px;}
+.audio-chip.active{background:var(--navy);border-color:var(--navy);color:var(--white);}
+.sentence-list{display:flex;flex-direction:column;gap:12px;}
+.sentence-actions{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px;}
+.translation-toggle-btn{display:flex;align-items:center;gap:6px;background:none;border:none;cursor:pointer;font-size:.78rem;color:var(--gray-600);font-weight:500;font-family:'DM Sans',sans-serif;padding:4px 8px;border-radius:8px;transition:var(--transition);}
+.translation-toggle-btn:hover{background:var(--gray-100);color:var(--navy);}
+.sr-indicator{display:flex;align-items:center;gap:5px;font-size:.72rem;color:var(--gray-400);}
+.sr-dot{width:8px;height:8px;border-radius:50%;background:var(--gray-200);}
+.sr-dot.due{background:var(--warning);}
+.sr-dot.learned{background:var(--success);}
+.audio-progress{height:3px;background:var(--gray-200);border-radius:2px;overflow:hidden;}
+.audio-progress-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .1s linear;width:0%;}
 
 /* SETTINGS */
-.settings-list { display: flex; flex-direction: column; gap: 12px; }
-.settings-group { background: var(--white); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow-sm); }
-.settings-group-title { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--gray-400); padding: 14px 16px 8px; }
-.settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-top: 1px solid var(--gray-100); gap: 12px; }
-.settings-item:first-of-type { border-top: none; }
-.settings-item-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-.settings-icon { width: 36px; height: 36px; border-radius: 10px; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-.settings-label { font-size: 0.9rem; font-weight: 500; color: var(--navy); }
-.settings-desc { font-size: 0.75rem; color: var(--gray-400); margin-top: 2px; }
-.toggle-switch { position: relative; width: 44px; height: 26px; flex-shrink: 0; }
-.toggle-switch input { opacity: 0; width: 0; height: 0; }
-.toggle-slider { position: absolute; inset: 0; background: var(--gray-200); border-radius: 13px; cursor: pointer; transition: var(--transition); }
-.toggle-slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: white; border-radius: 50%; transition: var(--transition); box-shadow: 0 2px 4px rgba(0,0,0,0.15); }
-.toggle-switch input:checked + .toggle-slider { background: var(--navy); }
-.toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
-.settings-select { border: 1.5px solid var(--gray-200); border-radius: 8px; padding: 7px 12px; font-size: 0.85rem; color: var(--navy); background: var(--gray-100); cursor: pointer; font-family: 'DM Sans', sans-serif; font-weight: 500; outline: none; transition: var(--transition); }
-.settings-select:focus { border-color: var(--navy); }
-.range-wrapper { display: flex; align-items: center; gap: 10px; }
-.range-value { font-size: 0.85rem; font-weight: 600; color: var(--navy); min-width: 28px; text-align: right; }
-input[type=range] { -webkit-appearance: none; width: 120px; height: 4px; background: var(--gray-200); border-radius: 2px; outline: none; }
-input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--navy); cursor: pointer; box-shadow: var(--shadow-sm); }
-.stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; padding: 16px; }
-.stat-card { background: var(--gray-100); border-radius: var(--radius-sm); padding: 14px; text-align: center; }
-.stat-card-num { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 700; color: var(--navy); }
-.stat-card-label { font-size: 0.72rem; color: var(--gray-600); margin-top: 4px; }
-.danger-btn { width: 100%; padding: 13px; background: #fef0ee; border: 1.5px solid #f5c6c0; border-radius: var(--radius-sm); color: var(--danger); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: var(--transition); font-family: 'DM Sans', sans-serif; }
-.danger-btn:hover { background: #fde0dc; }
-.version-badge { text-align: center; padding: 20px; font-size: 0.75rem; color: var(--gray-400); }
+.settings-list{display:flex;flex-direction:column;gap:12px;}
+.settings-group{background:var(--white);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);}
+.settings-group-title{font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray-400);padding:14px 16px 8px;}
+.settings-item{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-top:1px solid var(--gray-100);gap:12px;}
+.settings-item:first-of-type{border-top:none;}
+.settings-item-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0;}
+.settings-icon{width:36px;height:36px;border-radius:10px;background:var(--gray-100);display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0;}
+.settings-label{font-size:.9rem;font-weight:500;color:var(--navy);}
+.settings-desc{font-size:.75rem;color:var(--gray-400);margin-top:2px;}
+.toggle-switch{position:relative;width:44px;height:26px;flex-shrink:0;}
+.toggle-switch input{opacity:0;width:0;height:0;}
+.toggle-slider{position:absolute;inset:0;background:var(--gray-200);border-radius:13px;cursor:pointer;transition:var(--transition);}
+.toggle-slider:before{content:'';position:absolute;width:20px;height:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:var(--transition);box-shadow:0 2px 4px rgba(0,0,0,.15);}
+.toggle-switch input:checked+.toggle-slider{background:var(--navy);}
+.toggle-switch input:checked+.toggle-slider:before{transform:translateX(18px);}
+.settings-select{border:1.5px solid var(--gray-200);border-radius:8px;padding:7px 12px;font-size:.85rem;color:var(--navy);background:var(--gray-100);cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;outline:none;transition:var(--transition);}
+.range-wrapper{display:flex;align-items:center;gap:10px;}
+.range-value{font-size:.85rem;font-weight:600;color:var(--navy);min-width:28px;text-align:right;}
+input[type=range]{-webkit-appearance:none;width:120px;height:4px;background:var(--gray-200);border-radius:2px;outline:none;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--navy);cursor:pointer;}
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;padding:16px;}
+.stat-card{background:var(--gray-100);border-radius:var(--radius-sm);padding:14px;text-align:center;}
+.stat-card-num{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--navy);}
+.stat-card-label{font-size:.72rem;color:var(--gray-600);margin-top:4px;}
+.danger-btn{width:100%;padding:13px;background:#fef0ee;border:1.5px solid #f5c6c0;border-radius:var(--radius-sm);color:var(--danger);font-size:.875rem;font-weight:600;cursor:pointer;transition:var(--transition);font-family:'DM Sans',sans-serif;}
+.version-badge{text-align:center;padding:20px;font-size:.75rem;color:var(--gray-400);}
 
-@media (min-width: 480px) { .page { padding-left: 20px; padding-right: 20px; } }
+@media(min-width:480px){.page{padding-left:20px;padding-right:20px;}}
   </style>
 </head>
 <body>
@@ -416,130 +207,119 @@ input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px;
 <header class="app-header">
   <div class="header-inner">
     <div class="app-logo"><span>🇫🇷</span> Le Français</div>
-    <div class="lang-toggle">
-      <button class="lang-btn active" data-lang="tr">TR</button>
-      <button class="lang-btn" data-lang="en">EN</button>
+    <div class="header-right">
+      <div class="lang-toggle">
+        <button class="lang-btn active" data-lang="tr">TR</button>
+        <button class="lang-btn" data-lang="en">EN</button>
+      </div>
+      <button class="menu-btn" onclick="toggleMenu()">☰</button>
     </div>
   </div>
 </header>
 
-<main>
-  <section class="page active" id="page-flashcards">
-    <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
-  </section>
-  <section class="page" id="page-pronunciation">
-    <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
-  </section>
-  <section class="page" id="page-settings">
-    <div class="loader"><div class="spinner"></div> Yükleniyor...</div>
-  </section>
-</main>
+<!-- SIDE MENU -->
+<div class="menu-overlay" id="menu-overlay" onclick="closeMenu()"></div>
+<div class="side-menu" id="side-menu">
+  <div class="side-menu-header">
+    <span class="side-menu-title">🇫🇷 Le Français</span>
+    <button class="side-menu-close" onclick="closeMenu()">✕</button>
+  </div>
+  <button class="side-menu-item active" data-page="flashcards" onclick="navigateMenu('flashcards')">
+    <span class="side-menu-icon">🃏</span> <span data-i18n="nav.flashcards">Kelime Kartları</span>
+  </button>
+  <button class="side-menu-item" data-page="pronunciation" onclick="navigateMenu('pronunciation')">
+    <span class="side-menu-icon">🎧</span> <span data-i18n="nav.pronunciation">Telaffuz</span>
+  </button>
+  <button class="side-menu-item" data-page="settings" onclick="navigateMenu('settings')">
+    <span class="side-menu-icon">⚙️</span> <span data-i18n="nav.settings">Ayarlar</span>
+  </button>
+</div>
 
-<nav class="bottom-nav">
-  <button class="nav-item active" data-page="flashcards">
-    <span class="nav-icon">🃏</span>
-    <span class="nav-label">Kartlar</span>
-  </button>
-  <button class="nav-item" data-page="pronunciation">
-    <span class="nav-icon">🎧</span>
-    <span class="nav-label">Telaffuz</span>
-  </button>
-  <button class="nav-item" data-page="settings">
-    <span class="nav-icon">⚙️</span>
-    <span class="nav-label">Ayarlar</span>
-  </button>
-</nav>
+<main>
+  <section class="page active" id="page-flashcards"><div class="loader"><div class="spinner"></div> Yükleniyor...</div></section>
+  <section class="page" id="page-pronunciation"><div class="loader"><div class="spinner"></div> Yükleniyor...</div></section>
+  <section class="page" id="page-settings"><div class="loader"><div class="spinner"></div> Yükleniyor...</div></section>
+</main>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // API KEYS
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 window.PEXELS_API_KEY = 'Ml4BpmvIdeI8gfyUYxFiodEB7HhB7B47pYUwuf1ErQmdYEl4gmpIM1ug';
 window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // I18N
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 const I18N = {
   tr: {
-    nav: { flashcards:"Kartlar", pronunciation:"Telaffuz", settings:"Ayarlar" },
-    flashcards: {
-      title:"Kelime Kartları", subtitle:"Kartlara tıklayarak çevir",
-      due:"Bugün", learned:"Öğrenildi", total:"Toplam",
-      tapToFlip:"Çevirmek için tıkla",
-      again:"Tekrar", hard:"Zor", easy:"Kolay",
-      againInterval:"< 1 dk", hardInterval:"1 gün", easyInterval:"4 gün",
-      sessionDone:"Oturum Tamamlandı! 🎉", sessionDoneMsg:"Harika iş çıkardın! Yarın tekrar çalış.",
+    nav:{flashcards:"Kelime Kartları",pronunciation:"Telaffuz",settings:"Ayarlar"},
+    flashcards:{
+      title:"Kelime Kartları",subtitle:"Tıkla — FR ↔ TR arası geç, ses dinle",
+      again:"Tekrar",hard:"Zor",easy:"Kolay",
+      againInterval:"< 1 dk",hardInterval:"1 gün",easyInterval:"4 gün",
+      sessionDone:"Oturum Tamamlandı! 🎉",sessionDoneMsg:"Harika iş! Yarın tekrar çalış.",
       newSession:"Yeni Oturum",
-      again_count:"Tekrar", hard_count:"Zor", easy_count:"Kolay",
-      level_all:"Tümü", level_a1:"A1", level_a2:"A2", level_verbs:"Fiiller"
+      again_count:"Tekrar",hard_count:"Zor",easy_count:"Kolay",
+      level_all:"Tümü",level_a1:"A1",level_a2:"A2",level_verbs:"Fiiller"
     },
-    pronunciation: {
-      title:"Telaffuz", subtitle:"Dinle ve tekrar et",
-      level_all:"Tümü", level_a1:"A1", level_a2:"A2",
-      male:"Erkek", female:"Kadın", normal:"Normal", slow:"Yavaş",
-      showTranslation:"Çeviriyi göster", hideTranslation:"Çeviriyi gizle",
-      playing:"Oynatılıyor...", due:"Bugün çalışılacak",
-      voicePickerTitle:"Ses Seçimi", voicePickerNote:"📱 = iPhone'da yüklü (önerilen) · ☁️ = ağ gerektirir",
-      voiceNotFound:"⚠️ Fransızca ses bulunamadı. iPhone: Ayarlar → Erişilebilirlik → Sözlü İçerik → Sesler → Fransızca ekleyin.",
-      testVoice:"🔊 Sesi Test Et"
+    pronunciation:{
+      title:"Telaffuz",subtitle:"Dinle ve tekrar et",
+      level_all:"Tümü",level_a1:"A1",level_a2:"A2",
+      male:"Erkek",female:"Kadın",normal:"Normal",slow:"Yavaş",
+      showTranslation:"Çeviriyi göster",hideTranslation:"Çeviriyi gizle",
+      playing:"Oynatılıyor...",due:"Bugün çalışılacak"
     },
-    settings: {
-      title:"Ayarlar", subtitle:"Çalışma tercihleriniz",
-      pronunciation:"Telaffuz Ayarları",
-      defaultVoice:"Varsayılan Ses", male:"Erkek", female:"Kadın",
-      defaultSpeed:"Varsayılan Hız", normal:"Normal", slow:"Yavaş",
-      autoPlay:"Otomatik Oynat", autoPlayDesc:"Kart açılınca ses otomatik başlasın",
-      showPhonetic:"Fonetik Göster", showPhoneticDesc:"Kelimenin IPA okunuşunu göster",
-      study:"Çalışma Ayarları", dailyGoal:"Günlük Kart Hedefi",
-      language:"Dil / Language", appLanguage:"Uygulama Dili",
-      progress:"İlerleme", totalCards:"Toplam Kart", learnedCards:"Öğrenilen",
-      studyDays:"Çalışma Günü", accuracy:"Doğruluk",
-      resetProgress:"İlerlemeyi Sıfırla", resetConfirm:"Tüm ilerleme silinecek. Emin misiniz?",
-      version:"Français App v1.0 — TCF Uyumlu"
+    settings:{
+      title:"Ayarlar",subtitle:"Çalışma tercihleriniz",
+      pronunciation:"Ses Ayarları",
+      defaultVoice:"Varsayılan Ses",male:"Erkek",female:"Kadın",
+      defaultSpeed:"Varsayılan Hız",normal:"Normal",slow:"Yavaş",
+      showPhonetic:"Fonetik Göster",showPhoneticDesc:"IPA okunuşunu göster",
+      study:"Çalışma Ayarları",
+      language:"Dil / Language",appLanguage:"Uygulama Dili",
+      progress:"İlerleme",totalCards:"Toplam Kart",learnedCards:"Öğrenilen",
+      studyDays:"Çalışma Günü",accuracy:"Doğruluk",
+      resetProgress:"İlerlemeyi Sıfırla",resetConfirm:"Tüm ilerleme silinecek. Emin misiniz?",
+      version:"Français App v2.0 — TCF Uyumlu"
     }
   },
   en: {
-    nav: { flashcards:"Cards", pronunciation:"Pronunciation", settings:"Settings" },
-    flashcards: {
-      title:"Flashcards", subtitle:"Tap a card to flip it",
-      due:"Due Today", learned:"Learned", total:"Total",
-      tapToFlip:"Tap to flip",
-      again:"Again", hard:"Hard", easy:"Easy",
-      againInterval:"< 1 min", hardInterval:"1 day", easyInterval:"4 days",
-      sessionDone:"Session Complete! 🎉", sessionDoneMsg:"Great job! Come back tomorrow.",
+    nav:{flashcards:"Flashcards",pronunciation:"Pronunciation",settings:"Settings"},
+    flashcards:{
+      title:"Flashcards",subtitle:"Tap — toggle FR ↔ TR, hear the word",
+      again:"Again",hard:"Hard",easy:"Easy",
+      againInterval:"< 1 min",hardInterval:"1 day",easyInterval:"4 days",
+      sessionDone:"Session Complete! 🎉",sessionDoneMsg:"Great job! Come back tomorrow.",
       newSession:"New Session",
-      again_count:"Again", hard_count:"Hard", easy_count:"Easy",
-      level_all:"All", level_a1:"A1", level_a2:"A2", level_verbs:"Verbs"
+      again_count:"Again",hard_count:"Hard",easy_count:"Easy",
+      level_all:"All",level_a1:"A1",level_a2:"A2",level_verbs:"Verbs"
     },
-    pronunciation: {
-      title:"Pronunciation", subtitle:"Listen and repeat",
-      level_all:"All", level_a1:"A1", level_a2:"A2",
-      male:"Male", female:"Female", normal:"Normal", slow:"Slow",
-      showTranslation:"Show translation", hideTranslation:"Hide translation",
-      playing:"Playing...", due:"Due today",
-      voicePickerTitle:"Voice Selection", voicePickerNote:"📱 = on device (recommended) · ☁️ = needs network",
-      voiceNotFound:"⚠️ No French voice found. iPhone: Settings → Accessibility → Spoken Content → Voices → French.",
-      testVoice:"🔊 Test Voice"
+    pronunciation:{
+      title:"Pronunciation",subtitle:"Listen and repeat",
+      level_all:"All",level_a1:"A1",level_a2:"A2",
+      male:"Male",female:"Female",normal:"Normal",slow:"Slow",
+      showTranslation:"Show translation",hideTranslation:"Hide translation",
+      playing:"Playing...",due:"Due today"
     },
-    settings: {
-      title:"Settings", subtitle:"Your study preferences",
-      pronunciation:"Pronunciation Settings",
-      defaultVoice:"Default Voice", male:"Male", female:"Female",
-      defaultSpeed:"Default Speed", normal:"Normal", slow:"Slow",
-      autoPlay:"Auto Play", autoPlayDesc:"Auto play audio when card opens",
-      showPhonetic:"Show Phonetic", showPhoneticDesc:"Show IPA pronunciation",
-      study:"Study Settings", dailyGoal:"Daily Card Goal",
-      language:"Dil / Language", appLanguage:"App Language",
-      progress:"Progress", totalCards:"Total Cards", learnedCards:"Learned",
-      studyDays:"Study Days", accuracy:"Accuracy",
-      resetProgress:"Reset Progress", resetConfirm:"All progress will be deleted. Are you sure?",
-      version:"Français App v1.0 — TCF Compatible"
+    settings:{
+      title:"Settings",subtitle:"Your study preferences",
+      pronunciation:"Audio Settings",
+      defaultVoice:"Default Voice",male:"Male",female:"Female",
+      defaultSpeed:"Default Speed",normal:"Normal",slow:"Slow",
+      showPhonetic:"Show Phonetic",showPhoneticDesc:"Show IPA pronunciation",
+      study:"Study Settings",
+      language:"Dil / Language",appLanguage:"App Language",
+      progress:"Progress",totalCards:"Total Cards",learnedCards:"Learned",
+      studyDays:"Study Days",accuracy:"Accuracy",
+      resetProgress:"Reset Progress",resetConfirm:"All progress will be deleted. Are you sure?",
+      version:"Français App v2.0 — TCF Compatible"
     }
   }
 };
+
 function t(path) {
   const lang = (typeof AppState !== 'undefined' ? AppState.settings.language : null) || 'tr';
   const keys = path.split('.');
@@ -548,83 +328,85 @@ function t(path) {
   return val || path;
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // DATA
-// ═══════════════════════════════════════
+// ═══════════════════════════════
+// gender: m=masculin (un), f=féminin (une), v=verb/invariable
+// article: un/une shown on card
 const DATA_A1_WORDS = [
   {id:"a1_001",word:"bonjour",article:"",translation_tr:"merhaba",translation_en:"hello",phonetic:"bɔ̃.ʒuʁ",category:"greetings",gender:"v",level:"A1",pexels_query:"greeting wave hello",emoji:"👋"},
   {id:"a1_002",word:"merci",article:"",translation_tr:"teşekkür ederim",translation_en:"thank you",phonetic:"mɛʁ.si",category:"greetings",gender:"v",level:"A1",pexels_query:"thank you gratitude",emoji:"🙏"},
   {id:"a1_003",word:"oui",article:"",translation_tr:"evet",translation_en:"yes",phonetic:"wi",category:"basics",gender:"v",level:"A1",pexels_query:"yes thumbs up",emoji:"✅"},
   {id:"a1_004",word:"non",article:"",translation_tr:"hayır",translation_en:"no",phonetic:"nɔ̃",category:"basics",gender:"v",level:"A1",pexels_query:"no rejection",emoji:"❌"},
-  {id:"a1_005",word:"maison",article:"la",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",gender:"f",level:"A1",pexels_query:"house home building",emoji:"🏠"},
-  {id:"a1_006",word:"eau",article:"l'",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",gender:"f",level:"A1",pexels_query:"water glass drink",emoji:"💧"},
-  {id:"a1_007",word:"pain",article:"le",translation_tr:"ekmek",translation_en:"bread",phonetic:"pɛ̃",category:"food",gender:"m",level:"A1",pexels_query:"bread bakery fresh",emoji:"🍞"},
-  {id:"a1_008",word:"livre",article:"le",translation_tr:"kitap",translation_en:"book",phonetic:"livʁ",category:"objects",gender:"m",level:"A1",pexels_query:"book reading library",emoji:"📚"},
-  {id:"a1_009",word:"chat",article:"le",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",gender:"m",level:"A1",pexels_query:"cat kitten cute",emoji:"🐱"},
-  {id:"a1_010",word:"chien",article:"le",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",gender:"m",level:"A1",pexels_query:"dog puppy cute",emoji:"🐶"},
-  {id:"a1_011",word:"voiture",article:"la",translation_tr:"araba",translation_en:"car",phonetic:"vwa.tyʁ",category:"transport",gender:"f",level:"A1",pexels_query:"car automobile road",emoji:"🚗"},
-  {id:"a1_012",word:"école",article:"l'",translation_tr:"okul",translation_en:"school",phonetic:"e.kɔl",category:"places",gender:"f",level:"A1",pexels_query:"school classroom building",emoji:"🏫"},
-  {id:"a1_013",word:"ami",article:"l'",translation_tr:"arkadaş",translation_en:"friend",phonetic:"a.mi",category:"people",gender:"m",level:"A1",pexels_query:"friends friendship together",emoji:"👫"},
-  {id:"a1_014",word:"famille",article:"la",translation_tr:"aile",translation_en:"family",phonetic:"fa.mij",category:"people",gender:"f",level:"A1",pexels_query:"family together happy",emoji:"👨‍👩‍👧"},
-  {id:"a1_015",word:"enfant",article:"l'",translation_tr:"çocuk",translation_en:"child",phonetic:"ɑ̃.fɑ̃",category:"people",gender:"m",level:"A1",pexels_query:"child kid playing",emoji:"👶"},
-  {id:"a1_016",word:"soleil",article:"le",translation_tr:"güneş",translation_en:"sun",phonetic:"sɔ.lɛj",category:"nature",gender:"m",level:"A1",pexels_query:"sun sunshine sky bright",emoji:"☀️"},
-  {id:"a1_017",word:"fleur",article:"la",translation_tr:"çiçek",translation_en:"flower",phonetic:"flœʁ",category:"nature",gender:"f",level:"A1",pexels_query:"flower bloom garden",emoji:"🌸"},
-  {id:"a1_018",word:"pomme",article:"la",translation_tr:"elma",translation_en:"apple",phonetic:"pɔm",category:"food",gender:"f",level:"A1",pexels_query:"apple fruit red",emoji:"🍎"},
-  {id:"a1_019",word:"lait",article:"le",translation_tr:"süt",translation_en:"milk",phonetic:"lɛ",category:"food",gender:"m",level:"A1",pexels_query:"milk glass white",emoji:"🥛"},
-  {id:"a1_020",word:"table",article:"la",translation_tr:"masa",translation_en:"table",phonetic:"tabl",category:"home",gender:"f",level:"A1",pexels_query:"table furniture wooden",emoji:"🪑"},
-  {id:"a1_021",word:"chaise",article:"la",translation_tr:"sandalye",translation_en:"chair",phonetic:"ʃɛz",category:"home",gender:"f",level:"A1",pexels_query:"chair furniture",emoji:"🪑"},
-  {id:"a1_022",word:"fenêtre",article:"la",translation_tr:"pencere",translation_en:"window",phonetic:"fə.nɛtʁ",category:"home",gender:"f",level:"A1",pexels_query:"window light room",emoji:"🪟"},
-  {id:"a1_023",word:"porte",article:"la",translation_tr:"kapı",translation_en:"door",phonetic:"pɔʁt",category:"home",gender:"f",level:"A1",pexels_query:"door entrance wooden",emoji:"🚪"},
-  {id:"a1_024",word:"rue",article:"la",translation_tr:"sokak",translation_en:"street",phonetic:"ʁy",category:"places",gender:"f",level:"A1",pexels_query:"street urban city road",emoji:"🛣️"},
-  {id:"a1_025",word:"ville",article:"la",translation_tr:"şehir",translation_en:"city",phonetic:"vil",category:"places",gender:"f",level:"A1",pexels_query:"city urban buildings",emoji:"🏙️"},
-  {id:"a1_026",word:"pays",article:"le",translation_tr:"ülke",translation_en:"country",phonetic:"pe.i",category:"places",gender:"m",level:"A1",pexels_query:"country landscape nature",emoji:"🗺️"},
-  {id:"a1_027",word:"homme",article:"l'",translation_tr:"adam",translation_en:"man",phonetic:"ɔm",category:"people",gender:"m",level:"A1",pexels_query:"man adult male",emoji:"👨"},
-  {id:"a1_028",word:"femme",article:"la",translation_tr:"kadın",translation_en:"woman",phonetic:"fam",category:"people",gender:"f",level:"A1",pexels_query:"woman adult female",emoji:"👩"},
-  {id:"a1_029",word:"garçon",article:"le",translation_tr:"oğlan",translation_en:"boy",phonetic:"ɡaʁ.sɔ̃",category:"people",gender:"m",level:"A1",pexels_query:"boy child young",emoji:"👦"},
-  {id:"a1_030",word:"fille",article:"la",translation_tr:"kız",translation_en:"girl",phonetic:"fij",category:"people",gender:"f",level:"A1",pexels_query:"girl child young",emoji:"👧"},
-  {id:"a1_031",word:"mère",article:"la",translation_tr:"anne",translation_en:"mother",phonetic:"mɛʁ",category:"people",gender:"f",level:"A1",pexels_query:"mother mom family",emoji:"👩"},
-  {id:"a1_032",word:"père",article:"le",translation_tr:"baba",translation_en:"father",phonetic:"pɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"father dad family",emoji:"👨"},
-  {id:"a1_033",word:"frère",article:"le",translation_tr:"erkek kardeş",translation_en:"brother",phonetic:"fʁɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"brother siblings",emoji:"👦"},
-  {id:"a1_034",word:"sœur",article:"la",translation_tr:"kız kardeş",translation_en:"sister",phonetic:"sœʁ",category:"people",gender:"f",level:"A1",pexels_query:"sister siblings girls",emoji:"👧"},
-  {id:"a1_035",word:"heure",article:"l'",translation_tr:"saat",translation_en:"hour",phonetic:"œʁ",category:"time",gender:"f",level:"A1",pexels_query:"clock time hour",emoji:"🕐"},
-  {id:"a1_036",word:"jour",article:"le",translation_tr:"gün",translation_en:"day",phonetic:"ʒuʁ",category:"time",gender:"m",level:"A1",pexels_query:"day daylight sunrise",emoji:"📅"},
-  {id:"a1_037",word:"nuit",article:"la",translation_tr:"gece",translation_en:"night",phonetic:"nɥi",category:"time",gender:"f",level:"A1",pexels_query:"night sky dark stars",emoji:"🌙"},
-  {id:"a1_038",word:"matin",article:"le",translation_tr:"sabah",translation_en:"morning",phonetic:"ma.tɛ̃",category:"time",gender:"m",level:"A1",pexels_query:"morning sunrise coffee",emoji:"🌅"},
-  {id:"a1_039",word:"soir",article:"le",translation_tr:"akşam",translation_en:"evening",phonetic:"swaʁ",category:"time",gender:"m",level:"A1",pexels_query:"evening sunset dusk",emoji:"🌆"},
-  {id:"a1_040",word:"semaine",article:"la",translation_tr:"hafta",translation_en:"week",phonetic:"sə.mɛn",category:"time",gender:"f",level:"A1",pexels_query:"calendar week planner",emoji:"🗓️"},
-  {id:"a1_041",word:"café",article:"le",translation_tr:"kahve",translation_en:"coffee",phonetic:"ka.fe",category:"food",gender:"m",level:"A1",pexels_query:"coffee cafe cup",emoji:"☕"},
-  {id:"a1_042",word:"restaurant",article:"le",translation_tr:"restoran",translation_en:"restaurant",phonetic:"ʁɛs.tɔ.ʁɑ̃",category:"places",gender:"m",level:"A1",pexels_query:"restaurant dining food",emoji:"🍽️"},
-  {id:"a1_043",word:"supermarché",article:"le",translation_tr:"süpermarket",translation_en:"supermarket",phonetic:"sy.pɛʁ.maʁ.ʃe",category:"places",gender:"m",level:"A1",pexels_query:"supermarket grocery store",emoji:"🛒"},
-  {id:"a1_044",word:"hôpital",article:"l'",translation_tr:"hastane",translation_en:"hospital",phonetic:"o.pi.tal",category:"places",gender:"m",level:"A1",pexels_query:"hospital medical building",emoji:"🏥"},
-  {id:"a1_045",word:"pharmacie",article:"la",translation_tr:"eczane",translation_en:"pharmacy",phonetic:"faʁ.ma.si",category:"places",gender:"f",level:"A1",pexels_query:"pharmacy medicine store",emoji:"💊"},
-  {id:"a1_046",word:"banque",article:"la",translation_tr:"banka",translation_en:"bank",phonetic:"bɑ̃k",category:"places",gender:"f",level:"A1",pexels_query:"bank finance building",emoji:"🏦"},
-  {id:"a1_047",word:"train",article:"le",translation_tr:"tren",translation_en:"train",phonetic:"tʁɛ̃",category:"transport",gender:"m",level:"A1",pexels_query:"train railway station",emoji:"🚂"},
-  {id:"a1_048",word:"bus",article:"le",translation_tr:"otobüs",translation_en:"bus",phonetic:"bys",category:"transport",gender:"m",level:"A1",pexels_query:"bus public transport",emoji:"🚌"},
-  {id:"a1_049",word:"avion",article:"l'",translation_tr:"uçak",translation_en:"airplane",phonetic:"a.vjɔ̃",category:"transport",gender:"m",level:"A1",pexels_query:"airplane sky flight",emoji:"✈️"},
-  {id:"a1_050",word:"vélo",article:"le",translation_tr:"bisiklet",translation_en:"bicycle",phonetic:"ve.lo",category:"transport",gender:"m",level:"A1",pexels_query:"bicycle bike ride",emoji:"🚲"}
+  {id:"a1_005",word:"maison",article:"une",translation_tr:"ev",translation_en:"house",phonetic:"mɛ.zɔ̃",category:"home",gender:"f",level:"A1",pexels_query:"house home building",emoji:"🏠"},
+  {id:"a1_006",word:"eau",article:"une",translation_tr:"su",translation_en:"water",phonetic:"o",category:"food",gender:"f",level:"A1",pexels_query:"water glass drink",emoji:"💧"},
+  {id:"a1_007",word:"pain",article:"un",translation_tr:"ekmek",translation_en:"bread",phonetic:"pɛ̃",category:"food",gender:"m",level:"A1",pexels_query:"bread bakery fresh",emoji:"🍞"},
+  {id:"a1_008",word:"livre",article:"un",translation_tr:"kitap",translation_en:"book",phonetic:"livʁ",category:"objects",gender:"m",level:"A1",pexels_query:"book reading library",emoji:"📚"},
+  {id:"a1_009",word:"chat",article:"un",translation_tr:"kedi",translation_en:"cat",phonetic:"ʃa",category:"animals",gender:"m",level:"A1",pexels_query:"cat kitten cute",emoji:"🐱"},
+  {id:"a1_010",word:"chien",article:"un",translation_tr:"köpek",translation_en:"dog",phonetic:"ʃjɛ̃",category:"animals",gender:"m",level:"A1",pexels_query:"dog puppy cute",emoji:"🐶"},
+  {id:"a1_011",word:"voiture",article:"une",translation_tr:"araba",translation_en:"car",phonetic:"vwa.tyʁ",category:"transport",gender:"f",level:"A1",pexels_query:"car automobile road",emoji:"🚗"},
+  {id:"a1_012",word:"école",article:"une",translation_tr:"okul",translation_en:"school",phonetic:"e.kɔl",category:"places",gender:"f",level:"A1",pexels_query:"school classroom building",emoji:"🏫"},
+  {id:"a1_013",word:"ami",article:"un",translation_tr:"arkadaş",translation_en:"friend",phonetic:"a.mi",category:"people",gender:"m",level:"A1",pexels_query:"friends friendship together",emoji:"👫"},
+  {id:"a1_014",word:"famille",article:"une",translation_tr:"aile",translation_en:"family",phonetic:"fa.mij",category:"people",gender:"f",level:"A1",pexels_query:"family together happy",emoji:"👨‍👩‍👧"},
+  {id:"a1_015",word:"enfant",article:"un",translation_tr:"çocuk",translation_en:"child",phonetic:"ɑ̃.fɑ̃",category:"people",gender:"m",level:"A1",pexels_query:"child kid playing",emoji:"👶"},
+  {id:"a1_016",word:"soleil",article:"un",translation_tr:"güneş",translation_en:"sun",phonetic:"sɔ.lɛj",category:"nature",gender:"m",level:"A1",pexels_query:"sun sunshine sky bright",emoji:"☀️"},
+  {id:"a1_017",word:"fleur",article:"une",translation_tr:"çiçek",translation_en:"flower",phonetic:"flœʁ",category:"nature",gender:"f",level:"A1",pexels_query:"flower bloom garden",emoji:"🌸"},
+  {id:"a1_018",word:"pomme",article:"une",translation_tr:"elma",translation_en:"apple",phonetic:"pɔm",category:"food",gender:"f",level:"A1",pexels_query:"apple fruit red",emoji:"🍎"},
+  {id:"a1_019",word:"lait",article:"un",translation_tr:"süt",translation_en:"milk",phonetic:"lɛ",category:"food",gender:"m",level:"A1",pexels_query:"milk glass white",emoji:"🥛"},
+  {id:"a1_020",word:"table",article:"une",translation_tr:"masa",translation_en:"table",phonetic:"tabl",category:"home",gender:"f",level:"A1",pexels_query:"table furniture wooden",emoji:"🪑"},
+  {id:"a1_021",word:"chaise",article:"une",translation_tr:"sandalye",translation_en:"chair",phonetic:"ʃɛz",category:"home",gender:"f",level:"A1",pexels_query:"chair furniture",emoji:"🪑"},
+  {id:"a1_022",word:"fenêtre",article:"une",translation_tr:"pencere",translation_en:"window",phonetic:"fə.nɛtʁ",category:"home",gender:"f",level:"A1",pexels_query:"window light room",emoji:"🪟"},
+  {id:"a1_023",word:"porte",article:"une",translation_tr:"kapı",translation_en:"door",phonetic:"pɔʁt",category:"home",gender:"f",level:"A1",pexels_query:"door entrance wooden",emoji:"🚪"},
+  {id:"a1_024",word:"rue",article:"une",translation_tr:"sokak",translation_en:"street",phonetic:"ʁy",category:"places",gender:"f",level:"A1",pexels_query:"street urban city road",emoji:"🛣️"},
+  {id:"a1_025",word:"ville",article:"une",translation_tr:"şehir",translation_en:"city",phonetic:"vil",category:"places",gender:"f",level:"A1",pexels_query:"city urban buildings",emoji:"🏙️"},
+  {id:"a1_026",word:"pays",article:"un",translation_tr:"ülke",translation_en:"country",phonetic:"pe.i",category:"places",gender:"m",level:"A1",pexels_query:"country landscape nature",emoji:"🗺️"},
+  {id:"a1_027",word:"homme",article:"un",translation_tr:"adam",translation_en:"man",phonetic:"ɔm",category:"people",gender:"m",level:"A1",pexels_query:"man adult male",emoji:"👨"},
+  {id:"a1_028",word:"femme",article:"une",translation_tr:"kadın",translation_en:"woman",phonetic:"fam",category:"people",gender:"f",level:"A1",pexels_query:"woman adult female",emoji:"👩"},
+  {id:"a1_029",word:"garçon",article:"un",translation_tr:"oğlan",translation_en:"boy",phonetic:"ɡaʁ.sɔ̃",category:"people",gender:"m",level:"A1",pexels_query:"boy child young",emoji:"👦"},
+  {id:"a1_030",word:"fille",article:"une",translation_tr:"kız",translation_en:"girl",phonetic:"fij",category:"people",gender:"f",level:"A1",pexels_query:"girl child young",emoji:"👧"},
+  {id:"a1_031",word:"mère",article:"une",translation_tr:"anne",translation_en:"mother",phonetic:"mɛʁ",category:"people",gender:"f",level:"A1",pexels_query:"mother mom family",emoji:"👩"},
+  {id:"a1_032",word:"père",article:"un",translation_tr:"baba",translation_en:"father",phonetic:"pɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"father dad family",emoji:"👨"},
+  {id:"a1_033",word:"frère",article:"un",translation_tr:"erkek kardeş",translation_en:"brother",phonetic:"fʁɛʁ",category:"people",gender:"m",level:"A1",pexels_query:"brother siblings",emoji:"👦"},
+  {id:"a1_034",word:"sœur",article:"une",translation_tr:"kız kardeş",translation_en:"sister",phonetic:"sœʁ",category:"people",gender:"f",level:"A1",pexels_query:"sister siblings girls",emoji:"👧"},
+  {id:"a1_035",word:"heure",article:"une",translation_tr:"saat",translation_en:"hour",phonetic:"œʁ",category:"time",gender:"f",level:"A1",pexels_query:"clock time hour",emoji:"🕐"},
+  {id:"a1_036",word:"jour",article:"un",translation_tr:"gün",translation_en:"day",phonetic:"ʒuʁ",category:"time",gender:"m",level:"A1",pexels_query:"day daylight sunrise",emoji:"📅"},
+  {id:"a1_037",word:"nuit",article:"une",translation_tr:"gece",translation_en:"night",phonetic:"nɥi",category:"time",gender:"f",level:"A1",pexels_query:"night sky dark stars",emoji:"🌙"},
+  {id:"a1_038",word:"matin",article:"un",translation_tr:"sabah",translation_en:"morning",phonetic:"ma.tɛ̃",category:"time",gender:"m",level:"A1",pexels_query:"morning sunrise coffee",emoji:"🌅"},
+  {id:"a1_039",word:"soir",article:"un",translation_tr:"akşam",translation_en:"evening",phonetic:"swaʁ",category:"time",gender:"m",level:"A1",pexels_query:"evening sunset dusk",emoji:"🌆"},
+  {id:"a1_040",word:"semaine",article:"une",translation_tr:"hafta",translation_en:"week",phonetic:"sə.mɛn",category:"time",gender:"f",level:"A1",pexels_query:"calendar week planner",emoji:"🗓️"},
+  {id:"a1_041",word:"café",article:"un",translation_tr:"kahve",translation_en:"coffee",phonetic:"ka.fe",category:"food",gender:"m",level:"A1",pexels_query:"coffee cafe cup",emoji:"☕"},
+  {id:"a1_042",word:"restaurant",article:"un",translation_tr:"restoran",translation_en:"restaurant",phonetic:"ʁɛs.tɔ.ʁɑ̃",category:"places",gender:"m",level:"A1",pexels_query:"restaurant dining food",emoji:"🍽️"},
+  {id:"a1_043",word:"supermarché",article:"un",translation_tr:"süpermarket",translation_en:"supermarket",phonetic:"sy.pɛʁ.maʁ.ʃe",category:"places",gender:"m",level:"A1",pexels_query:"supermarket grocery store",emoji:"🛒"},
+  {id:"a1_044",word:"hôpital",article:"un",translation_tr:"hastane",translation_en:"hospital",phonetic:"o.pi.tal",category:"places",gender:"m",level:"A1",pexels_query:"hospital medical building",emoji:"🏥"},
+  {id:"a1_045",word:"pharmacie",article:"une",translation_tr:"eczane",translation_en:"pharmacy",phonetic:"faʁ.ma.si",category:"places",gender:"f",level:"A1",pexels_query:"pharmacy medicine store",emoji:"💊"},
+  {id:"a1_046",word:"banque",article:"une",translation_tr:"banka",translation_en:"bank",phonetic:"bɑ̃k",category:"places",gender:"f",level:"A1",pexels_query:"bank finance building",emoji:"🏦"},
+  {id:"a1_047",word:"train",article:"un",translation_tr:"tren",translation_en:"train",phonetic:"tʁɛ̃",category:"transport",gender:"m",level:"A1",pexels_query:"train railway station",emoji:"🚂"},
+  {id:"a1_048",word:"bus",article:"un",translation_tr:"otobüs",translation_en:"bus",phonetic:"bys",category:"transport",gender:"m",level:"A1",pexels_query:"bus public transport",emoji:"🚌"},
+  {id:"a1_049",word:"avion",article:"un",translation_tr:"uçak",translation_en:"airplane",phonetic:"a.vjɔ̃",category:"transport",gender:"m",level:"A1",pexels_query:"airplane sky flight",emoji:"✈️"},
+  {id:"a1_050",word:"vélo",article:"un",translation_tr:"bisiklet",translation_en:"bicycle",phonetic:"ve.lo",category:"transport",gender:"m",level:"A1",pexels_query:"bicycle bike ride",emoji:"🚲"}
 ];
 
 const DATA_A2_WORDS = [
-  {id:"a2_001",word:"travail",article:"le",translation_tr:"iş",translation_en:"work",phonetic:"tʁa.vaj",category:"work",gender:"m",level:"A2",pexels_query:"work office desk",emoji:"💼"},
-  {id:"a2_002",word:"réunion",article:"la",translation_tr:"toplantı",translation_en:"meeting",phonetic:"ʁe.y.njɔ̃",category:"work",gender:"f",level:"A2",pexels_query:"meeting conference business",emoji:"🤝"},
-  {id:"a2_003",word:"appartement",article:"l'",translation_tr:"daire",translation_en:"apartment",phonetic:"a.paʁ.tə.mɑ̃",category:"home",gender:"m",level:"A2",pexels_query:"apartment interior living",emoji:"🏢"},
-  {id:"a2_004",word:"cuisine",article:"la",translation_tr:"mutfak",translation_en:"kitchen",phonetic:"kɥi.zin",category:"home",gender:"f",level:"A2",pexels_query:"kitchen cooking home",emoji:"👨‍🍳"},
-  {id:"a2_005",word:"chambre",article:"la",translation_tr:"yatak odası",translation_en:"bedroom",phonetic:"ʃɑ̃bʁ",category:"home",gender:"f",level:"A2",pexels_query:"bedroom bed room",emoji:"🛏️"},
-  {id:"a2_006",word:"vacances",article:"les",translation_tr:"tatil",translation_en:"vacation",phonetic:"va.kɑ̃s",category:"leisure",gender:"f",level:"A2",pexels_query:"vacation holiday travel beach",emoji:"🏖️"},
-  {id:"a2_007",word:"voyage",article:"le",translation_tr:"seyahat",translation_en:"travel",phonetic:"vwa.jaʒ",category:"leisure",gender:"m",level:"A2",pexels_query:"travel journey adventure",emoji:"🧳"},
-  {id:"a2_008",word:"sport",article:"le",translation_tr:"spor",translation_en:"sport",phonetic:"spɔʁ",category:"leisure",gender:"m",level:"A2",pexels_query:"sport exercise fitness",emoji:"⚽"},
-  {id:"a2_009",word:"musique",article:"la",translation_tr:"müzik",translation_en:"music",phonetic:"my.zik",category:"leisure",gender:"f",level:"A2",pexels_query:"music concert headphones",emoji:"🎵"},
-  {id:"a2_010",word:"cinéma",article:"le",translation_tr:"sinema",translation_en:"cinema",phonetic:"si.ne.ma",category:"leisure",gender:"m",level:"A2",pexels_query:"cinema movie theater",emoji:"🎬"},
-  {id:"a2_011",word:"magasin",article:"le",translation_tr:"mağaza",translation_en:"store",phonetic:"ma.ɡa.zɛ̃",category:"places",gender:"m",level:"A2",pexels_query:"store shop retail",emoji:"🏪"},
-  {id:"a2_012",word:"marché",article:"le",translation_tr:"pazar",translation_en:"market",phonetic:"maʁ.ʃe",category:"places",gender:"m",level:"A2",pexels_query:"market outdoor food stalls",emoji:"🛍️"},
-  {id:"a2_013",word:"météo",article:"la",translation_tr:"hava durumu",translation_en:"weather",phonetic:"me.te.o",category:"nature",gender:"f",level:"A2",pexels_query:"weather forecast sky clouds",emoji:"⛅"},
-  {id:"a2_014",word:"pluie",article:"la",translation_tr:"yağmur",translation_en:"rain",phonetic:"plɥi",category:"nature",gender:"f",level:"A2",pexels_query:"rain rainy weather",emoji:"🌧️"},
-  {id:"a2_015",word:"neige",article:"la",translation_tr:"kar",translation_en:"snow",phonetic:"nɛʒ",category:"nature",gender:"f",level:"A2",pexels_query:"snow winter cold",emoji:"❄️"},
-  {id:"a2_016",word:"rendez-vous",article:"le",translation_tr:"randevu",translation_en:"appointment",phonetic:"ʁɑ̃.de.vu",category:"social",gender:"m",level:"A2",pexels_query:"appointment calendar meeting",emoji:"📅"},
-  {id:"a2_017",word:"invitation",article:"l'",translation_tr:"davet",translation_en:"invitation",phonetic:"ɛ̃.vi.ta.sjɔ̃",category:"social",gender:"f",level:"A2",pexels_query:"invitation party celebration",emoji:"💌"},
-  {id:"a2_018",word:"cadeau",article:"le",translation_tr:"hediye",translation_en:"gift",phonetic:"ka.do",category:"social",gender:"m",level:"A2",pexels_query:"gift present wrapped",emoji:"🎁"},
-  {id:"a2_019",word:"anniversaire",article:"l'",translation_tr:"doğum günü",translation_en:"birthday",phonetic:"a.ni.vɛʁ.sɛʁ",category:"social",gender:"m",level:"A2",pexels_query:"birthday cake celebration",emoji:"🎂"},
-  {id:"a2_020",word:"santé",article:"la",translation_tr:"sağlık",translation_en:"health",phonetic:"sɑ̃.te",category:"health",gender:"f",level:"A2",pexels_query:"health wellness medical",emoji:"❤️"}
+  {id:"a2_001",word:"travail",article:"un",translation_tr:"iş",translation_en:"work",phonetic:"tʁa.vaj",category:"work",gender:"m",level:"A2",pexels_query:"work office desk",emoji:"💼"},
+  {id:"a2_002",word:"réunion",article:"une",translation_tr:"toplantı",translation_en:"meeting",phonetic:"ʁe.y.njɔ̃",category:"work",gender:"f",level:"A2",pexels_query:"meeting conference business",emoji:"🤝"},
+  {id:"a2_003",word:"appartement",article:"un",translation_tr:"daire",translation_en:"apartment",phonetic:"a.paʁ.tə.mɑ̃",category:"home",gender:"m",level:"A2",pexels_query:"apartment interior living",emoji:"🏢"},
+  {id:"a2_004",word:"cuisine",article:"une",translation_tr:"mutfak",translation_en:"kitchen",phonetic:"kɥi.zin",category:"home",gender:"f",level:"A2",pexels_query:"kitchen cooking home",emoji:"👨‍🍳"},
+  {id:"a2_005",word:"chambre",article:"une",translation_tr:"yatak odası",translation_en:"bedroom",phonetic:"ʃɑ̃bʁ",category:"home",gender:"f",level:"A2",pexels_query:"bedroom bed room",emoji:"🛏️"},
+  {id:"a2_006",word:"vacances",article:"des",translation_tr:"tatil",translation_en:"vacation",phonetic:"va.kɑ̃s",category:"leisure",gender:"f",level:"A2",pexels_query:"vacation holiday travel beach",emoji:"🏖️"},
+  {id:"a2_007",word:"voyage",article:"un",translation_tr:"seyahat",translation_en:"travel",phonetic:"vwa.jaʒ",category:"leisure",gender:"m",level:"A2",pexels_query:"travel journey adventure",emoji:"🧳"},
+  {id:"a2_008",word:"sport",article:"un",translation_tr:"spor",translation_en:"sport",phonetic:"spɔʁ",category:"leisure",gender:"m",level:"A2",pexels_query:"sport exercise fitness",emoji:"⚽"},
+  {id:"a2_009",word:"musique",article:"une",translation_tr:"müzik",translation_en:"music",phonetic:"my.zik",category:"leisure",gender:"f",level:"A2",pexels_query:"music concert headphones",emoji:"🎵"},
+  {id:"a2_010",word:"cinéma",article:"un",translation_tr:"sinema",translation_en:"cinema",phonetic:"si.ne.ma",category:"leisure",gender:"m",level:"A2",pexels_query:"cinema movie theater",emoji:"🎬"},
+  {id:"a2_011",word:"magasin",article:"un",translation_tr:"mağaza",translation_en:"store",phonetic:"ma.ɡa.zɛ̃",category:"places",gender:"m",level:"A2",pexels_query:"store shop retail",emoji:"🏪"},
+  {id:"a2_012",word:"marché",article:"un",translation_tr:"pazar",translation_en:"market",phonetic:"maʁ.ʃe",category:"places",gender:"m",level:"A2",pexels_query:"market outdoor food stalls",emoji:"🛍️"},
+  {id:"a2_013",word:"météo",article:"une",translation_tr:"hava durumu",translation_en:"weather",phonetic:"me.te.o",category:"nature",gender:"f",level:"A2",pexels_query:"weather forecast sky clouds",emoji:"⛅"},
+  {id:"a2_014",word:"pluie",article:"une",translation_tr:"yağmur",translation_en:"rain",phonetic:"plɥi",category:"nature",gender:"f",level:"A2",pexels_query:"rain rainy weather",emoji:"🌧️"},
+  {id:"a2_015",word:"neige",article:"une",translation_tr:"kar",translation_en:"snow",phonetic:"nɛʒ",category:"nature",gender:"f",level:"A2",pexels_query:"snow winter cold",emoji:"❄️"},
+  {id:"a2_016",word:"rendez-vous",article:"un",translation_tr:"randevu",translation_en:"appointment",phonetic:"ʁɑ̃.de.vu",category:"social",gender:"m",level:"A2",pexels_query:"appointment calendar meeting",emoji:"📅"},
+  {id:"a2_017",word:"invitation",article:"une",translation_tr:"davet",translation_en:"invitation",phonetic:"ɛ̃.vi.ta.sjɔ̃",category:"social",gender:"f",level:"A2",pexels_query:"invitation party celebration",emoji:"💌"},
+  {id:"a2_018",word:"cadeau",article:"un",translation_tr:"hediye",translation_en:"gift",phonetic:"ka.do",category:"social",gender:"m",level:"A2",pexels_query:"gift present wrapped",emoji:"🎁"},
+  {id:"a2_019",word:"anniversaire",article:"un",translation_tr:"doğum günü",translation_en:"birthday",phonetic:"a.ni.vɛʁ.sɛʁ",category:"social",gender:"m",level:"A2",pexels_query:"birthday cake celebration",emoji:"🎂"},
+  {id:"a2_020",word:"santé",article:"une",translation_tr:"sağlık",translation_en:"health",phonetic:"sɑ̃.te",category:"health",gender:"f",level:"A2",pexels_query:"health wellness medical",emoji:"❤️"}
 ];
 
 const DATA_A1_SENTENCES = [
@@ -658,24 +440,24 @@ const DATA_A2_SENTENCES = [
   {id:"s_a2_010",sentence:"Depuis combien de temps apprenez-vous le français ?",words:["Depuis","combien","de","temps","apprenez-vous","le","français","?"],translation_tr:"Ne zamandır Fransızca öğreniyorsunuz?",translation_en:"How long have you been learning French?",level:"A2",topic:"language"}
 ];
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // APP STATE
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 const AppState = {
-  currentPage: 'flashcards',
-  settings: { language:'tr', voice:'female', speed:'normal', autoPlay:false, showPhonetic:true, dailyGoal:20 },
-  progress: { cards:{}, sentences:{}, studyDays:new Set(), totalSessions:0 }
+  currentPage:'flashcards',
+  settings:{language:'tr',voice:'female',speed:'normal',showPhonetic:true},
+  progress:{cards:{},sentences:{},studyDays:new Set(),totalSessions:0}
 };
 
 function saveState() {
   try {
-    localStorage.setItem('francais_state', JSON.stringify({
-      settings: AppState.settings,
-      progress: {
-        cards: AppState.progress.cards,
-        sentences: AppState.progress.sentences,
-        studyDays: [...AppState.progress.studyDays],
-        totalSessions: AppState.progress.totalSessions
+    localStorage.setItem('francais_v2', JSON.stringify({
+      settings:AppState.settings,
+      progress:{
+        cards:AppState.progress.cards,
+        sentences:AppState.progress.sentences,
+        studyDays:[...AppState.progress.studyDays],
+        totalSessions:AppState.progress.totalSessions
       }
     }));
   } catch(e) {}
@@ -683,7 +465,7 @@ function saveState() {
 
 function loadState() {
   try {
-    const raw = localStorage.getItem('francais_state');
+    const raw = localStorage.getItem('francais_v2');
     if (!raw) return;
     const saved = JSON.parse(raw);
     if (saved.settings) Object.assign(AppState.settings, saved.settings);
@@ -696,15 +478,32 @@ function loadState() {
   } catch(e) {}
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
+// MENU
+// ═══════════════════════════════
+function toggleMenu() {
+  document.getElementById('side-menu').classList.toggle('open');
+  document.getElementById('menu-overlay').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('side-menu').classList.remove('open');
+  document.getElementById('menu-overlay').classList.remove('open');
+}
+function navigateMenu(page) {
+  closeMenu();
+  navigate(page);
+}
+
+// ═══════════════════════════════
 // ROUTER
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 function navigate(page) {
   AppState.currentPage = page;
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(`page-${page}`)?.classList.add('active');
-  document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+  document.querySelectorAll('.side-menu-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.page === page);
+  });
   if (page === 'flashcards') renderFlashcards();
   if (page === 'pronunciation') renderPronunciation();
   if (page === 'settings') renderSettings();
@@ -731,14 +530,14 @@ function showToast(msg) {
   el.textContent = msg;
   el.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => el.classList.remove('show'), 2200);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // SM-2
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 function sm2(card, quality) {
-  let { ef=2.5, interval=1, reps=0 } = card;
+  let {ef=2.5,interval=1,reps=0} = card;
   if (quality < 3) { reps=0; interval=1; }
   else {
     if (reps===0) interval=1;
@@ -747,147 +546,70 @@ function sm2(card, quality) {
     reps++;
   }
   ef = Math.max(1.3, ef+0.1-(5-quality)*(0.08+(5-quality)*0.02));
-  return { ef, interval, reps, nextReview: Date.now()+interval*86400000 };
+  return {ef, interval, reps, nextReview:Date.now()+interval*86400000};
 }
 
-function isDue(cardData) {
-  if (!cardData || !cardData.nextReview) return true;
-  return Date.now() >= cardData.nextReview;
+function isDue(c) {
+  if (!c || !c.nextReview) return true;
+  return Date.now() >= c.nextReview;
 }
 
-// ═══════════════════════════════════════
-// VOICE SYSTEM
-// ═══════════════════════════════════════
-let availableFrVoices = [];
-let selectedVoiceURI = null;
-
-function loadFrVoices() {
-  const all = window.speechSynthesis ? window.speechSynthesis.getVoices() : [];
-  availableFrVoices = all.filter(v => v.lang && v.lang.startsWith('fr'));
-  return availableFrVoices;
-}
-
-function getBestVoice(gender) {
-  const voices = availableFrVoices.length ? availableFrVoices : loadFrVoices();
-  if (!voices.length) return null;
-  if (selectedVoiceURI) {
-    const picked = voices.find(v => v.voiceURI === selectedVoiceURI);
-    if (picked) return picked;
-  }
-  const femaleHints = ['amélie','amelie','marie','aurelie','aurélie','audrey','virginie','female','femme'];
-  const maleHints = ['thomas','nicolas','pierre','male','homme'];
-  const hints = gender === 'male' ? maleHints : femaleHints;
-  const match = voices.find(v => hints.some(h => v.name.toLowerCase().includes(h)));
-  if (match) return match;
-  const local = voices.find(v => v.localService);
-  return local || voices[0];
-}
-
-function renderVoicePicker() {
-  loadFrVoices();
-  if (!availableFrVoices.length) {
-    return `<div class="voice-warning">${t('pronunciation.voiceNotFound')}</div>`;
-  }
-  return `
-    <div class="voice-picker-box">
-      <div class="voice-picker-title">🎙️ ${t('pronunciation.voicePickerTitle')} — ${availableFrVoices.length} ses</div>
-      <div class="voice-picker-chips">
-        ${availableFrVoices.map(v => `
-          <button class="audio-chip ${selectedVoiceURI === v.voiceURI ? 'active' : ''}"
-            onclick="selectVoice('${v.voiceURI.replace(/\\/g,'\\\\').replace(/'/g,"\\'")}')">
-            ${v.localService ? '📱' : '☁️'} ${v.name}
-          </button>
-        `).join('')}
-      </div>
-      <div class="voice-picker-note">${t('pronunciation.voicePickerNote')}</div>
-      ${selectedVoiceURI ? `<button class="voice-test-btn" onclick="testVoice()">${t('pronunciation.testVoice')}</button>` : ''}
-    </div>
-  `;
-}
-
-function selectVoice(uri) {
-  selectedVoiceURI = uri;
-  const area = document.getElementById('voice-picker-area');
-  if (area) area.innerHTML = renderVoicePicker();
-}
-
-function testVoice() {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance("Bonjour, comment allez-vous ?");
-  utter.lang = 'fr-FR';
-  utter.rate = currentSpeed === 'slow' ? 0.5 : 1.0;
-  const voice = getBestVoice(currentVoice);
-  if (voice) utter.voice = voice;
-  window.speechSynthesis.speak(utter);
-}
-
-// ─── GOOGLE CLOUD TTS ───
-async function googleTTS(text, slow = false) {
-  const key = window.GOOGLE_TTS_KEY || '';
-  if (!key) return null;
-  const voiceName = (AppState.settings.voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
-  const speakingRate = slow ? 0.65 : 1.0;
-  try {
-    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: { text },
-        voice: { languageCode: 'fr-FR', name: voiceName },
-        audioConfig: { audioEncoding: 'MP3', speakingRate }
-      })
-    });
-    const data = await res.json();
-    if (!data.audioContent) return null;
-    return 'data:audio/mp3;base64,' + data.audioContent;
-  } catch { return null; }
-}
-
+// ═══════════════════════════════
+// GOOGLE TTS
+// ═══════════════════════════════
 async function speakWord(text, gender) {
-  // gender: 'm' → erkek ses, 'f' → kadın ses, 'v'/undefined → ayarlardaki ses
-  const voiceGender = gender === 'm' ? 'male' : gender === 'f' ? 'female' : (AppState.settings.voice || 'female');
-  const voiceName = voiceGender === 'male' ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
   const key = window.GOOGLE_TTS_KEY || '';
   if (!key) return;
+  // gender: m → erkek ses, f → kadın ses
+  const voiceName = (gender === 'm') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
   try {
     const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: { text },
-        voice: { languageCode: 'fr-FR', name: voiceName },
-        audioConfig: { audioEncoding: 'MP3', speakingRate: 0.9 }
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        input:{text},
+        voice:{languageCode:'fr-FR',name:voiceName},
+        audioConfig:{audioEncoding:'MP3',speakingRate:0.9}
       })
     });
     const data = await res.json();
     if (!data.audioContent) return;
-    const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
-    audio.play().catch(() => {});
+    const audio = new Audio('data:audio/mp3;base64,'+data.audioContent);
+    audio.play().catch(()=>{});
   } catch {}
 }
 
-if (window.speechSynthesis) {
-  loadFrVoices();
-  window.speechSynthesis.onvoiceschanged = () => {
-    loadFrVoices();
-    if (AppState.currentPage === 'pronunciation') {
-      const area = document.getElementById('voice-picker-area');
-      if (area) area.innerHTML = renderVoicePicker();
-    }
-  };
+async function playTTS(text, gender, slow) {
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) return null;
+  const voiceName = (gender === 'm') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        input:{text},
+        voice:{languageCode:'fr-FR',name:voiceName},
+        audioConfig:{audioEncoding:'MP3',speakingRate:slow?0.6:1.0}
+      })
+    });
+    const data = await res.json();
+    if (data.error) { showToast('Hata: '+data.error.message); return null; }
+    if (!data.audioContent) return null;
+    return 'data:audio/mp3;base64,'+data.audioContent;
+  } catch(e) { showToast('Bağlantı hatası'); return null; }
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // PEXELS
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 const imageCache = {};
 async function fetchPexelsImage(query, wordId) {
   if (imageCache[wordId]) return imageCache[wordId];
-  const PEXELS_KEY = window.PEXELS_API_KEY || '';
-  if (!PEXELS_KEY) return null;
+  const key = window.PEXELS_API_KEY || '';
+  if (!key) return null;
   try {
-    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`, { headers:{ Authorization:PEXELS_KEY } });
+    const res = await fetch(`https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`,{headers:{Authorization:key}});
     const data = await res.json();
     const url = data.photos?.[0]?.src?.medium || null;
     if (url) imageCache[wordId] = url;
@@ -895,23 +617,23 @@ async function fetchPexelsImage(query, wordId) {
   } catch { return null; }
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // FLASHCARDS
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 let allWords = [];
 let sessionQueue = [];
 let currentCardIndex = 0;
-let sessionStats = { again:0, hard:0, easy:0 };
+let sessionStats = {again:0,hard:0,easy:0};
 let fcFilter = 'all';
-let cardFlipped = false;
+let cardShowingFR = true;
 
 function loadWords() { allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS]; }
 
 function getFilteredWords() {
   let words = [...allWords];
-  if (fcFilter==='a1') words = words.filter(w => w.level==='A1');
-  else if (fcFilter==='a2') words = words.filter(w => w.level==='A2');
-  else if (fcFilter==='verbs') words = words.filter(w => w.category==='verb');
+  if (fcFilter==='a1') words = words.filter(w=>w.level==='A1');
+  else if (fcFilter==='a2') words = words.filter(w=>w.level==='A2');
+  else if (fcFilter==='verbs') words = words.filter(w=>w.category==='verb');
   return words;
 }
 
@@ -924,15 +646,15 @@ function renderFlashcards() {
   if (!page) return;
   const filtered = getFilteredWords();
   const dueWords = getDueWords();
-  const learnedCount = filtered.filter(w => { const c=AppState.progress.cards[w.id]; return c&&c.reps>0&&!isDue(c); }).length;
+  const learnedCount = filtered.filter(w=>{const c=AppState.progress.cards[w.id];return c&&c.reps>0&&!isDue(c);}).length;
 
   page.innerHTML = `
     <div class="section-header">
       <h1 class="section-title">${t('flashcards.title')}</h1>
       <p class="section-subtitle">${t('flashcards.subtitle')}</p>
     </div>
-    <div style="text-align:center;margin-bottom:16px">
-      <span style="font-size:0.9rem;color:var(--gray-600);font-weight:500">🃏 ${dueWords.length} kart bekliyor · ✅ ${learnedCount} öğrenildi</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span style="font-size:.85rem;color:var(--gray-600)">🃏 ${dueWords.length} bekliyor · ✅ ${learnedCount} öğrenildi</span>
     </div>
     <div class="filter-row">
       ${['all','a1','a2','verbs'].map(f=>`<button class="chip ${fcFilter===f?'active':''}" onclick="setFcFilter('${f}')">${t('flashcards.level_'+f)}</button>`).join('')}
@@ -945,66 +667,74 @@ function renderFlashcards() {
   if (dueWords.length > 0) {
     sessionQueue = [...dueWords];
     currentCardIndex = 0;
-    sessionStats = { again:0, hard:0, easy:0 };
-    cardFlipped = false;
+    sessionStats = {again:0,hard:0,easy:0};
+    cardShowingFR = true;
     loadCardContent(sessionQueue[0]);
   }
 }
 
 function setFcFilter(f) { fcFilter=f; renderFlashcards(); }
 
-let cardShowingFR = true; // true = FR yüzü, false = TR yüzü
-
 function renderCardArea(queue) {
   const card = queue[currentCardIndex];
-  const gender = card.gender || 'v';
+  const g = card.gender || 'v';
   const article = card.article || '';
-  const genderClass = `gender-${gender}`;
-  const displayWord = article ? `${article} ${card.word}` : card.word;
-  const translation = AppState.settings.language === 'tr' ? card.translation_tr : card.translation_en;
+  const translation = AppState.settings.language==='tr' ? card.translation_tr : card.translation_en;
 
   return `
-    <div class="card-counter"><span class="counter-text">${currentCardIndex + 1} / ${queue.length} kart</span></div>
-    <div class="progress-bar" style="margin-bottom:16px">
-      <div class="progress-fill" style="width:${(currentCardIndex / queue.length) * 100}%"></div>
+    <div class="card-counter">
+      <span class="counter-text">${currentCardIndex+1} / ${queue.length}</span>
+    </div>
+    <div class="progress-bar" style="margin-bottom:14px">
+      <div class="progress-fill" style="width:${(currentCardIndex/queue.length)*100}%"></div>
     </div>
 
     <div class="flashcard-scene" onclick="toggleCard()">
-      <div class="flashcard ${cardShowingFR ? '' : 'flipped'}" id="flashcard">
+      <div class="flashcard ${cardShowingFR?'':'flipped'}" id="flashcard">
 
-        <!-- FR YÜZ -->
-        <div class="flashcard-face flashcard-front ${genderClass}">
+        <div class="flashcard-face flashcard-front gender-${g}">
           <div class="fc-image" id="fc-image">
-            <div class="fc-image-placeholder" id="fc-placeholder"><span id="fc-emoji">⏳</span></div>
+            <div class="fc-image-placeholder" id="fc-placeholder">
+              <span id="fc-emoji">${card.emoji||'🇫🇷'}</span>
+            </div>
           </div>
           <div class="fc-image-overlay"></div>
-          <div class="fc-hint">👆 Çevir</div>
+          <div class="fc-hint">👆 tıkla</div>
           <div class="fc-front-content">
             <div class="fc-word">
-              ${article ? `<span class="fc-article">${article}</span>` : ''}${card.word}
+              ${article?`<span class="fc-article">${article}</span>`:''}${card.word}
             </div>
-            <div class="fc-phonetic">${card.phonetic || ''}</div>
+            <div class="fc-phonetic">${card.phonetic||''}</div>
           </div>
         </div>
 
-        <!-- TR YÜZ -->
         <div class="flashcard-face flashcard-back">
-          <div class="fc-back-emoji">${card.emoji || '🇫🇷'}</div>
-          <div class="fc-translation">${translation}</div>
-          <div class="fc-back-word">
-            <span style="opacity:0.6">${article}</span> ${card.word}
+          <div style="font-size:3rem;margin-bottom:8px">${card.emoji||'🇫🇷'}</div>
+          <div class="fc-back-translation gender-${g}">${translation}</div>
+          <div class="fc-back-subword" style="margin-top:6px">
+            ${article?`<span style="color:${g==='m'?'var(--masc-light)':g==='f'?'var(--fem-light)':'var(--gray-400)';font-size:.9rem}">${article}</span> `:''}${card.word}
           </div>
-          <div class="fc-category-badge ${`gender-badge-${gender}`}">
-            ${gender === 'm' ? '🔵 Masculin' : gender === 'f' ? '🔴 Féminin' : '⚪ ' + (card.category || '')}
-          </div>
+          <div style="font-size:.75rem;color:var(--gray-400);margin-top:4px">${card.phonetic||''}</div>
         </div>
       </div>
     </div>
 
     <div class="sm2-buttons">
-      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)"><span class="sm2-btn-icon">😰</span><span class="sm2-btn-label">${t('flashcards.again')}</span><span class="sm2-btn-interval">${t('flashcards.againInterval')}</span></button>
-      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)"><span class="sm2-btn-icon">😐</span><span class="sm2-btn-label">${t('flashcards.hard')}</span><span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span></button>
-      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)"><span class="sm2-btn-icon">😄</span><span class="sm2-btn-label">${t('flashcards.easy')}</span><span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span></button>
+      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)">
+        <span class="sm2-btn-icon">😰</span>
+        <span class="sm2-btn-label">${t('flashcards.again')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.againInterval')}</span>
+      </button>
+      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)">
+        <span class="sm2-btn-icon">😐</span>
+        <span class="sm2-btn-label">${t('flashcards.hard')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span>
+      </button>
+      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)">
+        <span class="sm2-btn-icon">😄</span>
+        <span class="sm2-btn-label">${t('flashcards.easy')}</span>
+        <span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span>
+      </button>
     </div>
   `;
 }
@@ -1025,52 +755,39 @@ function renderSessionComplete() {
   `;
 }
 
+function toggleCard() {
+  cardShowingFR = !cardShowingFR;
+  const el = document.getElementById('flashcard');
+  if (el) el.classList.toggle('flipped', !cardShowingFR);
+  // Her tıklamada ses çal — cinsiyete göre ses seç
+  const card = sessionQueue[currentCardIndex];
+  if (card) speakWord(card.word, card.gender);
+}
+
 async function loadCardContent(word) {
-  cardShowingFR = true; // Her yeni kartta FR yüzünden başla
-  setTimeout(() => speakWord(word.word, word.gender), 300);
-  const EMOJIS = {greetings:'👋',food:'🍽️',home:'🏠',animals:'🐾',transport:'🚗',places:'📍',people:'👥',nature:'🌿',objects:'📦',basics:'💬',verb:'✨'};
-  const emoji = word.emoji || EMOJIS[word.category] || '🇫🇷';
-  const placeholder = document.getElementById('fc-placeholder');
-  if (placeholder) placeholder.querySelector('#fc-emoji').textContent = emoji;
-  const imgUrl = await fetchPexelsImage(word.pexels_query || word.word, word.id);
+  cardShowingFR = true;
+  // Kart yüklenince FR yüzünden başla, sesi çal
+  setTimeout(() => speakWord(word.word, word.gender), 400);
+  const imgUrl = await fetchPexelsImage(word.pexels_query||word.word, word.id);
   if (imgUrl) {
     const fcImage = document.getElementById('fc-image');
     if (fcImage) fcImage.innerHTML = `<img src="${imgUrl}" alt="${word.word}" loading="lazy"><div class="fc-image-overlay"></div>`;
   }
 }
 
-function toggleCard() {
-  cardShowingFR = !cardShowingFR;
-  const card = document.getElementById('flashcard');
-  if (card) card.classList.toggle('flipped', !cardShowingFR);
-  // Her tıklamada ses çal — gender'a göre ses seç
-  if (sessionQueue[currentCardIndex]) {
-    speakWord(sessionQueue[currentCardIndex].word, sessionQueue[currentCardIndex].gender);
-  }
-}
-
-function flipCard() { toggleCard(); } // eski referanslar için
-
 function rateCard(quality) {
   if (currentCardIndex >= sessionQueue.length) return;
   const word = sessionQueue[currentCardIndex];
   const existing = AppState.progress.cards[word.id] || {};
-  AppState.progress.cards[word.id] = { ...existing, ...sm2(existing, quality) };
+  AppState.progress.cards[word.id] = {...existing, ...sm2(existing, quality)};
   if (quality===0) sessionStats.again++;
   else if (quality===3) sessionStats.hard++;
   else sessionStats.easy++;
   saveState();
 
-  const allF = getFilteredWords();
-  const dueNow = allF.filter(w=>isDue(AppState.progress.cards[w.id])).length;
-  const learnedNow = allF.filter(w=>{ const c=AppState.progress.cards[w.id]; return c&&c.reps>0&&!isDue(c); }).length;
-  const dueEl = document.querySelector('.fc-stat-num[data-stat="due"]');
-  const learnedEl = document.querySelector('.fc-stat-num[data-stat="learned"]');
-  if (dueEl) dueEl.textContent = dueNow;
-  if (learnedEl) learnedEl.textContent = learnedNow;
-
   currentCardIndex++;
-  cardFlipped = false;
+  cardShowingFR = true; // Yeni kart her zaman FR yüzüyle başlasın
+
   const fcContent = document.getElementById('fc-content');
   if (!fcContent) return;
   if (currentCardIndex >= sessionQueue.length) {
@@ -1083,9 +800,9 @@ function rateCard(quality) {
   loadCardContent(sessionQueue[currentCardIndex]);
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // PRONUNCIATION
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 let allSentences = [];
 let pronFilter = 'all';
 let currentVoice = null;
@@ -1096,7 +813,7 @@ function loadSentences() { allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENT
 
 function getFilteredSentences() {
   if (pronFilter==='all') return allSentences;
-  return allSentences.filter(s => s.level===pronFilter.toUpperCase());
+  return allSentences.filter(s=>s.level===pronFilter.toUpperCase());
 }
 
 function renderPronunciation() {
@@ -1122,23 +839,15 @@ function renderPronunciation() {
         <button class="audio-chip ${currentSpeed==='slow'?'active':''}" onclick="setSpeed('slow')">🐢 ${t('pronunciation.slow')}</button>
       </div>
     </div>
-    <div id="voice-picker-area">${renderVoicePicker()}</div>
     <div class="sentence-list">
       ${sentences.map(s=>renderSentenceCard(s)).join('')}
     </div>
   `;
-
-  // iOS: refresh picker after delay in case voices load late
-  setTimeout(() => {
-    loadFrVoices();
-    const area = document.getElementById('voice-picker-area');
-    if (area) area.innerHTML = renderVoicePicker();
-  }, 800);
 }
 
-function setPronFilter(f) { pronFilter=f; renderPronunciation(); }
-function setVoice(v) { currentVoice=v; renderPronunciation(); }
-function setSpeed(s) { currentSpeed=s; renderPronunciation(); }
+function setPronFilter(f){pronFilter=f;renderPronunciation();}
+function setVoice(v){currentVoice=v;renderPronunciation();}
+function setSpeed(s){currentSpeed=s;renderPronunciation();}
 
 function renderSentenceCard(s) {
   const srData = AppState.progress.sentences[s.id];
@@ -1160,7 +869,7 @@ function renderSentenceCard(s) {
       </div>
       <div class="translation-area">
         <div class="translation-text" id="trans-${s.id}">
-          ${AppState.settings.language==='tr' ? s.translation_tr : s.translation_en}
+          ${AppState.settings.language==='tr'?s.translation_tr:s.translation_en}
         </div>
       </div>
       <div class="sentence-actions">
@@ -1169,14 +878,14 @@ function renderSentenceCard(s) {
         </button>
         <div class="sr-indicator">
           <div class="sr-dot ${due?'due':''} ${learned?'learned':''}"></div>
-          <span style="font-size:0.68rem;color:var(--gray-400)">${learned?'✓':due?t('pronunciation.due'):''}</span>
+          <span style="font-size:.68rem;color:var(--gray-400)">${learned?'✓':due?t('pronunciation.due'):''}</span>
         </div>
       </div>
       <div class="audio-controls">
         <button class="audio-play-btn" id="play-${s.id}" onclick="playSentence('${s.id}')">▶</button>
         <div class="audio-controls-right">
-          <div style="font-size:0.75rem;color:var(--gray-600);font-weight:500" id="play-status-${s.id}">
-            ${s.sentence.length>50 ? s.sentence.substring(0,50)+'...' : s.sentence}
+          <div style="font-size:.75rem;color:var(--gray-600);font-weight:500" id="play-status-${s.id}">
+            ${s.sentence.length>50?s.sentence.substring(0,50)+'...':s.sentence}
           </div>
           <div class="audio-option-row">
             <button class="audio-chip ${currentSpeed==='slow'?'active':''}" onclick="toggleSpeedBtn()">
@@ -1194,144 +903,96 @@ function toggleTranslation(id) {
   const label = document.getElementById(`trans-toggle-label-${id}`);
   if (!trans) return;
   const visible = trans.classList.toggle('visible');
-  if (label) label.textContent = visible ? t('pronunciation.hideTranslation') : t('pronunciation.showTranslation');
+  if (label) label.textContent = visible?t('pronunciation.hideTranslation'):t('pronunciation.showTranslation');
 }
 
 function playSentence(id) { playWithSettings(id, currentVoice, currentSpeed); }
-
-function toggleSpeedBtn() {
-  currentSpeed = currentSpeed==='slow' ? 'normal' : 'slow';
-  renderPronunciation();
-}
+function toggleSpeedBtn() { currentSpeed=currentSpeed==='slow'?'normal':'slow'; renderPronunciation(); }
 
 async function playWithSettings(sentenceId, voice, speed) {
-  const sentence = allSentences.find(s => s.id === sentenceId);
+  const sentence = allSentences.find(s=>s.id===sentenceId);
   if (!sentence) return;
+  if (activeAudio) { activeAudio.pause(); activeAudio=null; }
+  document.querySelectorAll('.audio-play-btn').forEach(btn=>{btn.classList.remove('playing');btn.textContent='▶';});
 
-  if (activeAudio) { activeAudio.pause(); activeAudio = null; }
-  document.querySelectorAll('.audio-play-btn').forEach(btn => {
-    btn.classList.remove('playing'); btn.textContent = '▶';
-  });
-
-  const isSlow = speed === 'slow';
+  const isSlow = speed==='slow';
   const playBtn = document.getElementById(`play-${sentenceId}`);
   const statusEl = document.getElementById(`play-status-${sentenceId}`);
-  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
-  if (statusEl) statusEl.textContent = t('pronunciation.playing');
+  if (playBtn){playBtn.classList.add('playing');playBtn.textContent='⏸';}
+  if (statusEl) statusEl.textContent=t('pronunciation.playing');
 
-  AppState.settings.voice = voice;
-
-  // iOS fix: Audio nesnesini kullanıcı etkileşimi anında oluştur ve hemen play et
+  // iOS fix: unlock audio immediately on user gesture
   const audio = new Audio();
   activeAudio = audio;
-  audio.play().catch(() => {}); // iOS kilidini aç
+  audio.play().catch(()=>{});
 
-  const key = window.GOOGLE_TTS_KEY || '';
-  if (!key) {
-    showToast('API key eksik!');
-    if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+  const gender = voice==='male'?'m':'f';
+  const audioSrc = await playTTS(sentence.sentence, gender, isSlow);
+
+  if (!audioSrc) {
+    if (playBtn){playBtn.classList.remove('playing');playBtn.textContent='▶';}
     return;
   }
 
-  const voiceName = (voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
-  const speakingRate = isSlow ? 0.65 : 1.0;
+  audio.src = audioSrc;
 
-  try {
-    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        input: { text: sentence.sentence },
-        voice: { languageCode: 'fr-FR', name: voiceName },
-        audioConfig: { audioEncoding: 'MP3', speakingRate }
-      })
+  const words = sentence.words;
+  const totalDuration = isSlow ? sentence.sentence.length*80 : sentence.sentence.length*45;
+  const wordDuration = totalDuration/words.length;
+  let wordIndex = 0;
+
+  const hi = setInterval(()=>{
+    if (wordIndex>=words.length){clearInterval(hi);return;}
+    words.forEach((_,i)=>{
+      const el=document.getElementById(`word-${sentenceId}-${i}`);
+      if(el){el.classList.remove('highlighted');el.classList.add('played');}
     });
-    const data = await res.json();
+    const el=document.getElementById(`word-${sentenceId}-${wordIndex}`);
+    if(el){el.classList.remove('played');el.classList.add('highlighted');}
+    const fill=document.getElementById(`progress-fill-${sentenceId}`);
+    if(fill) fill.style.width=`${((wordIndex+1)/words.length)*100}%`;
+    wordIndex++;
+  }, wordDuration);
 
-    if (data.error) {
-      showToast('Hata: ' + data.error.message);
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      return;
-    }
-
-    if (!data.audioContent) {
-      showToast('Ses verisi alınamadı');
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      return;
-    }
-
-    audio.src = 'data:audio/mp3;base64,' + data.audioContent;
-
-    const words = sentence.words;
-    const totalDuration = isSlow ? sentence.sentence.length * 80 : sentence.sentence.length * 45;
-    const wordDuration = totalDuration / words.length;
-    let wordIndex = 0;
-
-    const highlightInterval = setInterval(() => {
-      if (wordIndex >= words.length) { clearInterval(highlightInterval); return; }
-      words.forEach((_, i) => {
-        const el = document.getElementById(`word-${sentenceId}-${i}`);
-        if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
-      });
-      const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
-      if (el) { el.classList.remove('played'); el.classList.add('highlighted'); }
-      const fill = document.getElementById(`progress-fill-${sentenceId}`);
-      if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
-      wordIndex++;
-    }, wordDuration);
-
-    audio.onended = () => {
-      clearInterval(highlightInterval);
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
-      words.forEach((_, i) => {
-        const el = document.getElementById(`word-${sentenceId}-${i}`);
-        if (el) el.classList.remove('highlighted');
-      });
-      const fill = document.getElementById(`progress-fill-${sentenceId}`);
-      if (fill) fill.style.width = '0%';
-      updateSentenceSR(sentenceId);
-    };
-
-    audio.onerror = () => {
-      clearInterval(highlightInterval);
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      showToast('Ses çalınamadı');
-    };
-
-    audio.load();
-    audio.play().catch(e => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-      showToast('Ses oynatılamadı');
-    });
-
-  } catch(e) {
-    showToast('Bağlantı hatası');
-    if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
-  }
+  audio.onended=()=>{
+    clearInterval(hi);
+    if(playBtn){playBtn.classList.remove('playing');playBtn.textContent='▶';}
+    if(statusEl) statusEl.textContent=sentence.sentence.length>50?sentence.sentence.substring(0,50)+'...':sentence.sentence;
+    words.forEach((_,i)=>{const el=document.getElementById(`word-${sentenceId}-${i}`);if(el)el.classList.remove('highlighted');});
+    const fill=document.getElementById(`progress-fill-${sentenceId}`);
+    if(fill) fill.style.width='0%';
+    updateSentenceSR(sentenceId);
+  };
+  audio.onerror=()=>{
+    clearInterval(hi);
+    if(playBtn){playBtn.classList.remove('playing');playBtn.textContent='▶';}
+    showToast('Ses çalınamadı');
+  };
+  audio.load();
+  audio.play().catch(()=>{if(playBtn){playBtn.classList.remove('playing');playBtn.textContent='▶';}});
 }
 
 function updateSentenceSR(id) {
-  const existing = AppState.progress.sentences[id] || {};
-  AppState.progress.sentences[id] = { ...existing, ...sm2(existing, 4) };
+  const existing=AppState.progress.sentences[id]||{};
+  AppState.progress.sentences[id]={...existing,...sm2(existing,4)};
   saveState();
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // SETTINGS
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 function renderSettings() {
-  const page = document.getElementById('page-settings');
-  if (!page) return;
-  const s = AppState.settings;
-  const p = AppState.progress;
-  const totalCards = allWords.length;
-  const learnedCards = Object.values(p.cards).filter(c=>c.reps>0&&!isDue(c)).length;
-  const studyDays = p.studyDays.size;
-  const totalRatings = Object.values(p.cards).reduce((a,c)=>a+(c.reps||0),0);
-  const accuracy = totalRatings>0 ? Math.round((Object.values(p.cards).reduce((a,c)=>a+(c.easy||0),0)/totalRatings)*100) : 0;
+  const page=document.getElementById('page-settings');
+  if(!page) return;
+  const s=AppState.settings;
+  const p=AppState.progress;
+  const totalCards=allWords.length;
+  const learnedCards=Object.values(p.cards).filter(c=>c.reps>0&&!isDue(c)).length;
+  const studyDays=p.studyDays.size;
+  const totalRatings=Object.values(p.cards).reduce((a,c)=>a+(c.reps||0),0);
+  const accuracy=totalRatings>0?Math.round((Object.values(p.cards).reduce((a,c)=>a+(c.easy||0),0)/totalRatings)*100):0;
 
-  page.innerHTML = `
+  page.innerHTML=`
     <div class="section-header">
       <h1 class="section-title">${t('settings.title')}</h1>
       <p class="section-subtitle">${t('settings.subtitle')}</p>
@@ -1354,22 +1015,8 @@ function renderSettings() {
           </select>
         </div>
         <div class="settings-item">
-          <div class="settings-item-left"><div class="settings-icon">▶️</div><div><div class="settings-label">${t('settings.autoPlay')}</div><div class="settings-desc">${t('settings.autoPlayDesc')}</div></div></div>
-          <label class="toggle-switch"><input type="checkbox" ${s.autoPlay?'checked':''} onchange="updateSetting('autoPlay',this.checked)"><span class="toggle-slider"></span></label>
-        </div>
-        <div class="settings-item">
           <div class="settings-item-left"><div class="settings-icon">🔤</div><div><div class="settings-label">${t('settings.showPhonetic')}</div><div class="settings-desc">${t('settings.showPhoneticDesc')}</div></div></div>
           <label class="toggle-switch"><input type="checkbox" ${s.showPhonetic?'checked':''} onchange="updateSetting('showPhonetic',this.checked)"><span class="toggle-slider"></span></label>
-        </div>
-      </div>
-      <div class="settings-group">
-        <div class="settings-group-title">${t('settings.study')}</div>
-        <div class="settings-item">
-          <div class="settings-item-left"><div class="settings-icon">🎯</div><div><div class="settings-label">${t('settings.dailyGoal')}</div></div></div>
-          <div class="range-wrapper">
-            <input type="range" min="5" max="50" step="5" value="${s.dailyGoal}" oninput="updateSetting('dailyGoal',parseInt(this.value));document.getElementById('goal-val').textContent=this.value">
-            <span class="range-value" id="goal-val">${s.dailyGoal}</span>
-          </div>
         </div>
       </div>
       <div class="settings-group">
@@ -1399,31 +1046,29 @@ function renderSettings() {
   `;
 }
 
-function updateSetting(key, value) {
-  AppState.settings[key] = value;
+function updateSetting(key,value) {
+  AppState.settings[key]=value;
   saveState();
-  if (key==='showPhonetic') renderSettings();
 }
 
 function confirmReset() {
   if (confirm(t('settings.resetConfirm'))) {
-    AppState.progress.cards = {};
-    AppState.progress.sentences = {};
-    AppState.progress.studyDays = new Set();
-    AppState.progress.totalSessions = 0;
+    AppState.progress.cards={};
+    AppState.progress.sentences={};
+    AppState.progress.studyDays=new Set();
+    AppState.progress.totalSessions=0;
     saveState();
     renderSettings();
     showToast('✓ Sıfırlandı');
   }
 }
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════
 // INIT
-// ═══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+// ═══════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
   loadState();
-  document.querySelectorAll('.nav-item').forEach(btn => btn.addEventListener('click', () => navigate(btn.dataset.page)));
-  document.querySelectorAll('.lang-btn').forEach(btn => btn.addEventListener('click', () => setLanguage(btn.dataset.lang)));
+  document.querySelectorAll('.lang-btn').forEach(btn=>btn.addEventListener('click',()=>setLanguage(btn.dataset.lang)));
   loadWords();
   loadSentences();
   navigate('flashcards');
