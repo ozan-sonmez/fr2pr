@@ -809,7 +809,7 @@ function testVoice() {
 
 // ─── GOOGLE CLOUD TTS ───
 async function googleTTS(text, slow = false) {
-  const key = window.GOOGLE_TTS_KEY || '';
+  const key = window.GOOGLE_TTS_KEY || 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
   if (!key) { showToast('API key eksik!'); return null; }
   const voiceName = (AppState.settings.voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
   const speakingRate = slow ? 0.65 : 1.0;
