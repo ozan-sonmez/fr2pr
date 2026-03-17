@@ -807,15 +807,42 @@ function testVoice() {
   window.speechSynthesis.speak(utter);
 }
 
-function speakWord(text) {
-  if (!window.speechSynthesis) return;
-  window.speechSynthesis.cancel();
-  const utter = new SpeechSynthesisUtterance(text);
-  utter.lang = 'fr-FR';
-  utter.rate = 0.85;
-  const voice = getBestVoice(AppState.settings.voice);
-  if (voice) utter.voice = voice;
-  window.speechSynthesis.speak(utter);
+// ─── GOOGLE CLOUD TTS ───
+async function googleTTS(text, slow = false) {
+  const key = window.GOOGLE_TTS_KEY |AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE| '';
+  if (!key) return null;
+  const voiceName = (AppState.settings.voice === 'male') ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  const speakingRate = slow ? 0.65 : 1.0;
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        input: { text },
+        voice: { languageCode: 'fr-FR', name: voiceName },
+        audioConfig: { audioEncoding: 'MP3', speakingRate }
+      })
+    });
+    const data = await res.json();
+    if (!data.audioContent) return null;
+    return 'data:audio/mp3;base64,' + data.audioContent;
+  } catch { return null; }
+}
+
+async function speakWord(text) {
+  const audioSrc = await googleTTS(text, false);
+  if (audioSrc) {
+    const audio = new Audio(audioSrc);
+    audio.play().catch(() => {});
+  } else if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'fr-FR';
+    utter.rate = 0.85;
+    const voice = getBestVoice(AppState.settings.voice);
+    if (voice) utter.voice = voice;
+    window.speechSynthesis.speak(utter);
+  }
 }
 
 if (window.speechSynthesis) {
@@ -1132,53 +1159,88 @@ function toggleSpeedBtn() {
   renderPronunciation();
 }
 
-function playWithSettings(sentenceId, voice, speed) {
-  const sentence = allSentences.find(s=>s.id===sentenceId);
+async function playWithSettings(sentenceId, voice, speed) {
+  const sentence = allSentences.find(s => s.id === sentenceId);
   if (!sentence) return;
-  if (activeAudio) { activeAudio.pause(); activeAudio=null; }
-  document.querySelectorAll('.audio-play-btn').forEach(btn => { btn.classList.remove('playing'); btn.textContent='▶'; });
 
-  const isSlow = speed==='slow';
+  if (activeAudio) { activeAudio.pause(); activeAudio = null; }
+  document.querySelectorAll('.audio-play-btn').forEach(btn => {
+    btn.classList.remove('playing'); btn.textContent = '▶';
+  });
+
+  const isSlow = speed === 'slow';
   const playBtn = document.getElementById(`play-${sentenceId}`);
   const statusEl = document.getElementById(`play-status-${sentenceId}`);
-  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent='⏸'; }
+  if (playBtn) { playBtn.classList.add('playing'); playBtn.textContent = '⏸'; }
   if (statusEl) statusEl.textContent = t('pronunciation.playing');
 
-  if (window.speechSynthesis) {
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(sentence.sentence);
-    utter.lang = 'fr-FR';
-    utter.rate = isSlow ? 0.5 : 1.0;
-    const chosenVoice = getBestVoice(voice);
-    if (chosenVoice) utter.voice = chosenVoice;
+  // Ses seçimini güncelle
+  AppState.settings.voice = voice;
 
+  const audioSrc = await googleTTS(sentence.sentence, isSlow);
+
+  if (audioSrc) {
+    const audio = new Audio(audioSrc);
+    activeAudio = audio;
+
+    // Kelime highlight — süre tahmini ile
     const words = sentence.words;
+    const totalDuration = isSlow ? sentence.sentence.length * 80 : sentence.sentence.length * 45;
+    const wordDuration = totalDuration / words.length;
     let wordIndex = 0;
-    utter.onboundary = (event) => {
-      if (event.name==='word') {
-        words.forEach((_,i) => {
-          const el = document.getElementById(`word-${sentenceId}-${i}`);
-          if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
-        });
-        if (wordIndex < words.length) {
-          const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
-          if (el) { el.classList.remove('played'); el.classList.add('highlighted'); }
-          const fill = document.getElementById(`progress-fill-${sentenceId}`);
-          if (fill) fill.style.width = `${((wordIndex+1)/words.length)*100}%`;
-          wordIndex++;
-        }
-      }
-    };
-    utter.onend = () => {
-      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent='▶'; }
-      if (statusEl) statusEl.textContent = sentence.sentence.length>50 ? sentence.sentence.substring(0,50)+'...' : sentence.sentence;
-      words.forEach((_,i) => { const el=document.getElementById(`word-${sentenceId}-${i}`); if(el) el.classList.remove('highlighted'); });
+
+    const highlightInterval = setInterval(() => {
+      if (wordIndex >= words.length) { clearInterval(highlightInterval); return; }
+      words.forEach((_, i) => {
+        const el = document.getElementById(`word-${sentenceId}-${i}`);
+        if (el) { el.classList.remove('highlighted'); el.classList.add('played'); }
+      });
+      const el = document.getElementById(`word-${sentenceId}-${wordIndex}`);
+      if (el) { el.classList.remove('played'); el.classList.add('highlighted'); }
       const fill = document.getElementById(`progress-fill-${sentenceId}`);
-      if (fill) fill.style.width='0%';
+      if (fill) fill.style.width = `${((wordIndex + 1) / words.length) * 100}%`;
+      wordIndex++;
+    }, wordDuration);
+
+    audio.onended = () => {
+      clearInterval(highlightInterval);
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      if (statusEl) statusEl.textContent = sentence.sentence.length > 50 ? sentence.sentence.substring(0,50) + '...' : sentence.sentence;
+      words.forEach((_, i) => {
+        const el = document.getElementById(`word-${sentenceId}-${i}`);
+        if (el) el.classList.remove('highlighted');
+      });
+      const fill = document.getElementById(`progress-fill-${sentenceId}`);
+      if (fill) fill.style.width = '0%';
       updateSentenceSR(sentenceId);
     };
-    utter.onerror = () => { if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent='▶'; } };
-    window.speechSynthesis.speak(utter);
+
+    audio.onerror = () => {
+      clearInterval(highlightInterval);
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses yüklenemedi');
+    };
+
+    audio.play().catch(() => {
+      if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+      showToast('Ses oynatılamadı');
+    });
+
+  } else {
+    // Fallback: Web Speech API
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      const utter = new SpeechSynthesisUtterance(sentence.sentence);
+      utter.lang = 'fr-FR';
+      utter.rate = isSlow ? 0.5 : 1.0;
+      const chosenVoice = getBestVoice(voice);
+      if (chosenVoice) utter.voice = chosenVoice;
+      utter.onend = () => {
+        if (playBtn) { playBtn.classList.remove('playing'); playBtn.textContent = '▶'; }
+        updateSentenceSR(sentenceId);
+      };
+      window.speechSynthesis.speak(utter);
+    }
   }
 }
 
