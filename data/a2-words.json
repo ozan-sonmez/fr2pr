@@ -1,0 +1,22 @@
+[
+  {"id":"a2_001","word":"travailler","translation_tr":"çalışmak","translation_en":"to work","phonetic":"tʁa.va.je","category":"verb","level":"A2","pexels_query":"working office"},
+  {"id":"a2_002","word":"appartement","translation_tr":"daire","translation_en":"apartment","phonetic":"a.paʁ.tə.mɑ̃","category":"home","level":"A2","pexels_query":"apartment building"},
+  {"id":"a2_003","word":"restaurant","translation_tr":"restoran","translation_en":"restaurant","phonetic":"ʁɛs.to.ʁɑ̃","category":"places","level":"A2","pexels_query":"restaurant dining"},
+  {"id":"a2_004","word":"cinéma","translation_tr":"sinema","translation_en":"cinema","phonetic":"si.ne.ma","category":"leisure","level":"A2","pexels_query":"cinema movie theater"},
+  {"id":"a2_005","word":"médecin","translation_tr":"doktor","translation_en":"doctor","phonetic":"me.dsɛ̃","category":"health","level":"A2","pexels_query":"doctor medical"},
+  {"id":"a2_006","word":"pharmacie","translation_tr":"eczane","translation_en":"pharmacy","phonetic":"faʁ.ma.si","category":"health","level":"A2","pexels_query":"pharmacy drugstore"},
+  {"id":"a2_007","word":"billet","translation_tr":"bilet","translation_en":"ticket","phonetic":"bi.jɛ","category":"transport","level":"A2","pexels_query":"ticket travel"},
+  {"id":"a2_008","word":"horaire","translation_tr":"zaman çizelgesi","translation_en":"schedule","phonetic":"ɔ.ʁɛʁ","category":"transport","level":"A2","pexels_query":"schedule timetable"},
+  {"id":"a2_009","word":"magasin","translation_tr":"mağaza","translation_en":"shop","phonetic":"ma.ga.zɛ̃","category":"places","level":"A2","pexels_query":"shop store"},
+  {"id":"a2_010","word":"marché","translation_tr":"pazar","translation_en":"market","phonetic":"maʁ.ʃe","category":"places","level":"A2","pexels_query":"market fresh food"},
+  {"id":"a2_011","word":"vacances","translation_tr":"tatil","translation_en":"holiday","phonetic":"va.kɑ̃s","category":"leisure","level":"A2","pexels_query":"vacation holiday beach"},
+  {"id":"a2_012","word":"météo","translation_tr":"hava durumu","translation_en":"weather","phonetic":"me.te.o","category":"nature","level":"A2","pexels_query":"weather forecast"},
+  {"id":"a2_013","word":"réunion","translation_tr":"toplantı","translation_en":"meeting","phonetic":"ʁe.y.njɔ̃","category":"work","level":"A2","pexels_query":"meeting office"},
+  {"id":"a2_014","word":"collègue","translation_tr":"iş arkadaşı","translation_en":"colleague","phonetic":"kɔ.lɛg","category":"work","level":"A2","pexels_query":"colleagues teamwork"},
+  {"id":"a2_015","word":"loyer","translation_tr":"kira","translation_en":"rent","phonetic":"lwa.je","category":"home","level":"A2","pexels_query":"rent house keys"},
+  {"id":"a2_016","word":"courses","translation_tr":"alışveriş","translation_en":"shopping","phonetic":"kuʁs","category":"daily","level":"A2","pexels_query":"grocery shopping"},
+  {"id":"a2_017","word":"recette","translation_tr":"tarif","translation_en":"recipe","phonetic":"ʁə.sɛt","category":"food","level":"A2","pexels_query":"recipe cooking"},
+  {"id":"a2_018","word":"journal","translation_tr":"gazete","translation_en":"newspaper","phonetic":"ʒuʁ.nal","category":"media","level":"A2","pexels_query":"newspaper reading"},
+  {"id":"a2_019","word":"spectacle","translation_tr":"gösteri","translation_en":"show","phonetic":"spɛk.takl","category":"leisure","level":"A2","pexels_query":"show performance stage"},
+  {"id":"a2_020","word":"banque","translation_tr":"banka","translation_en":"bank","phonetic":"bɑ̃k","category":"places","level":"A2","pexels_query":"bank finance"}
+]
