@@ -10,9 +10,7 @@ const AppState = {
     dailyGoal: 20
   },
   progress: {
-    // SM-2 data per card: { ef, interval, nextReview, reps, again, hard, easy }
     cards: {},
-    // SR data per sentence
     sentences: {},
     studyDays: new Set(),
     totalSessions: 0
@@ -109,7 +107,6 @@ async function fetchPexelsImage(query, wordId) {
 
 // ─── SM-2 ALGORITHM ───
 function sm2(card, quality) {
-  // quality: 0=again, 3=hard, 5=easy
   let { ef = 2.5, interval = 1, reps = 0 } = card;
 
   if (quality < 3) {
@@ -133,27 +130,32 @@ function isDue(cardData) {
   return Date.now() >= cardData.nextReview;
 }
 
+// ─── LOAD DATA ───
+function loadWords() {
+  allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS];
+}
+
+function loadSentences() {
+  allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENTENCES];
+}
+
 // ─── INIT ───
 document.addEventListener('DOMContentLoaded', () => {
   loadState();
 
-  // Nav
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => navigate(btn.dataset.page));
   });
 
-  // Lang toggle
   document.querySelectorAll('.lang-btn').forEach(btn => {
     btn.addEventListener('click', () => setLanguage(btn.dataset.lang));
   });
 
-  // Load embedded data (no fetch needed)
   loadWords();
   loadSentences();
 
   navigate('flashcards');
 
-  // Mark study day
   const today = new Date().toISOString().split('T')[0];
   AppState.progress.studyDays.add(today);
   saveState();
