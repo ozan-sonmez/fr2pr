@@ -1215,14 +1215,24 @@ function focusWord(event, sentenceId, wordIndex, word, meaning) {
   const countdown = document.getElementById(`countdown-${sentenceId}`);
   if (countdown) { countdown.style.display='none'; }
 
-  // Kelimeyi söyle
-  const clean = word.replace(/[^a-zàâçéèêëîïôûùüÿæœ'-]/gi,'');
+  // Kelimeyi söyle — noktalama temizlenmiş hali
+  const clean = word.replace(/[^a-zàâçéèêëîïôûùüÿæœ'éèêëàâùûîïœæç-]/gi,'').toLowerCase();
   speakWord(clean, 'v');
+
+  // Anlam bul — allWords'den direkt ara
+  const lang = AppState.settings.language;
+  let foundMeaning = '';
+  for (const w of allWords) {
+    if (w.word.toLowerCase() === clean) {
+      foundMeaning = lang==='tr' ? w.translation_tr : w.translation_en;
+      break;
+    }
+  }
 
   // Popup göster
   const popup = document.getElementById(`word-popup-${sentenceId}`);
   if (popup) {
-    popup.textContent = meaning ? `${word} = ${meaning}` : word;
+    popup.textContent = foundMeaning ? `${clean} = ${foundMeaning}` : clean;
     popup.style.display = 'block';
     clearTimeout(popup._timer);
     popup._timer = setTimeout(()=>{
