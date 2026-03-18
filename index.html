@@ -603,6 +603,110 @@ async function playTTS(text, gender, slow) {
   } catch(e) { showToast('Bağlantı hatası'); return null; }
 }
 
+// ─── FİİLLER ───
+const DATA_VERBS = [
+  {id:"v001",word:"parler",article:"",translation_tr:"konuşmak",translation_en:"to speak",phonetic:"paʁ.le",category:"verb",gender:"v",group:"er",level:"A1",emoji:"💬",conjugation:{je:"parle",tu:"parles",il:"parle",nous:"parlons",vous:"parlez",ils:"parlent"}},
+  {id:"v002",word:"aimer",article:"",translation_tr:"sevmek",translation_en:"to love",phonetic:"ɛ.me",category:"verb",gender:"v",group:"er",level:"A1",emoji:"❤️",conjugation:{je:"aime",tu:"aimes",il:"aime",nous:"aimons",vous:"aimez",ils:"aiment"}},
+  {id:"v003",word:"manger",article:"",translation_tr:"yemek",translation_en:"to eat",phonetic:"mɑ̃.ʒe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🍽️",conjugation:{je:"mange",tu:"manges",il:"mange",nous:"mangeons",vous:"mangez",ils:"mangent"}},
+  {id:"v004",word:"habiter",article:"",translation_tr:"yaşamak",translation_en:"to live",phonetic:"a.bi.te",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🏠",conjugation:{je:"habite",tu:"habites",il:"habite",nous:"habitons",vous:"habitez",ils:"habitent"}},
+  {id:"v005",word:"travailler",article:"",translation_tr:"çalışmak",translation_en:"to work",phonetic:"tʁa.va.je",category:"verb",gender:"v",group:"er",level:"A1",emoji:"💼",conjugation:{je:"travaille",tu:"travailles",il:"travaille",nous:"travaillons",vous:"travaillez",ils:"travaillent"}},
+  {id:"v006",word:"écouter",article:"",translation_tr:"dinlemek",translation_en:"to listen",phonetic:"e.ku.te",category:"verb",gender:"v",group:"er",level:"A1",emoji:"👂",conjugation:{je:"écoute",tu:"écoutes",il:"écoute",nous:"écoutons",vous:"écoutez",ils:"écoutent"}},
+  {id:"v007",word:"regarder",article:"",translation_tr:"izlemek",translation_en:"to watch",phonetic:"ʁə.ɡaʁ.de",category:"verb",gender:"v",group:"er",level:"A1",emoji:"👀",conjugation:{je:"regarde",tu:"regardes",il:"regarde",nous:"regardons",vous:"regardez",ils:"regardent"}},
+  {id:"v008",word:"chercher",article:"",translation_tr:"aramak",translation_en:"to search",phonetic:"ʃɛʁ.ʃe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🔍",conjugation:{je:"cherche",tu:"cherches",il:"cherche",nous:"cherchons",vous:"cherchez",ils:"cherchent"}},
+  {id:"v009",word:"acheter",article:"",translation_tr:"satın almak",translation_en:"to buy",phonetic:"aʃ.te",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🛒",conjugation:{je:"achète",tu:"achètes",il:"achète",nous:"achetons",vous:"achetez",ils:"achètent"}},
+  {id:"v010",word:"donner",article:"",translation_tr:"vermek",translation_en:"to give",phonetic:"dɔ.ne",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🎁",conjugation:{je:"donne",tu:"donnes",il:"donne",nous:"donnons",vous:"donnez",ils:"donnent"}},
+  {id:"v011",word:"arriver",article:"",translation_tr:"varmak",translation_en:"to arrive",phonetic:"a.ʁi.ve",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🚉",conjugation:{je:"arrive",tu:"arrives",il:"arrive",nous:"arrivons",vous:"arrivez",ils:"arrivent"}},
+  {id:"v012",word:"marcher",article:"",translation_tr:"yürümek",translation_en:"to walk",phonetic:"maʁ.ʃe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🚶",conjugation:{je:"marche",tu:"marches",il:"marche",nous:"marchons",vous:"marchez",ils:"marchent"}},
+  {id:"v013",word:"penser",article:"",translation_tr:"düşünmek",translation_en:"to think",phonetic:"pɑ̃.se",category:"verb",gender:"v",group:"er",level:"A1",emoji:"💭",conjugation:{je:"pense",tu:"penses",il:"pense",nous:"pensons",vous:"pensez",ils:"pensent"}},
+  {id:"v014",word:"porter",article:"",translation_tr:"taşımak",translation_en:"to carry",phonetic:"pɔʁ.te",category:"verb",gender:"v",group:"er",level:"A1",emoji:"👕",conjugation:{je:"porte",tu:"portes",il:"porte",nous:"portons",vous:"portez",ils:"portent"}},
+  {id:"v015",word:"trouver",article:"",translation_tr:"bulmak",translation_en:"to find",phonetic:"tʁu.ve",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🔑",conjugation:{je:"trouve",tu:"trouves",il:"trouve",nous:"trouvons",vous:"trouvez",ils:"trouvent"}},
+  {id:"v016",word:"demander",article:"",translation_tr:"sormak",translation_en:"to ask",phonetic:"də.mɑ̃.de",category:"verb",gender:"v",group:"er",level:"A1",emoji:"❓",conjugation:{je:"demande",tu:"demandes",il:"demande",nous:"demandons",vous:"demandez",ils:"demandent"}},
+  {id:"v017",word:"appeler",article:"",translation_tr:"aramak",translation_en:"to call",phonetic:"a.pəl.e",category:"verb",gender:"v",group:"er",level:"A1",emoji:"📞",conjugation:{je:"appelle",tu:"appelles",il:"appelle",nous:"appelons",vous:"appelez",ils:"appellent"}},
+  {id:"v018",word:"commencer",article:"",translation_tr:"başlamak",translation_en:"to start",phonetic:"kɔ.mɑ̃.se",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🚀",conjugation:{je:"commence",tu:"commences",il:"commence",nous:"commençons",vous:"commencez",ils:"commencent"}},
+  {id:"v019",word:"rentrer",article:"",translation_tr:"eve dönmek",translation_en:"to return",phonetic:"ʁɑ̃.tʁe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🏡",conjugation:{je:"rentre",tu:"rentres",il:"rentre",nous:"rentrons",vous:"rentrez",ils:"rentrent"}},
+  {id:"v020",word:"montrer",article:"",translation_tr:"göstermek",translation_en:"to show",phonetic:"mɔ̃.tʁe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"👆",conjugation:{je:"montre",tu:"montres",il:"montre",nous:"montrons",vous:"montrez",ils:"montrent"}},
+  {id:"v021",word:"jouer",article:"",translation_tr:"oynamak",translation_en:"to play",phonetic:"ʒwe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🎮",conjugation:{je:"joue",tu:"joues",il:"joue",nous:"jouons",vous:"jouez",ils:"jouent"}},
+  {id:"v022",word:"chanter",article:"",translation_tr:"şarkı söylemek",translation_en:"to sing",phonetic:"ʃɑ̃.te",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🎵",conjugation:{je:"chante",tu:"chantes",il:"chante",nous:"chantons",vous:"chantez",ils:"chantent"}},
+  {id:"v023",word:"cuisiner",article:"",translation_tr:"yemek pişirmek",translation_en:"to cook",phonetic:"kɥi.zi.ne",category:"verb",gender:"v",group:"er",level:"A1",emoji:"👨‍🍳",conjugation:{je:"cuisine",tu:"cuisines",il:"cuisine",nous:"cuisinons",vous:"cuisinez",ils:"cuisinent"}},
+  {id:"v024",word:"voyager",article:"",translation_tr:"seyahat etmek",translation_en:"to travel",phonetic:"vwa.ja.ʒe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"✈️",conjugation:{je:"voyage",tu:"voyages",il:"voyage",nous:"voyageons",vous:"voyagez",ils:"voyagent"}},
+  {id:"v025",word:"utiliser",article:"",translation_tr:"kullanmak",translation_en:"to use",phonetic:"y.ti.li.ze",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🔧",conjugation:{je:"utilise",tu:"utilises",il:"utilise",nous:"utilisons",vous:"utilisez",ils:"utilisent"}},
+  {id:"v026",word:"expliquer",article:"",translation_tr:"açıklamak",translation_en:"to explain",phonetic:"ɛks.pli.ke",category:"verb",gender:"v",group:"er",level:"A2",emoji:"📝",conjugation:{je:"explique",tu:"expliques",il:"explique",nous:"expliquons",vous:"expliquez",ils:"expliquent"}},
+  {id:"v027",word:"continuer",article:"",translation_tr:"devam etmek",translation_en:"to continue",phonetic:"kɔ̃.ti.nɥe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"➡️",conjugation:{je:"continue",tu:"continues",il:"continue",nous:"continuons",vous:"continuez",ils:"continuent"}},
+  {id:"v028",word:"préparer",article:"",translation_tr:"hazırlamak",translation_en:"to prepare",phonetic:"pʁe.pa.ʁe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"📋",conjugation:{je:"prépare",tu:"prépares",il:"prépare",nous:"préparons",vous:"préparez",ils:"préparent"}},
+  {id:"v029",word:"passer",article:"",translation_tr:"geçmek",translation_en:"to pass",phonetic:"pa.se",category:"verb",gender:"v",group:"er",level:"A2",emoji:"⏩",conjugation:{je:"passe",tu:"passes",il:"passe",nous:"passons",vous:"passez",ils:"passent"}},
+  {id:"v030",word:"rester",article:"",translation_tr:"kalmak",translation_en:"to stay",phonetic:"ʁɛs.te",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🏠",conjugation:{je:"reste",tu:"restes",il:"reste",nous:"restons",vous:"restez",ils:"restent"}},
+  {id:"v031",word:"terminer",article:"",translation_tr:"bitirmek",translation_en:"to finish",phonetic:"tɛʁ.mi.ne",category:"verb",gender:"v",group:"er",level:"A2",emoji:"✅",conjugation:{je:"termine",tu:"termines",il:"termine",nous:"terminons",vous:"terminez",ils:"terminent"}},
+  {id:"v032",word:"visiter",article:"",translation_tr:"ziyaret etmek",translation_en:"to visit",phonetic:"vi.zi.te",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🗺️",conjugation:{je:"visite",tu:"visites",il:"visite",nous:"visitons",vous:"visitez",ils:"visitent"}},
+  {id:"v033",word:"oublier",article:"",translation_tr:"unutmak",translation_en:"to forget",phonetic:"u.blije",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🧠",conjugation:{je:"oublie",tu:"oublies",il:"oublie",nous:"oublions",vous:"oubliez",ils:"oublient"}},
+  {id:"v034",word:"accepter",article:"",translation_tr:"kabul etmek",translation_en:"to accept",phonetic:"ak.sɛp.te",category:"verb",gender:"v",group:"er",level:"A2",emoji:"👍",conjugation:{je:"accepte",tu:"acceptes",il:"accepte",nous:"acceptons",vous:"acceptez",ils:"acceptent"}},
+  {id:"v035",word:"réserver",article:"",translation_tr:"rezervasyon yapmak",translation_en:"to reserve",phonetic:"ʁe.zɛʁ.ve",category:"verb",gender:"v",group:"er",level:"A2",emoji:"📅",conjugation:{je:"réserve",tu:"réserves",il:"réserve",nous:"réservons",vous:"réservez",ils:"réservent"}},
+  {id:"v036",word:"gagner",article:"",translation_tr:"kazanmak",translation_en:"to win",phonetic:"ɡa.ɲe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🏆",conjugation:{je:"gagne",tu:"gagnes",il:"gagne",nous:"gagnons",vous:"gagnez",ils:"gagnent"}},
+  {id:"v037",word:"tomber",article:"",translation_tr:"düşmek",translation_en:"to fall",phonetic:"tɔ̃.be",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🤕",conjugation:{je:"tombe",tu:"tombes",il:"tombe",nous:"tombons",vous:"tombez",ils:"tombent"}},
+  {id:"v038",word:"nager",article:"",translation_tr:"yüzmek",translation_en:"to swim",phonetic:"na.ʒe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🏊",conjugation:{je:"nage",tu:"nages",il:"nage",nous:"nageons",vous:"nagez",ils:"nagent"}},
+  {id:"v039",word:"rencontrer",article:"",translation_tr:"tanışmak",translation_en:"to meet",phonetic:"ʁɑ̃.kɔ̃.tʁe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🤝",conjugation:{je:"rencontre",tu:"rencontres",il:"rencontre",nous:"rencontrons",vous:"rencontrez",ils:"rencontrent"}},
+  {id:"v040",word:"s'appeler",article:"",translation_tr:"adı olmak",translation_en:"to be called",phonetic:"sa.pəl.e",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🏷️",conjugation:{je:"m'appelle",tu:"t'appelles",il:"s'appelle",nous:"nous appelons",vous:"vous appelez",ils:"s'appellent"}},
+  {id:"v041",word:"finir",article:"",translation_tr:"bitirmek",translation_en:"to finish",phonetic:"fi.niʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🏁",conjugation:{je:"finis",tu:"finis",il:"finit",nous:"finissons",vous:"finissez",ils:"finissent"}},
+  {id:"v042",word:"choisir",article:"",translation_tr:"seçmek",translation_en:"to choose",phonetic:"ʃwa.ziʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"☑️",conjugation:{je:"choisis",tu:"choisis",il:"choisit",nous:"choisissons",vous:"choisissez",ils:"choisissent"}},
+  {id:"v043",word:"partir",article:"",translation_tr:"ayrılmak",translation_en:"to leave",phonetic:"paʁ.tiʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"👋",conjugation:{je:"pars",tu:"pars",il:"part",nous:"partons",vous:"partez",ils:"partent"}},
+  {id:"v044",word:"sortir",article:"",translation_tr:"çıkmak",translation_en:"to go out",phonetic:"sɔʁ.tiʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🚶‍♂️",conjugation:{je:"sors",tu:"sors",il:"sort",nous:"sortons",vous:"sortez",ils:"sortent"}},
+  {id:"v045",word:"dormir",article:"",translation_tr:"uyumak",translation_en:"to sleep",phonetic:"dɔʁ.miʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"😴",conjugation:{je:"dors",tu:"dors",il:"dort",nous:"dormons",vous:"dormez",ils:"dorment"}},
+  {id:"v046",word:"venir",article:"",translation_tr:"gelmek",translation_en:"to come",phonetic:"və.niʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🏃",conjugation:{je:"viens",tu:"viens",il:"vient",nous:"venons",vous:"venez",ils:"viennent"}},
+  {id:"v047",word:"ouvrir",article:"",translation_tr:"açmak",translation_en:"to open",phonetic:"u.vʁiʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🔓",conjugation:{je:"ouvre",tu:"ouvres",il:"ouvre",nous:"ouvrons",vous:"ouvrez",ils:"ouvrent"}},
+  {id:"v048",word:"réussir",article:"",translation_tr:"başarmak",translation_en:"to succeed",phonetic:"ʁe.y.siʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"🌟",conjugation:{je:"réussis",tu:"réussis",il:"réussit",nous:"réussissons",vous:"réussissez",ils:"réussissent"}},
+  {id:"v049",word:"sentir",article:"",translation_tr:"hissetmek",translation_en:"to feel",phonetic:"sɑ̃.tiʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"👃",conjugation:{je:"sens",tu:"sens",il:"sent",nous:"sentons",vous:"sentez",ils:"sentent"}},
+  {id:"v050",word:"servir",article:"",translation_tr:"servis yapmak",translation_en:"to serve",phonetic:"sɛʁ.viʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"🍽️",conjugation:{je:"sers",tu:"sers",il:"sert",nous:"servons",vous:"servez",ils:"servent"}},
+  {id:"v051",word:"courir",article:"",translation_tr:"koşmak",translation_en:"to run",phonetic:"ku.ʁiʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🏃",conjugation:{je:"cours",tu:"cours",il:"court",nous:"courons",vous:"courez",ils:"courent"}},
+  {id:"v052",word:"revenir",article:"",translation_tr:"geri gelmek",translation_en:"to come back",phonetic:"ʁə.və.niʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"↩️",conjugation:{je:"reviens",tu:"reviens",il:"revient",nous:"revenons",vous:"revenez",ils:"reviennent"}},
+  {id:"v053",word:"tenir",article:"",translation_tr:"tutmak",translation_en:"to hold",phonetic:"tə.niʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"✋",conjugation:{je:"tiens",tu:"tiens",il:"tient",nous:"tenons",vous:"tenez",ils:"tiennent"}},
+  {id:"v054",word:"se lever",article:"",translation_tr:"kalkmak",translation_en:"to get up",phonetic:"sə lə.ve",category:"verb",gender:"v",group:"er",level:"A1",emoji:"⏰",conjugation:{je:"me lève",tu:"te lèves",il:"se lève",nous:"nous levons",vous:"vous levez",ils:"se lèvent"}},
+  {id:"v055",word:"se coucher",article:"",translation_tr:"yatmak",translation_en:"to go to bed",phonetic:"sə ku.ʃe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🛏️",conjugation:{je:"me couche",tu:"te couches",il:"se couche",nous:"nous couchons",vous:"vous couchez",ils:"se couchent"}},
+  {id:"v056",word:"prendre",article:"",translation_tr:"almak",translation_en:"to take",phonetic:"pʁɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"🤲",conjugation:{je:"prends",tu:"prends",il:"prend",nous:"prenons",vous:"prenez",ils:"prennent"}},
+  {id:"v057",word:"attendre",article:"",translation_tr:"beklemek",translation_en:"to wait",phonetic:"a.tɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"⏳",conjugation:{je:"attends",tu:"attends",il:"attend",nous:"attendons",vous:"attendez",ils:"attendent"}},
+  {id:"v058",word:"répondre",article:"",translation_tr:"cevap vermek",translation_en:"to answer",phonetic:"ʁe.pɔ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"💬",conjugation:{je:"réponds",tu:"réponds",il:"répond",nous:"répondons",vous:"répondez",ils:"répondent"}},
+  {id:"v059",word:"entendre",article:"",translation_tr:"duymak",translation_en:"to hear",phonetic:"ɑ̃.tɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"👂",conjugation:{je:"entends",tu:"entends",il:"entend",nous:"entendons",vous:"entendez",ils:"entendent"}},
+  {id:"v060",word:"perdre",article:"",translation_tr:"kaybetmek",translation_en:"to lose",phonetic:"pɛʁdʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"😟",conjugation:{je:"perds",tu:"perds",il:"perd",nous:"perdons",vous:"perdez",ils:"perdent"}},
+  {id:"v061",word:"comprendre",article:"",translation_tr:"anlamak",translation_en:"to understand",phonetic:"kɔ̃.pʁɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"💡",conjugation:{je:"comprends",tu:"comprends",il:"comprend",nous:"comprenons",vous:"comprenez",ils:"comprennent"}},
+  {id:"v062",word:"apprendre",article:"",translation_tr:"öğrenmek",translation_en:"to learn",phonetic:"a.pʁɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"📚",conjugation:{je:"apprends",tu:"apprends",il:"apprend",nous:"apprenons",vous:"apprenez",ils:"apprennent"}},
+  {id:"v063",word:"mettre",article:"",translation_tr:"koymak",translation_en:"to put",phonetic:"mɛtʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"📦",conjugation:{je:"mets",tu:"mets",il:"met",nous:"mettons",vous:"mettez",ils:"mettent"}},
+  {id:"v064",word:"lire",article:"",translation_tr:"okumak",translation_en:"to read",phonetic:"liʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"📖",conjugation:{je:"lis",tu:"lis",il:"lit",nous:"lisons",vous:"lisez",ils:"lisent"}},
+  {id:"v065",word:"écrire",article:"",translation_tr:"yazmak",translation_en:"to write",phonetic:"e.kʁiʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"✍️",conjugation:{je:"écris",tu:"écris",il:"écrit",nous:"écrivons",vous:"écrivez",ils:"écrivent"}},
+  {id:"v066",word:"dire",article:"",translation_tr:"söylemek",translation_en:"to say",phonetic:"diʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"🗣️",conjugation:{je:"dis",tu:"dis",il:"dit",nous:"disons",vous:"dites",ils:"disent"}},
+  {id:"v067",word:"boire",article:"",translation_tr:"içmek",translation_en:"to drink",phonetic:"bwaʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"🥤",conjugation:{je:"bois",tu:"bois",il:"boit",nous:"buvons",vous:"buvez",ils:"boivent"}},
+  {id:"v068",word:"connaître",article:"",translation_tr:"tanımak",translation_en:"to know",phonetic:"kɔ.nɛtʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"🤝",conjugation:{je:"connais",tu:"connais",il:"connaît",nous:"connaissons",vous:"connaissez",ils:"connaissent"}},
+  {id:"v069",word:"vivre",article:"",translation_tr:"yaşamak",translation_en:"to live",phonetic:"vivʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"🌱",conjugation:{je:"vis",tu:"vis",il:"vit",nous:"vivons",vous:"vivez",ils:"vivent"}},
+  {id:"v070",word:"conduire",article:"",translation_tr:"araba kullanmak",translation_en:"to drive",phonetic:"kɔ̃.dɥiʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"🚗",conjugation:{je:"conduis",tu:"conduis",il:"conduit",nous:"conduisons",vous:"conduisez",ils:"conduisent"}},
+  {id:"v071",word:"être",article:"",translation_tr:"olmak",translation_en:"to be",phonetic:"ɛtʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🌟",conjugation:{je:"suis",tu:"es",il:"est",nous:"sommes",vous:"êtes",ils:"sont"}},
+  {id:"v072",word:"avoir",article:"",translation_tr:"sahip olmak",translation_en:"to have",phonetic:"a.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"💎",conjugation:{je:"ai",tu:"as",il:"a",nous:"avons",vous:"avez",ils:"ont"}},
+  {id:"v073",word:"aller",article:"",translation_tr:"gitmek",translation_en:"to go",phonetic:"a.le",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🚶",conjugation:{je:"vais",tu:"vas",il:"va",nous:"allons",vous:"allez",ils:"vont"}},
+  {id:"v074",word:"faire",article:"",translation_tr:"yapmak",translation_en:"to do",phonetic:"fɛʁ",category:"verb",gender:"v",group:"re",level:"A1",emoji:"🛠️",conjugation:{je:"fais",tu:"fais",il:"fait",nous:"faisons",vous:"faites",ils:"font"}},
+  {id:"v075",word:"pouvoir",article:"",translation_tr:"yapabilmek",translation_en:"to be able",phonetic:"pu.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"💪",conjugation:{je:"peux",tu:"peux",il:"peut",nous:"pouvons",vous:"pouvez",ils:"peuvent"}},
+  {id:"v076",word:"vouloir",article:"",translation_tr:"istemek",translation_en:"to want",phonetic:"vu.lwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🙋",conjugation:{je:"veux",tu:"veux",il:"veut",nous:"voulons",vous:"voulez",ils:"veulent"}},
+  {id:"v077",word:"savoir",article:"",translation_tr:"bilmek",translation_en:"to know",phonetic:"sa.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🧠",conjugation:{je:"sais",tu:"sais",il:"sait",nous:"savons",vous:"savez",ils:"savent"}},
+  {id:"v078",word:"devoir",article:"",translation_tr:"zorunda olmak",translation_en:"to must",phonetic:"də.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"⚠️",conjugation:{je:"dois",tu:"dois",il:"doit",nous:"devons",vous:"devez",ils:"doivent"}},
+  {id:"v079",word:"voir",article:"",translation_tr:"görmek",translation_en:"to see",phonetic:"vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"👁️",conjugation:{je:"vois",tu:"vois",il:"voit",nous:"voyons",vous:"voyez",ils:"voient"}},
+  {id:"v080",word:"vendre",article:"",translation_tr:"satmak",translation_en:"to sell",phonetic:"vɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"🏪",conjugation:{je:"vends",tu:"vends",il:"vend",nous:"vendons",vous:"vendez",ils:"vendent"}},
+  {id:"v081",word:"rendre",article:"",translation_tr:"geri vermek",translation_en:"to give back",phonetic:"ʁɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"↩️",conjugation:{je:"rends",tu:"rends",il:"rend",nous:"rendons",vous:"rendez",ils:"rendent"}},
+  {id:"v082",word:"descendre",article:"",translation_tr:"inmek",translation_en:"to go down",phonetic:"de.sɑ̃dʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"⬇️",conjugation:{je:"descends",tu:"descends",il:"descend",nous:"descendons",vous:"descendez",ils:"descendent"}},
+  {id:"v083",word:"se souvenir",article:"",translation_tr:"hatırlamak",translation_en:"to remember",phonetic:"sə su.və.niʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"💭",conjugation:{je:"me souviens",tu:"te souviens",il:"se souvient",nous:"nous souvenons",vous:"vous souvenez",ils:"se souviennent"}},
+  {id:"v084",word:"se dépêcher",article:"",translation_tr:"acele etmek",translation_en:"to hurry",phonetic:"sə de.pɛ.ʃe",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🏃",conjugation:{je:"me dépêche",tu:"te dépêches",il:"se dépêche",nous:"nous dépêchons",vous:"vous dépêchez",ils:"se dépêchent"}},
+  {id:"v085",word:"recevoir",article:"",translation_tr:"almak",translation_en:"to receive",phonetic:"ʁə.sə.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"📬",conjugation:{je:"reçois",tu:"reçois",il:"reçoit",nous:"recevons",vous:"recevez",ils:"reçoivent"}},
+  {id:"v086",word:"sourire",article:"",translation_tr:"gülümsemek",translation_en:"to smile",phonetic:"su.ʁiʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"😊",conjugation:{je:"souris",tu:"souris",il:"sourit",nous:"sourions",vous:"souriez",ils:"sourient"}},
+  {id:"v087",word:"suivre",article:"",translation_tr:"takip etmek",translation_en:"to follow",phonetic:"sɥivʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"👣",conjugation:{je:"suis",tu:"suis",il:"suit",nous:"suivons",vous:"suivez",ils:"suivent"}},
+  {id:"v088",word:"croire",article:"",translation_tr:"inanmak",translation_en:"to believe",phonetic:"kʁwaʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"🙏",conjugation:{je:"crois",tu:"crois",il:"croit",nous:"croyons",vous:"croyez",ils:"croient"}},
+  {id:"v089",word:"naître",article:"",translation_tr:"doğmak",translation_en:"to be born",phonetic:"nɛtʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"👶",conjugation:{je:"nais",tu:"nais",il:"naît",nous:"naissons",vous:"naissez",ils:"naissent"}},
+  {id:"v090",word:"offrir",article:"",translation_tr:"hediye etmek",translation_en:"to offer",phonetic:"ɔ.fʁiʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"🎁",conjugation:{je:"offre",tu:"offres",il:"offre",nous:"offrons",vous:"offrez",ils:"offrent"}},
+  {id:"v091",word:"entrer",article:"",translation_tr:"girmek",translation_en:"to enter",phonetic:"ɑ̃.tʁe",category:"verb",gender:"v",group:"er",level:"A1",emoji:"🚪",conjugation:{je:"entre",tu:"entres",il:"entre",nous:"entrons",vous:"entrez",ils:"entrent"}},
+  {id:"v092",word:"pleuvoir",article:"",translation_tr:"yağmur yağmak",translation_en:"to rain",phonetic:"plø.vwaʁ",category:"verb",gender:"v",group:"ir",level:"A1",emoji:"🌧️",conjugation:{je:"—",tu:"—",il:"pleut",nous:"—",vous:"—",ils:"—"}},
+  {id:"v093",word:"présenter",article:"",translation_tr:"tanıtmak",translation_en:"to present",phonetic:"pʁe.zɑ̃.te",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🎤",conjugation:{je:"présente",tu:"présentes",il:"présente",nous:"présentons",vous:"présentez",ils:"présentent"}},
+  {id:"v094",word:"grandir",article:"",translation_tr:"büyümek",translation_en:"to grow up",phonetic:"ɡʁɑ̃.diʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"📈",conjugation:{je:"grandis",tu:"grandis",il:"grandit",nous:"grandissons",vous:"grandissez",ils:"grandissent"}},
+  {id:"v095",word:"remplir",article:"",translation_tr:"doldurmak",translation_en:"to fill",phonetic:"ʁɑ̃.pliʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"🫙",conjugation:{je:"remplis",tu:"remplis",il:"remplit",nous:"remplissons",vous:"remplissez",ils:"remplissent"}},
+  {id:"v096",word:"téléphoner",article:"",translation_tr:"telefon etmek",translation_en:"to phone",phonetic:"te.le.fɔ.ne",category:"verb",gender:"v",group:"er",level:"A2",emoji:"📱",conjugation:{je:"téléphone",tu:"téléphones",il:"téléphone",nous:"téléphonons",vous:"téléphonez",ils:"téléphonent"}},
+  {id:"v097",word:"refuser",article:"",translation_tr:"reddetmek",translation_en:"to refuse",phonetic:"ʁə.fy.ze",category:"verb",gender:"v",group:"er",level:"A2",emoji:"🚫",conjugation:{je:"refuse",tu:"refuses",il:"refuse",nous:"refusons",vous:"refusez",ils:"refusent"}},
+  {id:"v098",word:"mentir",article:"",translation_tr:"yalan söylemek",translation_en:"to lie",phonetic:"mɑ̃.tiʁ",category:"verb",gender:"v",group:"ir",level:"A2",emoji:"🤥",conjugation:{je:"mens",tu:"mens",il:"ment",nous:"mentons",vous:"mentez",ils:"mentent"}},
+  {id:"v099",word:"plaire",article:"",translation_tr:"hoşuna gitmek",translation_en:"to please",phonetic:"plɛʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"😍",conjugation:{je:"plais",tu:"plais",il:"plaît",nous:"plaisons",vous:"plaisez",ils:"plaisent"}},
+  {id:"v100",word:"paraître",article:"",translation_tr:"görünmek",translation_en:"to seem",phonetic:"pa.ʁɛtʁ",category:"verb",gender:"v",group:"re",level:"A2",emoji:"👀",conjugation:{je:"parais",tu:"parais",il:"paraît",nous:"paraissons",vous:"paraissez",ils:"paraissent"}}
+];
+
 // ═══════════════════════════════
 // PEXELS
 // ═══════════════════════════════
@@ -630,17 +734,21 @@ let sessionStats = {again:0,hard:0,easy:0};
 let fcFilter = 'all';
 let cardShowingFR = true;
 
-function loadWords() { allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS]; }
+function loadWords() { allWords = [...DATA_A1_WORDS, ...DATA_A2_WORDS, ...DATA_VERBS]; }
 
 function getFilteredWords() {
   let words = [...allWords];
-  if (fcFilter==='a1') words = words.filter(w=>w.level==='A1');
-  else if (fcFilter==='a2') words = words.filter(w=>w.level==='A2');
+  if (fcFilter==='a1') words = words.filter(w=>w.level==='A1'&&w.category!=='verb');
+  else if (fcFilter==='a2') words = words.filter(w=>w.level==='A2'&&w.category!=='verb');
   else if (fcFilter==='verbs') words = words.filter(w=>w.category==='verb');
+  else if (fcFilter==='er') words = words.filter(w=>w.group==='er');
+  else if (fcFilter==='ir') words = words.filter(w=>w.group==='ir');
+  else if (fcFilter==='re') words = words.filter(w=>w.group==='re');
   return words;
 }
 
 function getDueWords() {
+  // Oturum sınırı yok — tüm due kartlar gelsin
   return getFilteredWords().filter(w => isDue(AppState.progress.cards[w.id]));
 }
 
@@ -660,7 +768,13 @@ function renderFlashcards() {
       <span style="font-size:.85rem;color:var(--gray-600)">🃏 ${dueWords.length} bekliyor · ✅ ${learnedCount} öğrenildi</span>
     </div>
     <div class="filter-row">
-      ${['all','a1','a2','verbs'].map(f=>`<button class="chip ${fcFilter===f?'active':''}" onclick="setFcFilter('${f}')">${t('flashcards.level_'+f)}</button>`).join('')}
+      <button class="chip ${fcFilter==='all'?'active':''}" onclick="setFcFilter('all')">Tümü</button>
+      <button class="chip ${fcFilter==='a1'?'active':''}" onclick="setFcFilter('a1')">A1</button>
+      <button class="chip ${fcFilter==='a2'?'active':''}" onclick="setFcFilter('a2')">A2</button>
+      <button class="chip ${fcFilter==='verbs'?'active':''}" onclick="setFcFilter('verbs')" style="background:${fcFilter==='verbs'?'#6c3483':'var(--white)'};color:${fcFilter==='verbs'?'white':'var(--gray-600)'};border-color:${fcFilter==='verbs'?'#6c3483':'var(--gray-200)'}">Fiiller</button>
+      <button class="chip ${fcFilter==='er'?'active':''}" onclick="setFcFilter('er')" style="background:${fcFilter==='er'?'#1e8449':'var(--white)'};color:${fcFilter==='er'?'white':'var(--gray-600)'};border-color:${fcFilter==='er'?'#1e8449':'var(--gray-200)'}">-er</button>
+      <button class="chip ${fcFilter==='ir'?'active':''}" onclick="setFcFilter('ir')" style="background:${fcFilter==='ir'?'#d35400':'var(--white)'};color:${fcFilter==='ir'?'white':'var(--gray-600)'};border-color:${fcFilter==='ir'?'#d35400':'var(--gray-200)'}">-ir</button>
+      <button class="chip ${fcFilter==='re'?'active':''}" onclick="setFcFilter('re')" style="background:${fcFilter==='re'?'#6c3483':'var(--white)'};color:${fcFilter==='re'?'white':'var(--gray-600)'};border-color:${fcFilter==='re'?'#6c3483':'var(--gray-200)'}">-re</button>
     </div>
     <div id="fc-content">
       ${dueWords.length===0 ? renderSessionComplete() : renderCardArea(dueWords)}
@@ -680,6 +794,10 @@ function setFcFilter(f) { fcFilter=f; renderFlashcards(); }
 
 function renderCardArea(queue) {
   const card = queue[currentCardIndex];
+  const isVerb = card.category === 'verb';
+
+  if (isVerb) return renderVerbCard(card, queue);
+
   const g = card.gender || 'v';
   const article = card.article || '';
   const translation = AppState.settings.language==='tr' ? card.translation_tr : card.translation_en;
@@ -715,7 +833,7 @@ function renderCardArea(queue) {
           <div style="font-size:3rem;margin-bottom:8px">${card.emoji||'🇫🇷'}</div>
           <div class="fc-back-translation gender-${g}">${translation}</div>
           <div class="fc-back-subword" style="margin-top:6px">
-            ${article ? `<span style="color:${g==='m' ? '#00aaff' : g==='f' ? '#ff3355' : '#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
+            ${article ? `<span style="color:${g==='m'?'#00aaff':g==='f'?'#ff3355':'#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
           </div>
           <div style="font-size:.75rem;color:var(--gray-400);margin-top:4px">${card.phonetic||''}</div>
         </div>
@@ -723,21 +841,70 @@ function renderCardArea(queue) {
     </div>
 
     <div class="sm2-buttons">
-      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)">
-        <span class="sm2-btn-icon">😰</span>
-        <span class="sm2-btn-label">${t('flashcards.again')}</span>
-        <span class="sm2-btn-interval">${t('flashcards.againInterval')}</span>
-      </button>
-      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)">
-        <span class="sm2-btn-icon">😐</span>
-        <span class="sm2-btn-label">${t('flashcards.hard')}</span>
-        <span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span>
-      </button>
-      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)">
-        <span class="sm2-btn-icon">😄</span>
-        <span class="sm2-btn-label">${t('flashcards.easy')}</span>
-        <span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span>
-      </button>
+      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)"><span class="sm2-btn-icon">😰</span><span class="sm2-btn-label">${t('flashcards.again')}</span><span class="sm2-btn-interval">${t('flashcards.againInterval')}</span></button>
+      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)"><span class="sm2-btn-icon">😐</span><span class="sm2-btn-label">${t('flashcards.hard')}</span><span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span></button>
+      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)"><span class="sm2-btn-icon">😄</span><span class="sm2-btn-label">${t('flashcards.easy')}</span><span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span></button>
+    </div>
+  `;
+}
+
+function renderVerbCard(card, queue) {
+  const grpColor = card.group==='er' ? '#1e8449' : card.group==='ir' ? '#d35400' : '#6c3483';
+  const grpLabel = card.group==='er' ? '-ER' : card.group==='ir' ? '-IR' : '-RE';
+  const translation = AppState.settings.language==='tr' ? card.translation_tr : card.translation_en;
+  const conj = card.conjugation || {};
+
+  return `
+    <div class="card-counter">
+      <span class="counter-text">${currentCardIndex+1} / ${queue.length}</span>
+    </div>
+    <div class="progress-bar" style="margin-bottom:14px">
+      <div class="progress-fill" style="width:${(currentCardIndex/queue.length)*100}%"></div>
+    </div>
+
+    <div class="flashcard-scene" onclick="toggleCard()">
+      <div class="flashcard ${cardShowingFR?'':'flipped'}" id="flashcard">
+
+        <!-- FİİL ÖN YÜZ -->
+        <div class="flashcard-face flashcard-front" style="background:linear-gradient(135deg,${grpColor}dd 0%,${grpColor} 100%);">
+          <div class="fc-image-overlay" style="background:linear-gradient(to top,rgba(0,0,0,.6) 0%,rgba(0,0,0,.05) 60%)"></div>
+          <div style="position:absolute;top:14px;left:16px;background:rgba(255,255,255,.2);color:white;padding:4px 12px;border-radius:12px;font-size:.75rem;font-weight:700;letter-spacing:.08em">${grpLabel}</div>
+          <div class="fc-hint">👆 tıkla</div>
+          <div class="fc-front-content">
+            <div style="font-size:2.2rem;margin-bottom:2px">${card.emoji||'✨'}</div>
+            <div class="fc-word gender-v" style="color:white;font-size:2rem">${card.word}</div>
+            <div class="fc-phonetic">${card.phonetic||''}</div>
+          </div>
+        </div>
+
+        <!-- FİİL ARKA YÜZ -->
+        <div class="flashcard-face flashcard-back" style="padding:16px 20px;justify-content:flex-start;overflow:hidden;">
+          <div style="text-align:center;margin-bottom:12px;width:100%">
+            <div style="font-size:1.5rem;font-weight:700;color:${grpColor};font-family:'Playfair Display',serif">${card.word}</div>
+            <div style="font-size:1rem;color:var(--gray-600);margin-top:2px">${translation}</div>
+            <div style="display:inline-block;background:${grpColor}22;color:${grpColor};padding:2px 10px;border-radius:10px;font-size:.72rem;font-weight:700;margin-top:4px">${grpLabel}</div>
+          </div>
+          <div style="width:100%;background:var(--gray-100);border-radius:12px;padding:12px 14px">
+            <div style="font-size:.68rem;font-weight:700;letter-spacing:.08em;color:var(--gray-400);text-transform:uppercase;margin-bottom:8px">Geniş Zaman</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 12px">
+              ${[['je','tu'],['il/elle','nous'],['vous','ils/elles']].map(([p1,p2])=>{
+                const k1 = p1.includes('il') ? 'il' : p1.includes('ils') ? 'ils' : p1;
+                const k2 = p2.includes('ils') ? 'ils' : p2;
+                return `
+                  <div style="font-size:.82rem"><span style="color:var(--gray-400);font-size:.72rem">${p1} </span><span style="font-weight:600;color:var(--navy)">${conj[k1]||'—'}</span></div>
+                  <div style="font-size:.82rem"><span style="color:var(--gray-400);font-size:.72rem">${p2} </span><span style="font-weight:600;color:var(--navy)">${conj[k2]||'—'}</span></div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sm2-buttons">
+      <button class="sm2-btn sm2-btn-again" onclick="rateCard(0)"><span class="sm2-btn-icon">😰</span><span class="sm2-btn-label">${t('flashcards.again')}</span><span class="sm2-btn-interval">${t('flashcards.againInterval')}</span></button>
+      <button class="sm2-btn sm2-btn-hard" onclick="rateCard(3)"><span class="sm2-btn-icon">😐</span><span class="sm2-btn-label">${t('flashcards.hard')}</span><span class="sm2-btn-interval">${t('flashcards.hardInterval')}</span></button>
+      <button class="sm2-btn sm2-btn-easy" onclick="rateCard(5)"><span class="sm2-btn-icon">😄</span><span class="sm2-btn-label">${t('flashcards.easy')}</span><span class="sm2-btn-interval">${t('flashcards.easyInterval')}</span></button>
     </div>
   `;
 }
