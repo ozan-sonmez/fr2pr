@@ -978,12 +978,23 @@ let pronFilter = 'all';
 let currentVoice = null;
 let currentSpeed = null;
 let activeAudio = null;
+let autoPlay = false;
+let autoPlayTimer = null;
+let autoPlayCountdown = null;
+const favorites = new Set(JSON.parse(localStorage.getItem('pron_favorites')||'[]'));
+
+function saveFavorites() {
+  localStorage.setItem('pron_favorites', JSON.stringify([...favorites]));
+}
 
 function loadSentences() { allSentences = [...DATA_A1_SENTENCES, ...DATA_A2_SENTENCES]; }
 
 function getFilteredSentences() {
-  if (pronFilter==='all') return allSentences;
-  return allSentences.filter(s=>s.level===pronFilter.toUpperCase());
+  let s = allSentences;
+  if (pronFilter==='a1') s = s.filter(x=>x.level==='A1');
+  else if (pronFilter==='a2') s = s.filter(x=>x.level==='A2');
+  else if (pronFilter==='fav') s = s.filter(x=>favorites.has(x.id));
+  return s;
 }
 
 function renderPronunciation() {
@@ -1000,17 +1011,25 @@ function renderPronunciation() {
     </div>
     <div class="pron-filters">
       <div class="pron-filter-row">
-        ${['all','a1','a2'].map(f=>`<button class="chip ${pronFilter===f?'active':''}" onclick="setPronFilter('${f}')">${t('pronunciation.level_'+f)}</button>`).join('')}
+        <button class="chip ${pronFilter==='all'?'active':''}" onclick="setPronFilter('all')">Tümü</button>
+        <button class="chip ${pronFilter==='a1'?'active':''}" onclick="setPronFilter('a1')">A1</button>
+        <button class="chip ${pronFilter==='a2'?'active':''}" onclick="setPronFilter('a2')">A2</button>
+        <button class="chip ${pronFilter==='fav'?'active':''}" onclick="setPronFilter('fav')" style="${pronFilter==='fav'?'background:#c9a84c;border-color:#c9a84c;color:#1a2340':''}">⭐ Favoriler</button>
       </div>
       <div class="pron-filter-row">
         <button class="audio-chip ${currentVoice==='male'?'active':''}" onclick="setVoice('male')">🧔 ${t('pronunciation.male')}</button>
         <button class="audio-chip ${currentVoice==='female'?'active':''}" onclick="setVoice('female')">👩 ${t('pronunciation.female')}</button>
-        <button class="audio-chip ${currentSpeed==='normal'?'active':''}" onclick="setSpeed('normal')">▶️ ${t('pronunciation.normal')}</button>
-        <button class="audio-chip ${currentSpeed==='slow'?'active':''}" onclick="setSpeed('slow')">🐢 ${t('pronunciation.slow')}</button>
+        <button class="audio-chip ${currentSpeed==='normal'?'active':''}" onclick="setSpeed('normal')">▶️ Normal</button>
+        <button class="audio-chip ${currentSpeed==='slow'?'active':''}" onclick="setSpeed('slow')">🐢 Yavaş</button>
+        <button class="audio-chip ${autoPlay?'active':''}" onclick="toggleAutoPlay()" style="${autoPlay?'background:#27ae60;border-color:#27ae60':''}">
+          ${autoPlay?'⏹ Otomatik':'▶▶ Otomatik'}
+        </button>
       </div>
     </div>
     <div class="sentence-list">
-      ${sentences.map(s=>renderSentenceCard(s)).join('')}
+      ${sentences.length===0
+        ? '<div style="text-align:center;padding:40px;color:var(--gray-400)">Favori cümle yok — ⭐ ikonuna tıklayarak ekle</div>'
+        : sentences.map(s=>renderSentenceCard(s)).join('')}
     </div>
   `;
 }
@@ -1019,59 +1038,127 @@ function setPronFilter(f){pronFilter=f;renderPronunciation();}
 function setVoice(v){currentVoice=v;renderPronunciation();}
 function setSpeed(s){currentSpeed=s;renderPronunciation();}
 
+function toggleAutoPlay() {
+  autoPlay = !autoPlay;
+  if (!autoPlay) {
+    clearTimeout(autoPlayTimer);
+    clearInterval(autoPlayCountdown);
+  }
+  renderPronunciation();
+}
+
 function renderSentenceCard(s) {
   const srData = AppState.progress.sentences[s.id];
-  const due = isDue(srData);
-  const learned = srData && srData.reps>0 && !due;
+  const isFav = favorites.has(s.id);
+
+  // word meanings lookup from allWords
+  const wordMeanings = {};
+  allWords.forEach(w => {
+    wordMeanings[w.word.toLowerCase()] = AppState.settings.language==='tr' ? w.translation_tr : w.translation_en;
+  });
+
   return `
     <div class="sentence-card" id="card-${s.id}">
       <div class="sentence-card-header">
         <span class="sentence-level-badge">${s.level}</span>
         <span class="sentence-topic">${s.topic||''}</span>
+        <button onclick="toggleFavorite('${s.id}')" style="background:none;border:none;cursor:pointer;font-size:1.1rem;padding:2px 6px;border-radius:6px;transition:transform .2s" title="Favorilere ekle">
+          ${isFav?'⭐':'☆'}
+        </button>
       </div>
+
       <div class="sentence-text-area">
         <div class="sentence-words" id="words-${s.id}">
-          ${s.words.map((w,i)=>`<span class="word-token" id="word-${s.id}-${i}">${w}</span>`).join('')}
+          ${s.words.map((w,i)=>{
+            const clean = w.toLowerCase().replace(/[^a-zàâçéèêëîïôûùüÿæœ']/gi,'');
+            const meaning = wordMeanings[clean] || '';
+            return `<span class="word-token" id="word-${s.id}-${i}" onclick="focusWord(event,'${s.id}',${i},'${w}','${meaning.replace(/'/g,"\\'")}','${s.id}')" style="cursor:pointer" title="${meaning}">${w}</span>`;
+          }).join('')}
         </div>
         <div class="audio-progress" id="progress-${s.id}">
           <div class="audio-progress-fill" id="progress-fill-${s.id}"></div>
         </div>
+        <div id="word-popup-${s.id}" style="display:none;background:var(--navy);color:white;border-radius:10px;padding:8px 14px;margin-top:8px;font-size:.85rem;text-align:center"></div>
       </div>
+
       <div class="translation-area">
-        <div class="translation-text visible" id="trans-${s.id}">
+        <div class="translation-text visible" style="color:var(--gray-600);font-style:italic;font-size:.875rem;padding:0">
           ${AppState.settings.language==='tr'?s.translation_tr:s.translation_en}
         </div>
       </div>
-      <div class="sentence-actions">
-        <div></div>
-        <div class="sr-indicator">
-          <div class="sr-dot ${due?'due':''} ${learned?'learned':''}"></div>
-          <span style="font-size:.68rem;color:var(--gray-400)">${learned?'✓':due?t('pronunciation.due'):''}</span>
-        </div>
+
+      <div style="padding:8px 16px 4px;display:flex;gap:8px;justify-content:flex-end">
+        <button class="audio-chip ${(AppState.progress.sentences[s.id]?.rating===3)?'active':''}"
+          onclick="rateSentence('${s.id}',3)" style="${(AppState.progress.sentences[s.id]?.rating===3)?'background:#fff8e6;border-color:#f39c12;color:#f39c12':''}">
+          😐 Zor
+        </button>
+        <button class="audio-chip ${(AppState.progress.sentences[s.id]?.rating===5)?'active':''}"
+          onclick="rateSentence('${s.id}',5)" style="${(AppState.progress.sentences[s.id]?.rating===5)?'background:#edfaf2;border-color:#27ae60;color:#27ae60':''}">
+          😄 Kolay
+        </button>
       </div>
+
       <div class="audio-controls">
         <button class="audio-play-btn" id="play-${s.id}" onclick="playSentence('${s.id}')">▶</button>
         <div class="audio-controls-right">
           <div style="font-size:.75rem;color:var(--gray-600);font-weight:500" id="play-status-${s.id}">
             ${s.sentence.length>50?s.sentence.substring(0,50)+'...':s.sentence}
           </div>
-          <div class="audio-option-row">
-            <button class="audio-chip ${currentSpeed==='slow'?'active':''}" onclick="toggleSpeedBtn()">
-              🐢 ${currentSpeed==='slow'?t('pronunciation.slow'):t('pronunciation.normal')}
-            </button>
-          </div>
+          <div id="countdown-${s.id}" style="font-size:.72rem;color:var(--success);display:none"></div>
         </div>
       </div>
     </div>
   `;
 }
 
-function toggleTranslation(id) {
-  const trans = document.getElementById(`trans-${id}`);
-  const label = document.getElementById(`trans-toggle-label-${id}`);
-  if (!trans) return;
-  const visible = trans.classList.toggle('visible');
-  if (label) label.textContent = visible?t('pronunciation.hideTranslation'):t('pronunciation.showTranslation');
+// ─── FAVORİ ───
+function toggleFavorite(id) {
+  if (favorites.has(id)) favorites.delete(id);
+  else favorites.add(id);
+  saveFavorites();
+  renderPronunciation();
+}
+
+// ─── KELİME ODAK MODU ───
+function focusWord(event, sentenceId, wordIndex, word, meaning, cardId) {
+  event.stopPropagation();
+  const clean = word.replace(/[^a-zàâçéèêëîïôûùüÿæœ'-]/gi,'');
+  // Sadece o kelimeyi söyle
+  speakWord(clean, 'v');
+  // Popup göster
+  const popup = document.getElementById(`word-popup-${cardId}`);
+  if (popup) {
+    if (meaning) {
+      popup.style.display = 'block';
+      popup.innerHTML = `<strong>${word}</strong>${meaning ? ` = ${meaning}` : ''}`;
+      setTimeout(() => { popup.style.display = 'none'; }, 2500);
+    }
+  }
+}
+
+// ─── SM-2 SENTENCE RATING ───
+function rateSentence(id, quality) {
+  const existing = AppState.progress.sentences[id] || {};
+  AppState.progress.sentences[id] = { ...existing, ...sm2(existing, quality), rating: quality };
+  saveState();
+  // Butonu güncelle
+  const card = document.getElementById(`card-${id}`);
+  if (card) {
+    const btns = card.querySelectorAll('.audio-chip');
+    btns.forEach(b => {
+      if (b.textContent.includes('Zor')) {
+        b.style.background = quality===3 ? '#fff8e6' : '';
+        b.style.borderColor = quality===3 ? '#f39c12' : '';
+        b.style.color = quality===3 ? '#f39c12' : '';
+      }
+      if (b.textContent.includes('Kolay')) {
+        b.style.background = quality===5 ? '#edfaf2' : '';
+        b.style.borderColor = quality===5 ? '#27ae60' : '';
+        b.style.color = quality===5 ? '#27ae60' : '';
+      }
+    });
+  }
+  showToast(quality===5 ? '😄 Kolay işaretlendi' : '😐 Zor işaretlendi');
 }
 
 function playSentence(id) { playWithSettings(id, currentVoice, currentSpeed); }
@@ -1081,15 +1168,18 @@ async function playWithSettings(sentenceId, voice, speed) {
   const sentence = allSentences.find(s=>s.id===sentenceId);
   if (!sentence) return;
   if (activeAudio) { activeAudio.pause(); activeAudio=null; }
+  clearTimeout(autoPlayTimer);
+  clearInterval(autoPlayCountdown);
+
   document.querySelectorAll('.audio-play-btn').forEach(btn=>{btn.classList.remove('playing');btn.textContent='▶';});
+  document.querySelectorAll('[id^="countdown-"]').forEach(el=>{el.style.display='none';});
 
   const isSlow = speed==='slow';
   const playBtn = document.getElementById(`play-${sentenceId}`);
   const statusEl = document.getElementById(`play-status-${sentenceId}`);
   if (playBtn){playBtn.classList.add('playing');playBtn.textContent='⏸';}
-  if (statusEl) statusEl.textContent=t('pronunciation.playing');
+  if (statusEl) statusEl.textContent='Oynatılıyor...';
 
-  // iOS fix: unlock audio immediately on user gesture
   const audio = new Audio();
   activeAudio = audio;
   audio.play().catch(()=>{});
@@ -1129,8 +1219,42 @@ async function playWithSettings(sentenceId, voice, speed) {
     words.forEach((_,i)=>{const el=document.getElementById(`word-${sentenceId}-${i}`);if(el)el.classList.remove('highlighted');});
     const fill=document.getElementById(`progress-fill-${sentenceId}`);
     if(fill) fill.style.width='0%';
-    updateSentenceSR(sentenceId);
+
+    // SR update — otomatik "normal" rating
+    const existing = AppState.progress.sentences[sentenceId] || {};
+    if (!existing.rating) {
+      AppState.progress.sentences[sentenceId] = {...existing, ...sm2(existing, 4)};
+      saveState();
+    }
+
+    // Otomatik ilerleme
+    if (autoPlay) {
+      const sentences = getFilteredSentences();
+      const idx = sentences.findIndex(s=>s.id===sentenceId);
+      if (idx < sentences.length - 1) {
+        const nextId = sentences[idx+1].id;
+        const countdownEl = document.getElementById(`countdown-${sentenceId}`);
+        let secs = 3;
+        if (countdownEl) { countdownEl.style.display='block'; countdownEl.textContent=`Sonraki: ${secs}sn...`; }
+        autoPlayCountdown = setInterval(()=>{
+          secs--;
+          if (countdownEl) countdownEl.textContent = secs > 0 ? `Sonraki: ${secs}sn...` : 'Geçiliyor...';
+          if (secs <= 0) clearInterval(autoPlayCountdown);
+        }, 1000);
+        autoPlayTimer = setTimeout(()=>{
+          if (countdownEl) countdownEl.style.display='none';
+          // Scroll to next card
+          const nextCard = document.getElementById(`card-${nextId}`);
+          if (nextCard) nextCard.scrollIntoView({behavior:'smooth', block:'center'});
+          playWithSettings(nextId, currentVoice, currentSpeed);
+        }, 3000);
+      } else {
+        const countdownEl = document.getElementById(`countdown-${sentenceId}`);
+        if (countdownEl) { countdownEl.style.display='block'; countdownEl.textContent='✓ Liste tamamlandı'; }
+      }
+    }
   };
+
   audio.onerror=()=>{
     clearInterval(hi);
     if(playBtn){playBtn.classList.remove('playing');playBtn.textContent='▶';}
