@@ -1209,19 +1209,23 @@ function focusWord(event, sentenceId, wordIndex, word, meaning) {
   event.stopPropagation();
   wordFocusActive = true;
 
-  // Otomatik sayacı durdur
   clearTimeout(autoPlayTimer);
   clearInterval(autoPlayCountdown);
   const countdown = document.getElementById(`countdown-${sentenceId}`);
-  if (countdown) { countdown.style.display='none'; }
+  if (countdown) countdown.style.display='none';
 
-  // Kelimeyi söyle — noktalama temizlenmiş hali
-  const clean = word.replace(/[^a-zàâçéèêëîïôûùüÿæœ'éèêëàâùûîïœæç-]/gi,'').toLowerCase();
-  speakWord(clean, 'v');
+  // Noktalama temizle, küçük harf
+  const clean = word.replace(/[^a-zàâçéèêëîïôûùüÿæœ'-]/gi,'').toLowerCase().trim();
 
-  // Anlam bul — allWords'den direkt ara
+  // Ses — currentVoice'a göre
+  const voiceGender = currentVoice === 'male' ? 'm' : 'f';
+  speakWord(clean, voiceGender);
+
+  // Anlam ara — allWords + genişletilmiş sözlük
   const lang = AppState.settings.language;
   let foundMeaning = '';
+
+  // 1. allWords'de ara
   for (const w of allWords) {
     if (w.word.toLowerCase() === clean) {
       foundMeaning = lang==='tr' ? w.translation_tr : w.translation_en;
@@ -1229,10 +1233,44 @@ function focusWord(event, sentenceId, wordIndex, word, meaning) {
     }
   }
 
+  // 2. Bulunamazsa mini sözlükte ara (gramer kelimeleri)
+  if (!foundMeaning) {
+    const miniDict = {
+      tr: {
+        'je':'ben','tu':'sen','il':'o (erkek)','elle':'o (kadın)','nous':'biz','vous':'siz','ils':'onlar (erkek)','elles':'onlar (kadın)',
+        'le':'(eril artikel)','la':'(dişil artikel)','les':'(çoğul artikel)','un':'bir (eril)','une':'bir (dişil)','des':'(çoğul)',
+        'est':'(olmak — o)','sont':'(olmak — onlar)','suis':'(olmak — ben)','es':'(olmak — sen)',
+        'et':'ve','ou':'veya','mais':'ama','donc':'demek ki','car':'çünkü',
+        'de':'nın/nın','du':'(de+le)','des':'(de+les)','en':'içinde/ile','à':'e/a/da',
+        'que':'ki/ne','qui':'kim','quoi':'ne','où':'nerede','quand':'ne zaman','comment':'nasıl','pourquoi':'neden','combien':'kaç',
+        'pas':'değil','ne':'(olumsuzluk)','plus':'daha fazla/artık','très':'çok','bien':'iyi/çok','aussi':'de/ayrıca',
+        'avec':'ile','sans':'olmadan','pour':'için','sur':'üstünde','sous':'altında','dans':'içinde','devant':'önünde',
+        'un':'bir','deux':'iki','trois':'üç','quatre':'dört','cinq':'beş',
+        'bonjour':'merhaba','bonsoir':'iyi akşamlar','merci':'teşekkür','oui':'evet','non':'hayır','voilà':'işte',
+        "m'appelle":"adım (kendim)","s'appelle":"adı (o)","appelle":"çağır/ara",
+        'fait':'yapar/yapmak','beau':'güzel','beaucoup':'çok','peu':'az','même':'aynı/bile',
+        'tout':'her şey/hepsi','tous':'hepsi','toute':'tüm','toutes':'tüm'
+      },
+      en: {
+        'je':'I','tu':'you','il':'he','elle':'she','nous':'we','vous':'you (formal)','ils':'they','elles':'they (f)',
+        'le':'the (m)','la':'the (f)','les':'the (pl)','un':'a (m)','une':'a (f)',
+        'est':'is','sont':'are','suis':'am','es':'are (tu)',
+        'et':'and','ou':'or','mais':'but','donc':'so','car':'because',
+        'de':'of/from','en':'in/with','à':'to/at',
+        'que':'that/what','qui':'who','où':'where','quand':'when','comment':'how','pourquoi':'why','combien':'how much',
+        'pas':'not','très':'very','bien':'well/good','aussi':'also',
+        'avec':'with','sans':'without','pour':'for','dans':'in','sur':'on',
+        'bonjour':'hello','merci':'thank you','oui':'yes','non':'no',
+        'fait':'does/makes','beau':'beautiful','beaucoup':'a lot','peu':'a little'
+      }
+    };
+    foundMeaning = miniDict[lang]?.[clean] || '';
+  }
+
   // Popup göster
   const popup = document.getElementById(`word-popup-${sentenceId}`);
   if (popup) {
-    popup.textContent = foundMeaning ? `${clean} = ${foundMeaning}` : clean;
+    popup.textContent = foundMeaning ? `${clean} = ${foundMeaning}` : `"${clean}" — sözlükte yok`;
     popup.style.display = 'block';
     clearTimeout(popup._timer);
     popup._timer = setTimeout(()=>{
