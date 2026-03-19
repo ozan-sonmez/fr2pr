@@ -624,7 +624,7 @@ async function loadCardContent(word) {
   cardShowingFR = true;
   // Kart yüklenince FR yüzünden başla, sesi çal
   setTimeout(() => speakWord(word.word, word.gender), 400);
-  const imgUrl = await fetchPexelsImage(word.pexels_query||word.word, word.id);
+  const imgUrl = await fetchPexelsImage(word.pexels_query||word.translation_en||word.word, word.id);
   if (imgUrl) {
     const fcImage = document.getElementById('fc-image');
     if (fcImage) fcImage.innerHTML = `<img src="${imgUrl}" alt="${word.word}" loading="lazy"><div class="fc-image-overlay"></div>`;
@@ -1188,15 +1188,15 @@ function navigateMenu(page) { navigate(page); }
 function toggleMenu() {
   const overlay = document.getElementById('menu-overlay');
   const drawer = document.getElementById('side-menu');
-  if (overlay) overlay.classList.toggle('active');
-  if (drawer) drawer.classList.toggle('active');
+  if (overlay) overlay.classList.toggle('open');
+  if (drawer) drawer.classList.toggle('open');
 }
 
 function closeMenu() {
   const overlay = document.getElementById('menu-overlay');
   const drawer = document.getElementById('side-menu');
-  if (overlay) overlay.classList.remove('active');
-  if (drawer) drawer.classList.remove('active');
+  if (overlay) overlay.classList.remove('open');
+  if (drawer) drawer.classList.remove('open');
 }
 
 function showToast(msg) {
