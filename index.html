@@ -1165,6 +1165,84 @@ function confirmReset() {
 }
 
 // ═══════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════
+let currentPage = 'flashcards';
+
+function navigate(page) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.side-menu-item').forEach(b => {
+    b.classList.toggle('active', b.dataset.page === page);
+  });
+  if (page === 'flashcards') renderFlashcards();
+  else if (page === 'pronunciation') renderPronunciation();
+  else if (page === 'settings') renderSettings();
+  closeMenu();
+}
+
+function navigateMenu(page) { navigate(page); }
+
+function toggleMenu() {
+  const overlay = document.getElementById('menu-overlay');
+  const drawer = document.getElementById('side-menu');
+  if (overlay) overlay.classList.toggle('active');
+  if (drawer) drawer.classList.toggle('active');
+}
+
+function closeMenu() {
+  const overlay = document.getElementById('menu-overlay');
+  const drawer = document.getElementById('side-menu');
+  if (overlay) overlay.classList.remove('active');
+  if (drawer) drawer.classList.remove('active');
+}
+
+function showToast(msg) {
+  let toast = document.getElementById('toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast';
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a2340;color:white;padding:10px 20px;border-radius:20px;font-size:.85rem;z-index:9999;opacity:0;transition:opacity .3s';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+}
+
+async function speakWord(word, gender) {
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) return;
+  const voice = gender === 'm' ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        input:{text:word},
+        voice:{languageCode:'fr-FR',name:voice},
+        audioConfig:{audioEncoding:'MP3',speakingRate:0.9}
+      })
+    });
+    const data = await res.json();
+    if (data.audioContent) {
+      const audio = new Audio('data:audio/mp3;base64,' + data.audioContent);
+      audio.play();
+    }
+  } catch(e) {}
+}
+
+function setLanguage(lang) {
+  AppState.settings.language = lang;
+  saveState();
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  navigate(currentPage);
+}
+
+// ═══════════════════════════════
 // INIT
 // ═══════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
