@@ -265,7 +265,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;heigh
 // ═══════════════════════════════
 // API KEYS
 // ═══════════════════════════════
-window.PEXELS_API_KEY = 'Ml4BpmvIdeI8gfyUYxFiodEB7HhB7B47pYUwuf1ErQmdYEl4gmpIM1ug';
+window.PEXELS_API_KEY = '';
 window.GOOGLE_TTS_KEY = 'AIzaSyB9OqaIV0G-jLwMAvWBKww9E7bArniy4qE';
 
 // ═══════════════════════════════
@@ -397,7 +397,19 @@ function isDue(card) {
 // PEXELS
 // ═══════════════════════════════
 const imageCache = {};
+// Kategoriye göre resim araması — soyut kelimeler için resim gösterme
+const NO_IMAGE_CATEGORIES = new Set(['greetings','basics','numbers','adverbs','connectors','colors','time','adjectives','emotions']);
+
+function getPexelsQuery(word) {
+  if (word.pexels_query) return word.pexels_query;
+  if (NO_IMAGE_CATEGORIES.has(word.category)) return null;
+  // İngilizce çeviriden ilk kelimeyi al, "to " önekini çıkar
+  const en = (word.translation_en || '').replace(/^to /, '').replace(/\/.*/, '').trim();
+  return en || null;
+}
+
 async function fetchPexelsImage(query, wordId) {
+  if (!query) return null;
   if (imageCache[wordId]) return imageCache[wordId];
   const key = window.PEXELS_API_KEY || '';
   if (!key) return null;
@@ -478,6 +490,44 @@ function renderFlashcards() {
 
 function setFcFilter(f) { fcFilter=f; renderFlashcards(); }
 
+function getCategoryStyle(category) {
+  const styles = {
+    food:       'linear-gradient(135deg,#7b3f00 0%,#c0622a 100%)',
+    home:       'linear-gradient(135deg,#1a3a5c 0%,#2e6da4 100%)',
+    people:     'linear-gradient(135deg,#4a235a 0%,#7d3c98 100%)',
+    transport:  'linear-gradient(135deg,#1b2631 0%,#2e4057 100%)',
+    places:     'linear-gradient(135deg,#145a32 0%,#1e8449 100%)',
+    clothes:    'linear-gradient(135deg,#6e2c00 0%,#b7770d 100%)',
+    health:     'linear-gradient(135deg,#922b21 0%,#cb4335 100%)',
+    work:       'linear-gradient(135deg,#1a5276 0%,#2980b9 100%)',
+    education:  'linear-gradient(135deg,#154360 0%,#1f618d 100%)',
+    animals:    'linear-gradient(135deg,#4d5a27 0%,#7d8a2e 100%)',
+    nature:     'linear-gradient(135deg,#0b5345 0%,#148f77 100%)',
+    hobbies:    'linear-gradient(135deg,#512e5f 0%,#8e44ad 100%)',
+    sports:     'linear-gradient(135deg,#1a5276 0%,#d35400 100%)',
+    objects:    'linear-gradient(135deg,#424949 0%,#717d7e 100%)',
+    shopping:   'linear-gradient(135deg,#7b241c 0%,#e74c3c 100%)',
+    communication:'linear-gradient(135deg,#154360 0%,#2471a3 100%)',
+    colors:     'linear-gradient(135deg,#4a235a 0%,#c0392b 100%)',
+    numbers:    'linear-gradient(135deg,#1b2631 0%,#2c3e50 100%)',
+    time:       'linear-gradient(135deg,#212f3d 0%,#1a5276 100%)',
+    adjectives: 'linear-gradient(135deg,#1b4f72 0%,#2e86c1 100%)',
+    adverbs:    'linear-gradient(135deg,#4d4d4d 0%,#717d7e 100%)',
+    connectors: 'linear-gradient(135deg,#333 0%,#555 100%)',
+    emotions:   'linear-gradient(135deg,#7b241c 0%,#a93226 100%)',
+    greetings:  'linear-gradient(135deg,#1e8449 0%,#27ae60 100%)',
+    basics:     'linear-gradient(135deg,#1a2340 0%,#2c3e50 100%)',
+    general:    'linear-gradient(135deg,#2c3e50 0%,#4a4a4a 100%)',
+    finance:    'linear-gradient(135deg,#145a32 0%,#1d8348 100%)',
+    society:    'linear-gradient(135deg,#4a235a 0%,#6c3483 100%)',
+    arts:       'linear-gradient(135deg,#7d6608 0%,#b7770d 100%)',
+    technology: 'linear-gradient(135deg,#1b2631 0%,#154360 100%)',
+    travel:     'linear-gradient(135deg,#0b3d91 0%,#1a5276 100%)',
+    daily:      'linear-gradient(135deg,#2e4057 0%,#4a4a4a 100%)',
+  };
+  return styles[category] || 'linear-gradient(135deg,#1a2340 0%,#2c3e50 100%)';
+}
+
 function renderCardArea(queue) {
   const card = queue[currentCardIndex];
   const isVerb = card.category === 'verb';
@@ -487,6 +537,11 @@ function renderCardArea(queue) {
   const g = card.gender || 'v';
   const article = card.article || '';
   const translation = AppState.settings.language==='tr' ? card.translation_tr : card.translation_en;
+  const genderBg = g==='m'
+    ? 'linear-gradient(135deg,#0a1a40 0%,#0a2a6e 100%)'
+    : g==='f'
+    ? 'linear-gradient(135deg,#3a0a12 0%,#6e0a1e 100%)'
+    : getCategoryStyle(card.category);
 
   return `
     <div class="card-counter">
@@ -499,15 +554,10 @@ function renderCardArea(queue) {
     <div class="flashcard-scene" onclick="toggleCard()">
       <div class="flashcard ${cardShowingFR?'':'flipped'}" id="flashcard">
 
-        <div class="flashcard-face flashcard-front gender-${g}">
-          <div class="fc-image" id="fc-image">
-            <div class="fc-image-placeholder" id="fc-placeholder">
-              <span id="fc-emoji">${card.emoji||'🇫🇷'}</span>
-            </div>
-          </div>
-          <div class="fc-image-overlay"></div>
-          <div class="fc-hint">👆 tıkla</div>
-          <div class="fc-front-content">
+        <div class="flashcard-face flashcard-front" style="background:${genderBg};justify-content:center;align-items:center;flex-direction:column;gap:12px;">
+          <div style="font-size:5rem;line-height:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,0.4))">${card.emoji||'🇫🇷'}</div>
+          <div class="fc-hint" style="position:relative;top:auto;right:auto;margin-top:4px">👆 tıkla</div>
+          <div class="fc-front-content" style="position:relative;padding:0;text-align:center">
             <div class="fc-word gender-${g}">
               ${article?`<span class="fc-article">${article}</span>`:''}${card.word}
             </div>
@@ -516,7 +566,7 @@ function renderCardArea(queue) {
         </div>
 
         <div class="flashcard-face flashcard-back">
-          <div style="font-size:3rem;margin-bottom:8px">${card.emoji||'🇫🇷'}</div>
+          <div style="font-size:3.5rem;margin-bottom:10px">${card.emoji||'🇫🇷'}</div>
           <div class="fc-back-translation gender-${g}">${translation}</div>
           <div class="fc-back-subword" style="margin-top:6px">
             ${article ? `<span style="color:${g==='m'?'#00aaff':g==='f'?'#ff3355':'#9e9789'};font-size:.9rem">${article}</span> ` : ''}${card.word}
@@ -622,13 +672,7 @@ function toggleCard() {
 
 async function loadCardContent(word) {
   cardShowingFR = true;
-  // Kart yüklenince FR yüzünden başla, sesi çal
   setTimeout(() => speakWord(word.word, word.gender), 400);
-  const imgUrl = await fetchPexelsImage(word.pexels_query||word.translation_en||word.word, word.id);
-  if (imgUrl) {
-    const fcImage = document.getElementById('fc-image');
-    if (fcImage) fcImage.innerHTML = `<img src="${imgUrl}" alt="${word.word}" loading="lazy"><div class="fc-image-overlay"></div>`;
-  }
 }
 
 function rateCard(quality) {
