@@ -1213,6 +1213,27 @@ function showToast(msg) {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 2000);
 }
 
+async function playTTS(text, gender, slow) {
+  const key = window.GOOGLE_TTS_KEY || '';
+  if (!key) { showToast('API key eksik'); return null; }
+  const voiceName = gender==='m' ? 'fr-FR-Wavenet-D' : 'fr-FR-Wavenet-A';
+  try {
+    const res = await fetch(`https://texttospeech.googleapis.com/v1/text:synthesize?key=${key}`, {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        input:{text},
+        voice:{languageCode:'fr-FR',name:voiceName},
+        audioConfig:{audioEncoding:'MP3',speakingRate:slow?0.6:1.0}
+      })
+    });
+    const data = await res.json();
+    if (data.error) { showToast('Hata: '+data.error.message); return null; }
+    if (!data.audioContent) return null;
+    return 'data:audio/mp3;base64,'+data.audioContent;
+  } catch(e) { showToast('Bağlantı hatası'); return null; }
+}
+
 async function speakWord(word, gender) {
   const key = window.GOOGLE_TTS_KEY || '';
   if (!key) return;
